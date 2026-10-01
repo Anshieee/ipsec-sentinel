@@ -1,0 +1,65 @@
+# QA prep: 15 hardest questions (M5 fix 5)
+
+1. **Isn't synthetic data just testing your own generator?**
+   Yes, partly — stated in `docs/model-evaluation.md` and every report.
+   The 66 real pcaps (6 variants) are the only out-of-distribution check:
+   parsed fields transfer at 1.000, TCP traffic abstains (0 wrong).
+2. **Why is PFS `unknown` on real captures?**
+   strongSwan encrypts the whole CREATE_CHILD_SA (`message.c` rules +
+   wire proof, D19). Forced rekeys prove presence, never content.
+3. **Why is DH `unknown` without IKE?**
+   DH leaves no trace in ESP sizes/timing (ablation: prior + cipher
+   pockets only, dh2/5 never recovered).
+4. **How was leakage ruled out?**
+   `capture/audit_leakage.py`: stratified permutation MI + grouped
+   nearest-match, all green; features store no endpoint values (tested by
+   hiding `data/labels`); splits never share a variant-run.
+5. **Why abstain instead of guessing?**
+   Unknowns count as errors in eval, so abstention is never free. On real
+   TCP the model abstains 43% with zero wrong guesses — the alternative
+   (confident errors at 0.5) was measured and rejected.
+6. **How were rubric weights chosen?**
+   Cipher 25 / DH 20 mirror NIST SP 800-57 strength timelines; integrity
+   15 / PFS 10 follow RFC 8221/8247 optionality language; lifetimes 10,
+   replay 5, IKE 10, mode 5 encode standard guidance. Hand-computed
+   oracles pin the table (`test_assess.py`).
+7. **What does an encrypted IKE_AUTH hide?**
+   Identities, the CHILD proposal, traffic selectors. We verify
+   synthetic AUTH contents by decrypting with deterministic keys; real
+   AUTH is presence + length only.
+8. **Why is mode 100% — isn't that leakage?**
+   Tunnel overhead shifts every ESP size by 20/40 B; it transfers to real
+   captures (different runs/stacks). Brittle across traffic mixes —
+   documented, and AH mode is structural anyway.
+9. **What if the peer rekeys mid-capture?**
+   New SPIs appear (seq restarts per SPI); the validator requires
+   per-SPI contiguity and flags SPI-count anomalies.
+10. **Why RandomForest, not deep learning?**
+    426 pcaps, ~100 tabular features: RF is calibrated-enough, fast,
+    deterministic (seed 7), and importances are inspectable. xgboost/
+    lightgbm are installed for follow-ups.
+11. **Replay-window/ESN/lifetimes: why not predicted?**
+    Kernel-side state, invisible in short captures. Predicting them
+    would be fabrication; the rubric scores them from labels.
+12. **Transport-mode inner traffic: how validated?**
+    Synthetic transport ESP is decrypted (L4 parse + UDP-len/TCP-hlen
+    checks); real transport is block-alignment + SPI discipline only.
+13. **What breaks first on a new strongSwan version?**
+    Notify sets, QM sizes, KE lengths for new groups. The validator's
+    `--self-test` + full-corpus gate catches drift (rc != 0).
+14. **Why per-run shared addresses?**
+    So no address value can identify a variant even to a memorizing
+    classifier (D15); run-grouped splits are the second defense.
+15. **Can the frontend trust `confidence`?**
+    Parsed = 1.0 by construction; model = RF `predict_proba` max,
+    uncalibrated — treat as rank-ordering, not probability. `unknown`
+    below 0.5. Mock mode returns fixed samples for UI work.
+16. **Why does a live v1 analysis score 73 while the rubric oracle gives 88?**
+    The oracle is ideal-visibility scoring from labels (every field
+    known, v1 = 88). Live analysis of a short capture cannot observe SA
+    lifetimes or replay windows, so both score 0 with explicit
+    `unknown-lifetime` / `unknown-replay` findings: −10 lifetimes, −5
+    replay → 73. (v12 loses 10 more for PFS-unknown: QM encrypted.)
+    Unknowns are penalized conservatively by design, and
+    `docs/expected-live-scores.md` pins every sample. The rubric weights
+    never change to make numbers agree.

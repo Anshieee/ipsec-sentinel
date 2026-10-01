@@ -1,0 +1,18 @@
+[project]
+name = "sih-ipsec-analysis"
+version = "0.4.0"
+description = "AI-driven IPsec VPN protocol analysis platform"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[build-system]
+requires = ["setuptools>=61"]
+
+[project.scripts]
+ipsec-analyze = "cli.main:app"
+
+[tool.setuptools]
+packages = ["cli"]
+
+[tool.typer]
+pretty_exceptions_enable = false

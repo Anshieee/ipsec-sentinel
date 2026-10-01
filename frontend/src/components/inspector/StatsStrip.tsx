@@ -1,0 +1,52 @@
+import { Card } from '@/components/ui/Card'
+import { fmtDuration, fmtInt } from '@/lib/format'
+import type { AnalysisResult } from '@/types/analysis'
+
+interface Stat {
+  label: string
+  value: string
+}
+
+function statsFor(analysis: AnalysisResult | null, counters: { packets: number; ike: number; esp: number; ah: number; other: number }, elapsedSec: number): Stat[] {
+  if (analysis) {
+    return [
+      { label: 'Total', value: fmtInt(analysis.summary.packets) },
+      { label: 'IKE', value: fmtInt(analysis.summary.ikeHandshakes) },
+      { label: 'ESP', value: fmtInt(analysis.summary.espStreams) },
+      { label: 'AH', value: fmtInt(analysis.summary.ahPackets) },
+      { label: 'Other', value: fmtInt(Math.max(0, analysis.summary.packets - analysis.summary.ahPackets)) },
+      { label: 'Duration', value: fmtDuration(analysis.summary.durationSec) },
+    ]
+  }
+  return [
+    { label: 'Total', value: fmtInt(counters.packets) },
+    { label: 'IKE', value: fmtInt(counters.ike) },
+    { label: 'ESP', value: fmtInt(counters.esp) },
+    { label: 'AH', value: fmtInt(counters.ah) },
+    { label: 'Other', value: fmtInt(counters.other) },
+    { label: 'Duration', value: fmtDuration(elapsedSec) },
+  ]
+}
+
+export interface StatsStripProps {
+  analysis: AnalysisResult | null
+  counters: { packets: number; ike: number; esp: number; ah: number; other: number }
+  elapsedSec: number
+}
+
+/** Top stats strip for the inspector (spec 10.2 item 1). */
+export function StatsStrip({ analysis, counters, elapsedSec }: StatsStripProps) {
+  const stats = statsFor(analysis, counters, elapsedSec)
+  return (
+    <Card data-testid="stats-strip">
+      <dl className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+        {stats.map((stat) => (
+          <div key={stat.label}>
+            <dt className="text-[11px] text-muted">{stat.label}</dt>
+            <dd className="tnum text-lg font-semibold leading-6 text-ink">{stat.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+  )
+}

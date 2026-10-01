@@ -1,0 +1,172 @@
+{
+ "fields": {
+  "ike_version": {
+   "value": "ikev2",
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "ipsec_proto": {
+   "value": "esp",
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "ip_version": {
+   "value": 4,
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "nat_t": {
+   "value": true,
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "enc_alg": {
+   "value": "aes-128-cbc",
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "enc_key_len": {
+   "value": 128,
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "auth_alg": {
+   "value": "hmac-sha256",
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "dh_group": {
+   "value": 14,
+   "source": "parsed",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "pfs": {
+   "value": "unknown",
+   "source": "model",
+   "confidence": 0.0,
+   "detail": null
+  },
+  "mode": {
+   "value": "tunnel",
+   "source": "model",
+   "confidence": 0.6966666666666667,
+   "detail": {
+    "header_parse": "n/a",
+    "reason": "ESP payload encrypted: inner IP header and next-header are not visible on the wire",
+    "size_signal": {
+     "value": "tunnel",
+     "confidence": 0.6966666666666667
+    },
+    "decided_by": "size-overhead-model"
+   }
+  },
+  "traffic_type": {
+   "value": "voip",
+   "source": "model",
+   "confidence": 0.91,
+   "detail": null
+  }
+ },
+ "ai_confidence": 0.8733333333333334,
+ "metadata": {
+  "duration_s": {
+   "value": 7.938854217529297,
+   "source": "measured",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "n_packets": {
+   "value": 376,
+   "source": "measured",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "packet_rate": {
+   "value": 47.36199830572244,
+   "source": "measured",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "mean_bytes": {
+   "value": 274.3829787234043,
+   "source": "measured",
+   "confidence": 1.0,
+   "detail": null
+  },
+  "direction_ratio": {
+   "value": 0.9893617021276596,
+   "source": "measured",
+   "confidence": 1.0,
+   "detail": null
+  }
+ },
+ "assessment": {
+  "security_score": 63,
+  "risk_score": 37,
+  "risk_level": "medium",
+  "findings": [
+   {
+    "id": "unknown-pfs",
+    "severity": "medium",
+    "likelihood": 2,
+    "impact": 3,
+    "text": "pfs unknown: assuming weak.",
+    "solution": "Recapture with IKE handshake visible."
+   },
+   {
+    "id": "unknown-lifetime",
+    "severity": "medium",
+    "likelihood": 2,
+    "impact": 3,
+    "text": "SA lifetime unknown: assuming weak.",
+    "solution": "Provide rekey intervals for scoring."
+   },
+   {
+    "id": "unknown-replay",
+    "severity": "medium",
+    "likelihood": 2,
+    "impact": 3,
+    "text": "Replay state unknown: assuming weak.",
+    "solution": "Enable anti-replay (window 32+)."
+   }
+  ],
+  "threat_matrix": [
+   {
+    "id": "unknown-pfs",
+    "likelihood": 2,
+    "impact": 3,
+    "risk": 6
+   },
+   {
+    "id": "unknown-lifetime",
+    "likelihood": 2,
+    "impact": 3,
+    "risk": 6
+   },
+   {
+    "id": "unknown-replay",
+    "likelihood": 2,
+    "impact": 3,
+    "risk": 6
+   }
+  ],
+  "breakdown": {
+   "cipher": 20,
+   "dh": 15,
+   "integrity": 13,
+   "pfs": 0,
+   "lifetime": 0,
+   "replay": 0,
+   "ike": 10,
+   "mode": 5
+  }
+ }
+}

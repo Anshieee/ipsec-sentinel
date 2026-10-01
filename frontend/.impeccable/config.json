@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/components/ui/Tabs.tsx"
+        ],
+        "createdAt": "2026-09-30T01:57:40.032Z",
+        "reason": "DESIGN.md > Components > Tabs: the selected tab is signalled by a 2px accent underline; the accent border is the documented tab indicator, not a card outline."
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "src/styles/print.css"
+        ],
+        "createdAt": "2026-09-30T01:57:40.043Z",
+        "reason": "Print output is ink on paper: DESIGN.md's palette governs the dark screen theme, and the print stylesheet deliberately inverts it for the exported report."
+      }
+    ]
+  }
+}

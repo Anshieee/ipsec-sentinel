@@ -1,0 +1,23 @@
+{
+  "variant": "v1",
+  "ipsec_protocol": "esp",
+  "ike_version": "ikev2",
+  "mode": "tunnel",
+  "ip_version": 4,
+  "encryption": "aes-128-cbc",
+  "key_length_bits": 128,
+  "auth": "hmac-sha256",
+  "aead": false,
+  "dh_group": 14,
+  "pfs": true,
+  "esn": false,
+  "replay_window": 32,
+  "nat_t": false,
+  "ike_rekey_s": 14400,
+  "child_rekey_s": 3600,
+  "traffic_type": "icmp",
+  "source": "synthetic",
+  "run_id": "r1",
+  "duration_s": 10.0,
+  "packet_count": 147
+}

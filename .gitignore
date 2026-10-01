@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# OS / editor
+.DS_Store
+
+# Logs and scratch
+*.log
+logs/
+
+# Regenerable feature cache (rebuilt by train.py; keyed by mtime+version)
+engine/models/feature_cache.json
+
+# Derived dataset artifacts — regenerable (synth gen takes seconds).
+# The curated, checksummed release goes in dataset/ at M5 and IS committed.
+data/
+
+# Tooling/orchestration leftovers — not project code (see AGENTS.md)
+.claude/
+.codex/
+.agents/
+.mcp.json
+engine/models/*.joblib
+reports/out/
+dataset/*.tar.gz
+testbed/configs/**/ipsec.secrets

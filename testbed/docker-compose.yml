@@ -1,0 +1,112 @@
+# Fallback convenience lab (decision D3 keeps the canonical M2 testbed as a
+# NET_ADMIN netns container). Addressing matches testbed/matrix.py TOPOLOGY:
+#   LAN-A 10.1.0.0/24 (gw-a .1, client-a .10)
+#   LAN-B 10.2.0.0/24 (gw-b .1, client-b .10)
+#   transit 10.30.0.0/24 (gw-a .10, gw-b .20) <- IKE/ESP endpoints + capture
+# Select a variant:  VARIANT=v7 docker compose up -d   (default v1)
+
+services:
+  gw-a:
+    image: vimagick/strongswan:latest
+    container_name: testbed-gw-a
+    # override the image entrypoint (it hijacks `command:`)
+    entrypoint: ["/scripts/entrypoint.sh"]
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_forward: 1
+    environment:
+      - VARIANT=${VARIANT:-v1}
+    volumes:
+      - ./variants/${VARIANT:-v1}/gw-a:/etc/swanctl/conf.d
+      - ./scripts:/scripts
+    networks:
+      gw-a-net:
+        ipv4_address: 10.1.0.1
+      transit-net:
+        ipv4_address: 10.30.0.10
+    restart: unless-stopped
+
+  gw-b:
+    image: vimagick/strongswan:latest
+    container_name: testbed-gw-b
+    entrypoint: ["/scripts/entrypoint.sh"]
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_forward: 1
+    environment:
+      - VARIANT=${VARIANT:-v1}
+    volumes:
+      - ./variants/${VARIANT:-v1}/gw-b:/etc/swanctl/conf.d
+      - ./scripts:/scripts
+    networks:
+      gw-b-net:
+        ipv4_address: 10.2.0.1
+      transit-net:
+        ipv4_address: 10.30.0.20
+    restart: unless-stopped
+
+  client-a:
+    image: busybox:latest
+    container_name: testbed-client-a
+    entrypoint: ["/scripts/entrypoint.sh"]
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VARIANT=${VARIANT:-v1}
+    volumes:
+      - ./scripts:/scripts
+    networks:
+      gw-a-net:
+        ipv4_address: 10.1.0.10
+    restart: unless-stopped
+
+  client-b:
+    image: busybox:latest
+    container_name: testbed-client-b
+    entrypoint: ["/scripts/entrypoint.sh"]
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VARIANT=${VARIANT:-v1}
+    volumes:
+      - ./scripts:/scripts
+    networks:
+      gw-b-net:
+        ipv4_address: 10.2.0.10
+    restart: unless-stopped
+
+  capture:
+    image: corfr/tcpdump:latest
+    container_name: testbed-capture
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./capture:/captures
+    networks:
+      - transit-net
+    command:
+      - "-i"
+      - "any"
+      - "-w"
+      - "/captures/capture.pcap"
+      - "udp port 500 or udp port 4500 or proto 50 or proto 51"
+    restart: unless-stopped
+
+networks:
+  gw-a-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.1.0.0/24
+  gw-b-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.2.0.0/24
+  transit-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.30.0.0/24

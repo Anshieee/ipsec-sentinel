@@ -1,0 +1,328 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "IPsec Analyzer",
+  "version": "0.3.0"
+ },
+ "paths": {
+  "/health": {
+   "get": {
+    "summary": "Health",
+    "operationId": "health_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/models": {
+   "get": {
+    "summary": "Models",
+    "operationId": "models_models_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/analyze": {
+   "post": {
+    "summary": "Analyze Pcap",
+    "operationId": "analyze_pcap_analyze_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_analyze_pcap_analyze_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnalyzeResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/report": {
+   "post": {
+    "summary": "Report Pcap",
+    "description": "Full JSON report (classification + assessment + remediation).\n\nPDF rendering arrives in M4; the payload here is the report content.",
+    "operationId": "report_pcap_report_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_report_pcap_report_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnalyzeResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/variants": {
+   "get": {
+    "summary": "List Variants",
+    "description": "Demo data: the 18-variant matrix + plain (ground truth table).",
+    "operationId": "list_variants_variants_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/datasets/samples": {
+   "get": {
+    "summary": "Dataset Samples",
+    "description": "Demo data: sample manifest rows (small, stable selection).",
+    "operationId": "dataset_samples_datasets_samples_get",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 12,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AnalyzeResponse": {
+    "properties": {
+     "fields": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/FieldResult"
+      },
+      "type": "object",
+      "title": "Fields"
+     },
+     "ai_confidence": {
+      "type": "number",
+      "title": "Ai Confidence"
+     },
+     "metadata": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/FieldResult"
+      },
+      "type": "object",
+      "title": "Metadata"
+     },
+     "assessment": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Assessment"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fields",
+     "ai_confidence",
+     "metadata",
+     "assessment"
+    ],
+    "title": "AnalyzeResponse"
+   },
+   "Body_analyze_pcap_analyze_post": {
+    "properties": {
+     "file": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "File"
+     }
+    },
+    "type": "object",
+    "required": [
+     "file"
+    ],
+    "title": "Body_analyze_pcap_analyze_post"
+   },
+   "Body_report_pcap_report_post": {
+    "properties": {
+     "file": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "File"
+     }
+    },
+    "type": "object",
+    "required": [
+     "file"
+    ],
+    "title": "Body_report_pcap_report_post"
+   },
+   "FieldResult": {
+    "properties": {
+     "value": {
+      "title": "Value"
+     },
+     "source": {
+      "type": "string",
+      "title": "Source"
+     },
+     "confidence": {
+      "type": "number",
+      "title": "Confidence"
+     },
+     "detail": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "source",
+     "confidence"
+    ],
+    "title": "FieldResult"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   }
+  }
+ }
+}

@@ -1,0 +1,244 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — IPsec-AI Sentinel.
+ * Colour names are stable across passes; the current world is a matte-black
+ * deck with a single cool-white glass tint applied at four opacities. Nothing
+ * above the canvas is opaque — see --glass-* and the frosted material block at
+ * the foot of this file.
+ */
+:root {
+  /*
+   * Material: everything above the canvas is one cool-white glass tint, drawn
+   * at a different alpha per rung. Nothing is painted solid, so panels read as
+   * layered frosted sheets over a matte-black deck.
+   */
+  --color-base: #0a0a0b;
+  --color-surface: rgb(235 240 246 / 0.07);
+  --color-raised: rgb(235 240 246 / 0.13);
+
+  /* Hairline = structural divider. Control edge = interactive border (>= 3:1). */
+  --color-line: rgb(235 240 246 / 0.26);
+  --color-line-strong: rgb(235 240 246 / 0.48);
+
+  /* Text */
+  --color-ink: #f0f2f5;
+  --color-muted: #a7aeb8;
+
+  /* Accent: one primary action, the focus ring, links, primary chart series. */
+  --color-accent: #5a9bf8;
+  --color-accent-solid: #2563eb;
+
+  /* Status: reserved for meaning, never decoration. */
+  --color-highlight: #22c3d6;
+  --color-safe: #34c88f;
+  --color-warn: #f0a63a;
+  --color-orange: #f4763a;
+  --color-danger: #f2665e;
+  --color-danger-solid: #c4453c;
+  --color-violet: #a78bfa;
+
+  /*
+   * Same tokens as RGB channels so Tailwind can apply alpha modifiers.
+   * The surface/line channels are the glass tint; their rendered strength comes
+   * from --glass-* below, folded into Tailwind's <alpha-value> slot so `/50`
+   * still scales relative to the material rather than replacing it.
+   */
+  --color-base-rgb: 10 10 11;
+  --color-surface-rgb: 235 240 246;
+  --color-raised-rgb: 235 240 246;
+  --color-line-rgb: 235 240 246;
+  --color-line-strong-rgb: 235 240 246;
+  --color-ink-rgb: 240 242 245;
+  --color-muted-rgb: 167 174 184;
+  --color-accent-rgb: 90 155 248;
+  --color-accent-solid-rgb: 37 99 235;
+  --color-highlight-rgb: 34 195 214;
+  --color-safe-rgb: 52 200 143;
+  --color-warn-rgb: 240 166 58;
+  --color-orange-rgb: 244 118 58;
+  --color-danger-rgb: 242 102 94;
+  --color-danger-solid-rgb: 196 69 60;
+  --color-violet-rgb: 167 139 250;
+
+  /* Material opacities, in the order of the ladder above. */
+  --glass-surface: 0.07;
+  --glass-raised: 0.13;
+  --glass-line: 0.26;
+  --glass-line-strong: 0.48;
+  --glass-blur: blur(22px) saturate(140%);
+
+  /* Motion — explain change, then get out of the way. */
+  --dur-instant: 100ms;
+  --dur-fast: 140ms;
+  --dur-base: 180ms;
+  --dur-slow: 240ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Overlay depth (the only shadow family allowed to be black-alpha). */
+  --shadow-overlay: 0 10px 28px -10px rgb(0 0 0 / 0.75);
+
+  --card-pad: 1rem;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    /* 4px rhythm: nothing may drift off the scale at the root. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-base font-sans text-sm leading-5 text-ink antialiased;
+    /* Tabular figures everywhere: analysts compare numbers down columns. */
+    font-variant-numeric: tabular-nums;
+    overflow-x: hidden;
+  }
+
+  /* Type scale roles (see DESIGN.md > Typography). */
+  h1 {
+    @apply text-xl font-semibold leading-7 tracking-tight;
+  }
+
+  h2 {
+    @apply text-base font-semibold leading-5 tracking-tight;
+  }
+
+  h3 {
+    @apply text-sm font-semibold leading-5;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  /* Focus ring: 2px separation + 4px accent, drawn outside the control. */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-base), 0 0 0 4px var(--color-accent);
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgb(var(--color-accent-rgb) / 0.35);
+  }
+
+  /* Scrollbars read as part of the instrument, not a browser artefact. */
+  * {
+    scrollbar-color: var(--color-line-strong) transparent;
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-line-strong);
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Overline / column label: letter-spaced, never used for sentences. */
+  .overline {
+    @apply text-2xs font-semibold uppercase tracking-[0.08em] text-muted;
+  }
+
+  /* Machine data: SPIs, hex, IPs, cipher identifiers, log lines. */
+  .mono {
+    @apply font-mono text-xs leading-4;
+    font-variant-ligatures: none;
+  }
+
+  .card {
+    @apply rounded-card bg-surface p-[var(--card-pad)] shadow-card;
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 999px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sr-only-focusable:not(:focus-visible) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/*
+ * Frosted material.
+ * The alpha lives in the tokens above; this supplies the optics — a real
+ * backdrop blur on every glass rung, so panels pick up whatever scrolls
+ * beneath them instead of sitting on a flat plate. The inset highlight is the
+ * hairline of light along a sheet's top edge; it is what separates one
+ * translucent layer from the next without a border or a drop shadow.
+ */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bg-surface,
+  .bg-raised,
+  .card {
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+  }
+}
+
+/*
+ * Reduced motion: state changes stay instant rather than disappear, ambient
+ * loops (shimmer, pulse) stop entirely.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-shimmer,
+  [data-motion='ambient'] {
+    animation: none !important;
+  }
+}

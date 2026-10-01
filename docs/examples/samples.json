@@ -1,0 +1,49 @@
+{
+ "samples": [
+  {
+   "file": "data/real/v1/r1/email.pcap",
+   "variant": "v1",
+   "traffic": "email",
+   "ip_version": "4",
+   "packets": "277",
+   "esp_packets": "267",
+   "ike_packets": "10",
+   "source": "real",
+   "valid": "True"
+  },
+  {
+   "file": "data/real/v1/r1/icmp.pcap",
+   "variant": "v1",
+   "traffic": "icmp",
+   "ip_version": "4",
+   "packets": "26",
+   "esp_packets": "16",
+   "ike_packets": "10",
+   "source": "real",
+   "valid": "True"
+  },
+  {
+   "file": "data/pcaps/synth/plain/v4/r1/email.pcap",
+   "variant": "plain",
+   "traffic": "email",
+   "ip_version": "4",
+   "packets": "158",
+   "esp_packets": "0",
+   "ike_packets": "0",
+   "source": "synthetic",
+   "valid": "True"
+  },
+  {
+   "file": "data/pcaps/synth/plain/v4/r1/icmp.pcap",
+   "variant": "plain",
+   "traffic": "icmp",
+   "ip_version": "4",
+   "packets": "16",
+   "esp_packets": "0",
+   "ike_packets": "0",
+   "source": "synthetic",
+   "valid": "True"
+  }
+ ],
+ "total_rows": 426
+}
