@@ -1,7 +1,7 @@
 {
  "seed": 7,
  "n_estimators": 300,
- "train_rows": 396,
+ "train_rows": 414,
  "feature_keys": [
   "ah_nh",
   "duration",
@@ -96,6 +96,7 @@
   "n_esp_in_udp",
   "n_flows",
   "n_ike",
+  "n_ip",
   "n_keepalive",
   "n_packets",
   "n_spis",
@@ -186,6 +187,7 @@
   "n_esp",
   "n_esp_in_udp",
   "n_flows",
+  "n_ip",
   "n_keepalive",
   "n_packets",
   "n_spis",

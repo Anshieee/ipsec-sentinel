@@ -1,4 +1,4 @@
-# IPsec dataset v1.1 (462 pcaps)
+# IPsec dataset v1.2 (480 pcaps)
 
 Single dataset deliverable: `ipsec-dataset-v1.tar.gz` (built by
 `scripts/build-dataset.sh`, NOT committed — regenerable). Verify from the
@@ -17,14 +17,14 @@ regenerates (`generate-data`), and real-dependent steps (real-NAT-T
 report, synth→real eval, holdout) skip or fail loudly.
 
 Composition proof: the tarball's `real/` + checksums verified (0
-failures over 925 checksum entries); with `data/real` present,
+failures over 961 checksum entries); with `data/real` present,
 `reports/make_all.py` produces all 8 PDFs including
 `technical-real-natt.pdf` (verified in `reports/out/`).
 
 ## Splits (grouped by run — never split a run across train/test)
 
-- `train.csv`: synthetic r1+r2 (264 rows)
-- `test.csv`: synthetic r3 (132 rows)
+- `train.csv`: synthetic r1+r2 (276 rows)
+- `test.csv`: synthetic r3 (138 rows)
 - `real.csv`: all real captures, held out (66 rows: v1,v3,v5,v7,v12,v18;
   r2/r3 runs include forced CHILD rekeys + extra TCP captures)
 

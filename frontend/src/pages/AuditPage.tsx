@@ -32,7 +32,12 @@ export function AuditPage() {
 
         <div className="col-span-12 grid grid-cols-12 gap-4">
           <div className="col-span-12 lg:col-span-7">
-            <ScoreWaterfall findings={derived.findings} total={derived.riskScore} />
+            <ScoreWaterfall
+              findings={derived.findings}
+              total={derived.riskScore}
+              backend={derived.backendHeadline}
+              ruleVersion={derived.analysis?.posture?.ruleVersion ?? null}
+            />
           </div>
           <div className="col-span-12 lg:col-span-5">
             <CategoryRadar scores={derived.categoryScores} />
@@ -48,7 +53,7 @@ export function AuditPage() {
         </div>
 
         <div className="col-span-12">
-          <RemediationPlan findings={derived.findings} currentScore={derived.riskScore} />
+          <RemediationPlan findings={derived.findings} currentScore={derived.riskScore} backend={derived.backendHeadline} />
         </div>
       </div>
     </PageScaffold>

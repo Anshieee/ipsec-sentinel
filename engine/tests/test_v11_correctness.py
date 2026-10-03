@@ -467,6 +467,8 @@ def _good_cls():
     g = lambda v, s="OBSERVED", src="parsed": {  # noqa: E731
         "value": v, "status": s, "source": src, "confidence": 1.0}
     return {"ike_sa": {"version": g("ikev2"), "enc_alg": g("aes-128-cbc"),
+                       "enc_key_len": g(128),
+                       "auth_alg": g("hmac-sha256"), "prf": g("hmac-sha256"),
                        "dh_group": g(14)},
             "dh_group": g(14),
             "child_sa": {"proto": g("esp"),
@@ -475,7 +477,7 @@ def _good_cls():
                          "enc_key_len": g(128, "INFERRED", "model"),
                          "auth_alg": g("hmac-sha256", "INFERRED", "model"),
                          "pfs": {"value": True, "status": "INFERRED",
-                                 "source": "model", "confidence": 0.9},
+                                 "source": "model", "confidence": 1.0},
                          "replay": {"value": 32, "status": "NOT_OBSERVED",
                                     "source": "none", "confidence": 0.0},
                          "lifetime": {"value": 3600, "status": "OBSERVED",

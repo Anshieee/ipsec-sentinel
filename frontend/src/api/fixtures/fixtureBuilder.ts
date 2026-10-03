@@ -8,11 +8,12 @@ import { buildFlowStats, buildLengthHistogram, buildTimeSeries } from './stats'
 import { FEATURE_EVIDENCE } from './features'
 import type { FixtureSpec } from './spec'
 
-const observed = <T>(value: T): Param<T> => ({ value, provenance: 'observed', confidence: 1 })
+const observed = <T>(value: T): Param<T> => ({ value, provenance: 'observed', confidence: 1, status: 'OBSERVED' })
 const inferred = <T>(value: T, confidence: number): Param<T> => ({
   value,
   provenance: 'inferred',
   confidence,
+  status: 'INFERRED',
 })
 
 export function buildProtocol(spec: FixtureSpec): ProtocolInfo {
@@ -63,6 +64,9 @@ export function buildFixture(spec: FixtureSpec): AnalysisResult {
     source: 'upload',
     riskScore: computeRiskScore(evaluation.findings),
     overallConfidence: spec.overallConfidence,
+    // Fixtures are simulated: no backend headline (deriveValues uses the
+    // client rule engine) and every simulated surface carries a badge.
+    detection: { ipsecDetected: true },
     summary: {
       packets: spec.packets,
       ikeHandshakes: spec.ikeHandshakes,

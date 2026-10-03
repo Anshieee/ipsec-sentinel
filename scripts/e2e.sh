@@ -57,14 +57,14 @@ print('samples ok')"
 else
   step "generate-data (synthetic, deterministic)"
   $PY capture/synth/synth_pcap.py
-  [ "$($PY -c "import csv;print(sum(1 for _ in open('data/manifest.csv'))-1)")" = "396" ] \
-    || { echo "synthetic row count != 396"; exit 1; }
+  [ "$($PY -c "import csv;print(sum(1 for _ in open('data/manifest.csv'))-1)")" = "414" ] \
+    || { echo "synthetic row count != 414"; exit 1; }
   if [ -f "$REPO/dataset/ipsec-dataset-v1.tar.gz" ]; then
     step "restore real captures from dataset tarball"
     tar -xzf "$REPO/dataset/ipsec-dataset-v1.tar.gz" -C "$WORK/data" real labels/real
     $PY capture/synth/synth_pcap.py --ingest-real
-    [ "$($PY -c "import csv;print(sum(1 for _ in open('data/manifest.csv'))-1)")" = "462" ] \
-      || { echo "full row count != 462"; exit 1; }
+    [ "$($PY -c "import csv;print(sum(1 for _ in open('data/manifest.csv'))-1)")" = "480" ] \
+      || { echo "full row count != 480"; exit 1; }
   else
     echo "no dataset tarball: synthetic-only e2e (real tests skip)"
   fi

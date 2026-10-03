@@ -1,5 +1,33 @@
 # Final report (M5)
 
+## Addendum — v1.2 correctness release (2026-10-04)
+
+Supersedes the counts and scores below where they differ; the M5 record
+is kept intact underneath.
+
+- Corpus: **480 pcaps** — 414 synthetic (21 variants × r1–r3 × 6 types +
+  plain × {v4,v6} × r1–r3 × 6) + 66 real (v1 × r1/r2/r3 + v3,v5,v7,v12,v18
+  × r1/r2 with forced rekeys + extra TCP). Validator gate 480/480,
+  config gate 1717/1717, leakage audit green, checksums 961 entries.
+- Assessment rule **1.2.0**: 10 controls (new ike-cipher w5,
+  ike-integrity w3, both IKE-SA-scoped), confidence-weighted
+  posture/coverage (OBSERVED/label 1.0, INFERRED its confidence,
+  UNKNOWN 0), LIKELY verdict for inferred FAILs (severity capped one
+  level). No weight tuning: data-plane weights unchanged.
+- Oracles (hand-computed, f = 1): v1=88, v7=74, v11=71, v8=69, v19=75,
+  v20=99, v21=87, plain=WITHHELD (no score).
+- Live: v1=89 @ 0.6684, v19=72 @ 0.6258 (weak-cipher LIKELY),
+  v20=99 @ 0.6327 (no findings), v21=80 @ 0.6576 (three CONFIRMED IKE
+  FAILs, GCM child PASSes at 25), plain=WITHHELD.
+- Model eval (regenerated): child enc CV 0.889 (honest ESP-size signal,
+  never parsed from IKE), ike rows 1.000, dh 0.0 by design, pfs 0.957.
+- UI: backend-mapped (`src/api/backend.ts`) with ike_sa/child_sa cards,
+  detection state, controls list, posture+coverage headline (WITHHELD
+  shows no gauge), LIKELY badges, SIMULATED badges on simulated
+  surfaces; client rule-engine numbers relabeled where they disagree.
+- Release asset: `dataset/ipsec-dataset-v1.tar.gz`, sha256 in
+  `docs/RELEASE.md` (publish command included, not run).
+
 ## What was built
 An AI-driven IPsec analysis platform: 18-variant testbed (real netns
 captures + byte-realistic synthetic generator), a hybrid classifier

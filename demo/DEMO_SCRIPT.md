@@ -11,7 +11,7 @@ ipsec-analyze analyze demo/samples/v1-voip.pcap
 # ike_sa enc aes-128-cbc (OBSERVED, packet 2), child enc aes-128-cbc
 # (INFERRED model 0.98), flat dh_group unknown (IKE group is IKE evidence),
 # traffic_type voip (model), mode tunnel (model, basis size-overhead-model),
-# posture 89/100 @ coverage 0.65 (dh/lifetimes/replay unobserved)
+# posture 89/100 @ coverage 0.6684 (dh/lifetimes/replay unobserved)
 ```
 
 ## 2. Machine output + PDF (30 s)

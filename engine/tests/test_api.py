@@ -49,10 +49,11 @@ def test_analyze(tmp_path):
     assert body["detection"]["ipsec_detected"] is True
     assert body["fields"]["traffic_type"]["source"] == "model"
     assert 0.0 <= body["ai_confidence"] <= 1.0
-    # Live v1: posture 89 over evaluated controls, coverage 0.65
-    # (dh/lifetime/replay unobserved in a short capture).
+    # Live v1: posture 89 over evaluated controls, coverage 0.6684
+    # (dh/lifetime/replay unobserved in a short capture; INFERRED
+    # controls speak with their model confidence).
     assert body["assessment"]["posture_score"] == 89
-    assert body["assessment"]["coverage"] == 0.65
+    assert body["assessment"]["coverage"] == 0.6684
     assert body["assessment"]["score_status"] == "PUBLISHED"
     ctl = {c["id"]: c for c in body["assessment"]["controls"]}
     assert ctl["lifetime"]["status"] == "UNKNOWN"
@@ -75,15 +76,15 @@ def test_variants_and_samples():
     r = client.get("/variants")
     assert r.status_code == 200
     body = r.json()
-    assert len(body["variants"]) == 20
+    assert len(body["variants"]) == 21
     assert "plain" in body
     r = client.get("/datasets/samples?limit=10")
     assert r.status_code == 200
     body = r.json()
     assert len(body["samples"]) == 10
-    # full corpus: 462 rows (396 synthetic incl. plain + 66 real);
-    # clean checkouts that only regenerate synthetic data have 396.
-    assert body["total_rows"] >= 396
+    # full corpus: 480 rows (414 synthetic incl. plain + 66 real);
+    # clean checkouts that only regenerate synthetic data have 414.
+    assert body["total_rows"] >= 414
 
 
 def test_cors_preflight():
@@ -111,7 +112,7 @@ def test_mock_app():
     r = mc.post("/analyze", files={"file": ("x.pcap", b"data")})
     assert r.status_code == 200
     body = r.json()
-    assert body["fields"]["pfs"]["value"] == "unknown"
+    assert body["fields"]["pfs"]["value"] is True
     assert body["fields"]["pfs"]["source"] == "model"
     assert body["fields"]["mode"]["detail"]["decided_by"] == \
         "size-overhead-model"

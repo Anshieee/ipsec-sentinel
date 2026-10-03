@@ -354,3 +354,30 @@ at root — appending here (code reality wins).
   INIT expectations + SK-decryption suite now use ike_* keys; child
   expectations use child keys. M1 gate re-verified 1636/1636 (ss-verify
   container restarted, pre-existing stopped container).
+
+## D23 — v1.2 scoring corrections: why these weights, this formula (2026-10-04)
+
+Task prompt says `docs/DECISIONS.md`; the repo keeps root `DECISIONS.md`
+(D21) — appending here.
+
+- IKE coverage gap (Part 1a): v1.1 scored only ike_sa.version/dh_group,
+  so an OBSERVED 3DES/SHA1 handshake was silent. New controls ike-cipher
+  (5) and ike-integrity (3), read from ike_sa only. Weights: handshake
+  secrecy outweighs AUTH/PRF forgery resistance, both below the
+  data-plane cipher (25) because CHILD controls already judge carried
+  traffic; total 108. Data-plane weights untouched, so full-visibility
+  oracles move only by the IKE terms (v1 88->88, v11 73->71, v19 73->75).
+  v20 (CBC-128/SHA256/DH14) earns 4/5+3/3 with zero FAILs — stays
+  acceptable, shown before/after in tests (100 @ 0.65 -> 99 @ 0.6327).
+- Inferred symmetry (Part 1b): posture = 100*S(points*f)/S(weight*f),
+  coverage = S(weight*f)/S(applicable weights), f = 1.0 observed/label,
+  model confidence when inferred, 0 unknown. Rationale: an INFERRED PASS
+  must not count as full credit (it speaks softer), and an INFERRED FAIL
+  must still surface (silence would be the old confident-absence error in
+  reverse) — hence LIKELY with severity capped one level, CONFIRMED kept
+  for observed bytes. LIKELY is a control status (evaluated in math) and
+  a finding verdict. The 0.5 WITHHELD gate is unchanged; real-v1 lands at
+  0.4985 (WITHHELD) vs real-v18 0.5255 (PUBLISHED) — same variant, honest
+  boundary, pinned in tests.
+- PFS honesty: the control explanation now states observed (label oracle)
+  vs inferred-from-rekey-length (model, group unconfirmed).

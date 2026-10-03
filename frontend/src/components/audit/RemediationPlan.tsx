@@ -39,8 +39,10 @@ export function orderRemediation(findings: Finding[]): Finding[] {
 
 export interface RemediationPlanProps {
   findings: Finding[]
-  /** Current risk score, shown for comparison. */
-  currentScore: number
+  /** Current risk score, shown for comparison; null when WITHHELD. */
+  currentScore: number | null
+  /** Backend-mapped result: projections use client weights and are hidden. */
+  backend?: boolean
 }
 
 /**
@@ -48,7 +50,7 @@ export interface RemediationPlanProps {
  * projected risk score over unticked findings (spec 10.4 item 7).
  * Ticked state is local in-memory state only.
  */
-export function RemediationPlan({ findings, currentScore }: RemediationPlanProps) {
+export function RemediationPlan({ findings, currentScore, backend }: RemediationPlanProps) {
   const [ticked, setTicked] = useState<Set<string>>(() => new Set())
   const ordered = useMemo(() => orderRemediation(findings), [findings])
 
@@ -81,7 +83,15 @@ export function RemediationPlan({ findings, currentScore }: RemediationPlanProps
       <CardHeader
         title="Remediation plan"
         description="Ordered checklist built from the rule recommendations"
-        actions={<Badge tone="info">{fmtInt(projected)} projected</Badge>}
+        actions={
+          backend ? (
+            <Badge tone="info" title="Client-side projections use different weights than the backend posture and are hidden for backend results.">
+              projection n/a (backend score)
+            </Badge>
+          ) : (
+            <Badge tone="info">{fmtInt(projected)} projected</Badge>
+          )
+        }
       />
 
       <div className="space-y-1.5">
@@ -160,11 +170,20 @@ export function RemediationPlan({ findings, currentScore }: RemediationPlanProps
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
         <p className="text-[13px] text-muted">
-          Current risk score: <span className="tnum font-semibold text-ink">{fmtInt(currentScore)}</span>
-          {' · '}
-          <span data-testid="projected-score">
-            Projected risk score: <span className="tnum font-semibold text-ink">{fmtInt(projected)}</span>
+          Current risk score:{' '}
+          <span className="tnum font-semibold text-ink">
+            {currentScore === null ? 'withheld (insufficient evidence)' : fmtInt(currentScore)}
           </span>
+          {backend ? (
+            <span> · projections use client weights and are hidden for backend results.</span>
+          ) : (
+            <>
+              {' · '}
+              <span data-testid="projected-score">
+                Projected risk score: <span className="tnum font-semibold text-ink">{fmtInt(projected)}</span>
+              </span>
+            </>
+          )}
         </p>
         <Button variant="ghost" size="sm" disabled={ticked.size === 0} onClick={() => setTicked(new Set())}>
           Reset ticks

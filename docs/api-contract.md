@@ -111,3 +111,19 @@ CHANGED: findings contain confirmed FAILs only (no `unknown-*` ids, no
 "assuming weak" text); `security_score`/`risk_level` are null when
 `score_status` is WITHHELD (hide the headline, still render `findings`
 and UNKNOWN `resolve_by` hints). `GET /variants` now returns 20 rows.
+
+## v1.1 → v1.2 change list
+
+ADDED controls: `ike-cipher` (w5), `ike-integrity` (w3), scored from
+`ike_sa` only (IKE cipher/integrity/PRF now FAIL when weak — v1.1 was
+silent). Total weight 108.
+ADDED control status `LIKELY` (= FAIL on INFERRED evidence) and per-control
+`source` (observed/inferred/label/none) + `confidence`.
+ADDED finding key `verdict` (`CONFIRMED`/`LIKELY`); LIKELY findings have
+severity capped one level and "Likely:"-prefixed text.
+CHANGED: `posture_score`/`coverage` are confidence-weighted
+(OBSERVED/label 1.0, INFERRED its confidence, UNKNOWN 0) — coverage
+values shift vs v1.1 (e.g. live v1 0.65 → 0.6684); the 0.5 WITHHELD
+gate is unchanged. `breakdown` gains `ike_cipher`, `ike_integrity`.
+`rule_version` is now `1.2.0`. `GET /variants` returns 21 rows
+(new v21 weak-IKE variant).

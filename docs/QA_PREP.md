@@ -35,7 +35,7 @@
    New SPIs appear (seq restarts per SPI); the validator requires
    per-SPI contiguity and flags SPI-count anomalies.
 10. **Why RandomForest, not deep learning?**
-    462 pcaps, ~100 tabular features: RF is calibrated-enough, fast,
+    480 pcaps, ~100 tabular features: RF is calibrated-enough, fast,
     deterministic (seed 7), and importances are inspectable. xgboost/
     lightgbm are installed for follow-ups.
 11. **Replay-window/ESN/lifetimes: why not predicted?**
@@ -54,14 +54,25 @@
     Parsed = 1.0 by construction; model = RF `predict_proba` max,
     uncalibrated — treat as rank-ordering, not probability. `unknown`
     below 0.5. Mock mode returns fixed samples for UI work.
-16. **Why does a live v1 analysis report posture 89 @ 0.65 while the rubric oracle gives 88?**
-    Posture vs evidence coverage are separate numbers. The oracle is
-    ideal-visibility scoring from labels (every field known: DH 15,
-    lifetimes 10, replay 5 → v1 = 88). A short live capture cannot
-    observe the CHILD PFS group (rekeys encrypted), SA lifetimes, or
-    receiver replay enforcement, so those three controls are UNKNOWN:
-    they leave both the numerator and the denominator (58/65 → 89) and
-    lower coverage to 0.65. An unobservable field lowers coverage, not
-    posture — v1.1 removed the old "assuming weak" penalties entirely.
-    `docs/expected-live-scores.md` pins every sample; weights never
-    change to make numbers agree.
+16. **Why does a live v1 analysis report posture 89 @ 0.67 while the rubric oracle gives 88?**
+    Posture vs evidence coverage are separate, confidence-weighted
+    numbers. The oracle is ideal-visibility scoring from labels (every
+    field f = 1.0: 95/108 → 88). A short live capture cannot observe
+    the CHILD PFS group (rekeys encrypted), SA lifetimes, or receiver
+    replay enforcement, so those three controls are UNKNOWN (f = 0);
+    INFERRED controls speak with their model confidence (e.g. child
+    cipher 0.970). Live v1: 64.346/72.190 → 89 @ 0.6684 — the
+    hand-worked table is in `docs/review/security-rubric.md`.
+    An unobservable field lowers coverage, not posture — there are no
+    "assuming weak" penalties. Weights never change to make numbers
+    agree (the two IKE-suite controls were added because v1.1 left
+    OBSERVED weak IKE suites unscored, not to move any sample).
+17. **What does LIKELY mean, and why not just FAIL?**
+    A FAIL resting on INFERRED (model) evidence is reported as LIKELY:
+    same posture/coverage math (confidence-weighted), but the finding
+    severity is capped one level below the OBSERVED equivalent
+    (critical→high…) and the text is marked "Likely:". Example: live
+    v19's 3DES child (inferred 0.87) is LIKELY/high, while the
+    label-oracle v19 is CONFIRMED/critical. Only OBSERVED FAILs are
+    CONFIRMED. Every control carries `source` (observed/inferred/label/
+    none) and `confidence` so the UI can badge inference honestly.

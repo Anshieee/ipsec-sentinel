@@ -294,7 +294,19 @@ function FindingRow({ finding, expanded, onToggle }: FindingRowProps) {
   return (
     <>
       <tr className={cn('border-t border-line/60', expanded ? 'bg-accent/10' : 'hover:bg-raised/50')}>
-        <td className="px-3 py-2"><SeverityBadge severity={finding.severity} /></td>
+        <td className="px-3 py-2">
+          <span className="inline-flex items-center gap-1.5">
+            <SeverityBadge severity={finding.severity} />
+            {finding.verdict === 'LIKELY' ? (
+              <span
+                className="inline-flex items-center rounded-full border border-dashed border-violet/70 bg-violet/10 px-1.5 py-px text-[10px] text-violet"
+                title={`Inferred evidence${typeof finding.confidence === 'number' ? ` (confidence ${finding.confidence.toFixed(2)})` : ''} — likely, not confirmed.`}
+              >
+                LIKELY
+              </span>
+            ) : null}
+          </span>
+        </td>
         <td className="px-3 py-2 font-mono text-muted">{finding.ruleId}</td>
         <td className="px-3 py-2">
           <button

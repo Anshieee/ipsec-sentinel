@@ -2,7 +2,7 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { RiskGauge } from '@/components/overview/RiskGauge'
 import { SeverityBadge } from '@/components/ui/SeverityBadge'
 import { useDerived, useSentinel, useAnalysis } from '@/store/useSentinel'
-import { fmtInt } from '@/lib/format'
+import { fmtInt, fmtPct } from '@/lib/format'
 import { SEVERITIES } from '@/lib/severity'
 
 /** Score derivation sentence from the rule weights (spec 10.4 item 1). */
@@ -10,21 +10,42 @@ export function scoreDerivation(): string {
   return '25 x critical + 12 x high + 5 x medium + 2 x low, capped at 100'
 }
 
-/** Audit header summary: gauge, band, severity counts and score derivation. */
+/** Audit header summary: backend headline (when mapped) or client rule-engine gauge, severity counts. */
 export function AuditSummary() {
   const derived = useDerived()
   const previousRiskScore = useSentinel((s) => s.previousRiskScore)
-  const backend = useAnalysis()?.backendAssessment
+  const analysis = useAnalysis()
+  const backend = analysis?.posture
   const delta =
-    typeof previousRiskScore === 'number' && previousRiskScore !== derived.riskScore
+    typeof previousRiskScore === 'number' && derived.riskScore !== null && previousRiskScore !== derived.riskScore
       ? derived.riskScore - previousRiskScore
       : null
+  const withheld = derived.backendHeadline && derived.scoreStatus === 'WITHHELD'
+  const noIpsec = derived.backendHeadline && !derived.ipsecDetected
 
   return (
     <Card data-testid="audit-summary">
-      <CardHeader title="Security audit summary" description="Findings from the baseline policy rule engine" />
+      <CardHeader
+        title="Security audit summary"
+        description={
+          derived.backendHeadline
+            ? `Backend assessment (rule ${backend?.ruleVersion ?? 'n/a'}) — confirmed findings only`
+            : 'Findings from the baseline policy rule engine'
+        }
+      />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <RiskGauge score={derived.riskScore} band={derived.band} delta={delta} />
+        {noIpsec ? (
+          <p className="text-sm text-ink" data-testid="audit-no-ipsec">
+            No IPsec detected in this capture — nothing to score.
+          </p>
+        ) : withheld ? (
+          <p className="text-sm text-ink" data-testid="audit-withheld">
+            Score withheld: insufficient evidence (coverage {fmtPct(derived.coverage ?? 0)}). Confirmed findings
+            below still apply; each unknown lists the measurement that would resolve it.
+          </p>
+        ) : derived.riskScore === null ? null : (
+          <RiskGauge score={derived.riskScore} band={derived.band} delta={delta} />
+        )}
         <div>
           <dl className="grid grid-cols-2 gap-3">
             {SEVERITIES.map((severity) => (
@@ -38,14 +59,25 @@ export function AuditSummary() {
               </div>
             ))}
           </dl>
-          <p className="mt-3 text-[12px] leading-5 text-muted" data-testid="score-derivation">
-            Score derivation: <span className="text-ink">{scoreDerivation()}</span>
-          </p>
-          {backend ? (
+          {derived.backendHeadline ? (
+            <p className="mt-3 text-[12px] leading-5 text-muted" data-testid="score-derivation">
+              Score derivation:{' '}
+              <span className="text-ink">
+                backend posture {backend?.postureScore ?? 'withheld'}/100 at coverage{' '}
+                {fmtPct(derived.coverage ?? 0)} (rule {backend?.ruleVersion ?? 'n/a'})
+              </span>
+            </p>
+          ) : (
+            <p className="mt-3 text-[12px] leading-5 text-muted" data-testid="score-derivation">
+              Score derivation: <span className="text-ink">{scoreDerivation()}</span>
+            </p>
+          )}
+          {backend && derived.scoreStatus === 'PUBLISHED' ? (
             <p className="mt-1 text-[12px] leading-5 text-muted" data-testid="backend-assessment">
               Backend assessment:{' '}
               <span className="tnum text-ink">
-                Security {backend.securityScore}/100 · Risk {backend.riskScore} ({backend.riskLevel})
+                Posture {backend.postureScore}/100 · Risk {backend.riskScore} ({backend.riskLevel}) · Coverage{' '}
+                {fmtPct(backend.coverage)}
               </span>
             </p>
           ) : null}

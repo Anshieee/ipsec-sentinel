@@ -1,5 +1,11 @@
 export type Provenance = 'observed' | 'inferred'
 export type Severity = 'critical' | 'high' | 'medium' | 'low'
+/** Backend field honesty state (docs/api-contract.md v1.1+). */
+export type FieldStatus = 'OBSERVED' | 'INFERRED' | 'UNKNOWN' | 'NOT_OBSERVED' | 'NOT_APPLICABLE'
+/** Backend control verdict (v1.2 adds LIKELY: FAIL on inferred evidence). */
+export type ControlStatus = 'PASS' | 'FAIL' | 'LIKELY' | 'UNKNOWN' | 'NOT_APPLICABLE'
+export type FindingVerdict = 'CONFIRMED' | 'LIKELY'
+export type ScoreStatus = 'PUBLISHED' | 'WITHHELD'
 export type PolicyId = 'nist-baseline' | 'high-assurance' | 'legacy-interop'
 export type TrafficLabel = 'VoIP' | 'Video Streaming' | 'Web Browsing' | 'ICMP' | 'WhatsApp' | 'E-mail' | 'Other'
 
@@ -8,6 +14,8 @@ export interface Param<T> {
   provenance: Provenance
   /** 0..1, exactly 1 when observed. Calibrated probability, never "accuracy". */
   confidence: number
+  /** Backend honesty state; render UNKNOWN/NOT_OBSERVED as "not observed". */
+  status?: FieldStatus
   note?: string
 }
 
@@ -66,6 +74,36 @@ export interface Finding {
   reference: string
   recommendation: string
   status: 'fail'
+  /** Backend verdict: CONFIRMED (observed bytes) or LIKELY (inferred evidence). */
+  verdict?: FindingVerdict
+  /** Model confidence behind a LIKELY finding, if known. */
+  confidence?: number | null
+}
+
+/** Backend assessment control (docs/api-contract.md, rule v1.2.0). */
+export interface BackendControl {
+  id: string
+  ruleVersion: string
+  title: string
+  status: ControlStatus
+  weight: number
+  points: number
+  evidence: Record<string, unknown> | null
+  explanation: string
+  resolveBy: string | null
+  remediation: string | null
+  source: 'observed' | 'inferred' | 'label' | 'none'
+  confidence: number
+}
+
+/** Backend headline: posture is meaningless without its coverage. */
+export interface AssessmentHeadline {
+  postureScore: number | null
+  coverage: number
+  scoreStatus: ScoreStatus
+  riskScore: number | null
+  riskLevel: string | null
+  ruleVersion: string
 }
 
 export interface PacketRow {
@@ -103,10 +141,17 @@ export interface AnalysisResult {
   fileName: string
   analyzedAt: string
   source: 'upload' | 'live'
-  riskScore: number
+  /** Backend risk (100 - posture) when PUBLISHED, else null: never show a score without its coverage. */
+  riskScore: number | null
   overallConfidence: number
   /** Backend assessment passthrough (live mode only; see docs/frontend-integration.md). */
-  backendAssessment?: { securityScore: number; riskScore: number; riskLevel: string }
+  backendAssessment?: { securityScore: number | null; riskScore: number | null; riskLevel: string | null }
+  /** v1.1+ backend headline; present on backend-mapped results, absent on fixtures/simulations. */
+  posture?: AssessmentHeadline
+  /** v1.1+ backend controls; present on backend-mapped results. */
+  controls?: BackendControl[]
+  /** v1.1+ IPsec detection; false renders the "no IPsec detected" state. */
+  detection?: { ipsecDetected: boolean }
   summary: {
     packets: number
     ikeHandshakes: number

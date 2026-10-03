@@ -5,7 +5,7 @@ export type AnalysisStatus = 'idle' | 'loading' | 'ready' | 'error'
 
 export interface AnalysisSlice {
   current: AnalysisResult | null
-  previousRiskScore?: number
+  previousRiskScore?: number | null
   status: AnalysisStatus
   error?: string
   setAnalysis: (analysis: AnalysisResult) => void

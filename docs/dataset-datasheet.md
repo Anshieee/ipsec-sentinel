@@ -1,7 +1,7 @@
 # Dataset datasheet (M2)
 
 Composition, generation, labels, splits, limitations, real vs synthetic.
-Corpus: **462 pcaps** — 396 synthetic + 66 real — with per-pcap JSON labels
+Corpus: **480 pcaps** — 414 synthetic + 66 real — with per-pcap JSON labels
 (`data/labels/...`) and `data/manifest.csv`
 (`file,variant,traffic,ip_version,packets,esp_packets,ike_packets,source,valid`).
 
@@ -9,8 +9,8 @@ Corpus: **462 pcaps** — 396 synthetic + 66 real — with per-pcap JSON labels
 
 | source | pcaps | variants × runs × types |
 |---|---|---|
-| synthetic | 396 | 20 variants × r1–r3 × 6 types (360) + plain × {v4,v6} × r1–r3 × 6 types (36) |
-| real | 42 | v1 × {r1,r2} + v3,v5,v7,v12,v18 × r1, each × 6 types |
+| synthetic | 414 | 21 variants × r1–r3 × 6 types (378) + plain × {v4,v6} × r1–r3 × 6 types (36) |
+| real | 66 | v1 × {r1 (6 types), r2 (6), r3 (4: voip-long + extra TCP)} + v3,v5,v7,v12,v18 × {r1 (6), r2 (4: rekey + extra TCP)} |
 
 Plain negatives are unencrypted gateway-to-gateway traffic on the transit
 link (same wire addresses as transport-mode ESP): the only wire signal
@@ -31,7 +31,7 @@ Per-type packet counts (min/med/max) and durations (~6–9 s each):
 
 ## Generation — synthetic (`capture/synth/synth_pcap.py`, Scapy)
 
-Single source of truth: `testbed/matrix.py` (20 variants, topology,
+Single source of truth: `testbed/matrix.py` (21 variants, topology,
 proposals). Per-(variant, run, traffic) seeds (`sha256("synth"|...)`).
 
 - **IKEv2** (all but v12): UDP 500 both ports (v18: INIT on 500, AUTH +
@@ -79,7 +79,7 @@ proposals). Per-(variant, run, traffic) seeds (`sha256("synth"|...)`).
   identical distributions across variants (audit:
   `capture/audit_leakage.py`, report `docs/anti-leakage-audit.md`).
 
-## Generation — real (`data/real`, 42 pcaps)
+## Generation — real (`data/real`, 66 pcaps)
 
 Netns-in-privileged-container testbed (decision D3): one container, 4
 netns, 3 veth pairs, one charon per gateway netns, tcpdump on the transit

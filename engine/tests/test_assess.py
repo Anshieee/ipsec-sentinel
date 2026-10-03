@@ -57,12 +57,14 @@ def classify_from_label(variant_id: str) -> tuple[dict, dict]:
 
 
 def test_golden_scores():
-    # hand-computed from docs/review/security-rubric.md (v1.1 controls)
+    # hand-computed from docs/review/security-rubric.md (v1.2 controls,
+    # 10 controls, 108 points; oracles identical in shape to v1.1 plus
+    # the two IKE-suite controls)
     assert assess(*classify_from_label("v1"))["posture_score"] == 88
-    assert assess(*classify_from_label("v7"))["posture_score"] == 73
-    assert assess(*classify_from_label("v11"))["posture_score"] == 73
+    assert assess(*classify_from_label("v7"))["posture_score"] == 74
+    assert assess(*classify_from_label("v11"))["posture_score"] == 71
     # v8 (DH2): child PFS group FAIL (2) + IKE SA group FAIL (2).
-    assert assess(*classify_from_label("v8"))["posture_score"] == 67
+    assert assess(*classify_from_label("v8"))["posture_score"] == 69
     r8 = assess(*classify_from_label("v8"))
     assert {"weak-dh", "weak-ike-dh"} <= {f["id"] for f in r8["findings"]}
     r = assess(*classify_from_label("plain"))
@@ -77,14 +79,21 @@ def test_mismatch_oracles_score_own_sa():
     a19 = assess(*classify_from_label("v19"))
     assert a19["breakdown"]["cipher"] == 5, a19["breakdown"]
     assert "weak-cipher" in {f["id"] for f in a19["findings"]}
-    assert a19["posture_score"] == 73, a19["breakdown"]
-    # v20: weak IKE, strong ESP -> strong child posture, IKE FAIL listed.
+    assert a19["posture_score"] == 75, a19["breakdown"]
+    # v20: weaker IKE, strong ESP -> strong posture, no IKE FAILs.
     a20 = assess(*classify_from_label("v20"))
     assert a20["breakdown"]["cipher"] == 25, a20["breakdown"]
     assert "weak-cipher" not in {f["id"] for f in a20["findings"]}
-    # Max child suite (GCM-256/DH20/PFS): the IKE control scores the IKE
-    # *version* only, so the weak IKE cipher does not drag posture down.
-    assert a20["posture_score"] == 100, a20["breakdown"]
+    assert "weak-ike-cipher" not in {f["id"] for f in a20["findings"]}
+    # Near-max child suite; IKE CBC-128 earns 4/5 (acceptable, no FAIL).
+    assert a20["posture_score"] == 99, a20["breakdown"]
+    # v21: weak OBSERVED IKE (3DES/SHA1/DH2), max child suite.
+    # 25+20+15+10+10+5+2+1+1+5 = 94/108 -> 87, three IKE FAILs.
+    a21 = assess(*classify_from_label("v21"))
+    assert a21["posture_score"] == 87, a21["breakdown"]
+    assert {"weak-ike-cipher", "weak-ike-integ",
+            "weak-ike-dh"} <= {f["id"] for f in a21["findings"]}
+    assert a21["breakdown"]["cipher"] == 25, a21["breakdown"]
 
 
 def test_orderings_and_bounds():
@@ -124,8 +133,9 @@ def test_findings():
         for f in res["findings"]:
             assert tm[f["id"]]["risk"] == f["likelihood"] * f["impact"], name
     for c in r11["controls"]:
-        assert c["rule_version"] == "1.1.0", c
+        assert c["rule_version"] == "1.2.0", c
         assert c["evidence"] is not None, c
+        assert c["source"] in ("observed", "inferred", "label", "none"), c
 
 
 def test_unknown_is_not_conservative_penalty():
@@ -137,7 +147,9 @@ def test_unknown_is_not_conservative_penalty():
     r = assess(cls, life)
     assert not [f for f in r["findings"] if f["id"].startswith("unknown-")]
     assert not any("assuming weak" in f["text"] for f in r["findings"])
-    assert r["coverage"] == 0.8, r["coverage"]
+    # dh UNKNOWN removes its 20-point voice: 80/88 -> posture 91,
+    # coverage 88/108.
+    assert r["coverage"] == round(88 / 108, 4), r["coverage"]
     assert r["score_status"] == "PUBLISHED"
     assert r["posture_score"] == 91, r["breakdown"]
     ctl = {c["id"]: c for c in r["controls"]}

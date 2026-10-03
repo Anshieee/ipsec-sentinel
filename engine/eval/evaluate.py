@@ -380,6 +380,7 @@ def main() -> int:
     synth_vars = sorted({r["variant"] for r in synth})
     n_groups = len(set(r["variant"] + "/" + labels[r["file"]]["run_id"]
                        for r in synth))
+    n_var = len([v for v in synth_vars if v != "plain"])
     sections = [
         ("Protocol", f"Grouped 5-fold CV over {len(synth)} synthetic pcaps "
          f"({n_groups} variant-run groups); synth->real trains on all "
@@ -387,7 +388,7 @@ def main() -> int:
          "trains synthetic + real r1 runs and tests real r2/r3 runs (runs "
          "kept apart); ESP-only ablation drops every IKE-derived feature. "
          "Unknown predictions count as errors."),
-        ("Sample counts", f"CV: {len(synth)} synthetic (20 variants + plain "
+        ("Sample counts", f"CV: {len(synth)} synthetic ({n_var} variants + plain "
          f"x 3 runs x 6 types). synth->real: train {len(synth)} synthetic, "
          f"test {len(real)} real. "
          f"holdout: train {hold_info['n_train']}, test {hold_info['n_test']}."),
@@ -398,7 +399,7 @@ def main() -> int:
          f"r2/r3; n_train={hold_info['n_train']}, n_test={hold_info['n_test']}, "
          f"runs {hold_info['test_runs']}, traffic {hold_info['test_traffic']})",
          table_md(metrics["real_holdout"])),
-        ("Reading the numbers (v1.1 boundary)",
+        ("Reading the numbers (v1.2 boundary)",
          "- ike_version / ike_enc_alg / ike_dh_group: the IKE SA parse, "
          "still ~100% deterministic (proposal + KE travel in the clear). "
          "These score the IKE SA only — they never fill child fields.\n"
@@ -408,6 +409,9 @@ def main() -> int:
          "below the old 1.0 (which came from reading the IKE proposal): "
          "the tables above are the honest ESP-size signal, and the "
          "mismatch variants (v19/v20) prove no inheritance.\n"
+         "- ike_enc_alg is parsed from IKE_SA_INIT at ~100%: the v1.2 "
+         "ike-cipher / ike-integrity assessment controls read this parse, "
+         "never the child suite.\n"
          "- dh_group (CHILD PFS group): 0.0 by design — rekey content is "
          "encrypted, so the child group is never on the wire in short "
          "captures; every live prediction is honestly `unknown` (counted "
@@ -428,13 +432,13 @@ def main() -> int:
          "the tables above.\n"
          "- Real data covers ONLY v1,v3,v5,v7,v12,v18 (66 pcaps incl. "
          "forced-rekey and extra-TCP runs): the synth->real and holdout "
-         "numbers say nothing about the other 14 variants; synthetic-only "
+         f"numbers say nothing about the other {n_var - 6} variants; synthetic-only "
          "and real-included numbers are reported in separate tables above.\n"
          "- What synthetic-only evaluation proves: the pipeline works on "
          "the synthetic distribution. What it does NOT prove: performance "
          "on other stacks, middlebox-mangled traffic, or longer captures "
          "with rekeys. The 66 real pcaps are the only "
-         "out-of-distribution evidence and they cover 6 of 21 classes."),
+         f"out-of-distribution evidence and they cover 6 of {n_var + 1} classes."),
     ]
     write_report(ROOT / "docs" / "model-evaluation.md", sections)
     print("plots:", len(plots))

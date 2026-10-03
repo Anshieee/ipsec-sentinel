@@ -17,7 +17,19 @@ interface WaterfallBar {
 }
 
 /** Score contribution waterfall: one bar per failing finding plus a total (spec 10.4 item 3). */
-export function ScoreWaterfall({ findings, total }: { findings: Finding[]; total: number }) {
+export function ScoreWaterfall({
+  findings,
+  total,
+  backend,
+  ruleVersion,
+}: {
+  findings: Finding[]
+  /** Backend risk when PUBLISHED, null when WITHHELD (no total bar then). */
+  total: number | null
+  /** Backend-mapped result: totals come from the backend, never client weights. */
+  backend?: boolean
+  ruleVersion?: string | null
+}) {
   const bars = useMemo<WaterfallBar[]>(() => {
     const sorted = [...findings].sort((a, b) => WEIGHT[b.severity] - WEIGHT[a.severity])
     const entries = sorted.map((finding, index) => ({
@@ -25,7 +37,9 @@ export function ScoreWaterfall({ findings, total }: { findings: Finding[]; total
       weight: WEIGHT[finding.severity],
       tone: SEVERITY_TONE[finding.severity],
     }))
-    return [...entries, { name: 'Total', weight: total, tone: 'neutral' as Tone, total: true }]
+    return total === null
+      ? entries
+      : [...entries, { name: 'Total', weight: total, tone: 'neutral' as Tone, total: true }]
   }, [findings, total])
 
   return (
@@ -61,7 +75,16 @@ export function ScoreWaterfall({ findings, total }: { findings: Finding[]; total
           </ResponsiveContainer>
         </div>
         <figcaption className="mt-1 text-[11px] text-muted">
-          Total contribution {fmtInt(total)} points before the 100-point cap.
+          {total === null ? (
+            <>Score withheld: insufficient evidence — bars show finding severities only, no total.</>
+          ) : backend ? (
+            <>
+              Total risk {fmtInt(total)} (backend rule {ruleVersion ?? 'n/a'}). Per-finding bars show severity
+              weights for illustration only — the headline is the backend posture.
+            </>
+          ) : (
+            <>Total contribution {fmtInt(total)} points before the 100-point cap.</>
+          )}
         </figcaption>
         <table className="sr-only">
           <caption>Score contribution per finding</caption>

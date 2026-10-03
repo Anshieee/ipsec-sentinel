@@ -51,7 +51,7 @@ def main() -> int:
         technical(to_response(r), out / f"technical-{tag}.pdf", Path(rel).name)
         print(f"technical-{tag}.pdf")
     rows = []
-    for vid in [f"v{i}" for i in range(1, 21)]:
+    for vid in [f"v{i}" for i in range(1, 22)]:
         r = analyze(str(ROOT / f"data/pcaps/synth/{vid}/r1/voip.pcap"), MODELS)
         rows.append({"variant": vid, "analysis": to_response(r)})
     r = analyze(str(ROOT / "data/pcaps/synth/plain/v4/r1/voip.pcap"), MODELS)

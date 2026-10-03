@@ -89,6 +89,12 @@ data/pcaps/synth/v20/r3/video.pcap,v20,video,4,410,404,6,synthetic,True
 data/pcaps/synth/v20/r3/voip.pcap,v20,voip,4,404,398,6,synthetic,True
 data/pcaps/synth/v20/r3/web.pcap,v20,web,4,169,163,6,synthetic,True
 data/pcaps/synth/v20/r3/whatsapp.pcap,v20,whatsapp,4,170,164,6,synthetic,True
+data/pcaps/synth/v21/r3/email.pcap,v21,email,4,108,102,6,synthetic,True
+data/pcaps/synth/v21/r3/icmp.pcap,v21,icmp,4,22,16,6,synthetic,True
+data/pcaps/synth/v21/r3/video.pcap,v21,video,4,405,399,6,synthetic,True
+data/pcaps/synth/v21/r3/voip.pcap,v21,voip,4,403,397,6,synthetic,True
+data/pcaps/synth/v21/r3/web.pcap,v21,web,4,215,209,6,synthetic,True
+data/pcaps/synth/v21/r3/whatsapp.pcap,v21,whatsapp,4,268,262,6,synthetic,True
 data/pcaps/synth/v3/r3/email.pcap,v3,email,4,180,174,6,synthetic,True
 data/pcaps/synth/v3/r3/icmp.pcap,v3,icmp,4,24,18,6,synthetic,True
 data/pcaps/synth/v3/r3/video.pcap,v3,video,4,409,403,6,synthetic,True

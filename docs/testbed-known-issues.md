@@ -11,7 +11,8 @@ gateway netns with separate config + vici socket paths, tcpdump on the
 transit link. Scripts: `testbed/scripts/netns-up.sh <variant>` /
 `netns-down.sh`, 6-type runner `testbed/scripts/real-run.sh`. SAs are
 confirmed ESTABLISHED (IKE) + INSTALLED (child) on both sides before any
-traffic flows; captures cover 7 variant-runs × 6 traffic types (42 pcaps).
+traffic flows; captures cover 13 variant-runs (7 × 6 traffic types + 6 × 4
+with forced rekeys / extra TCP captures, 66 pcaps).
 
 ## Resolved pitfalls (not open issues)
 

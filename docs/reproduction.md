@@ -5,7 +5,7 @@ All commands run from the repo root with `.venv/bin/python` (Python
 
 ```bash
 uv venv && uv pip install -r requirements.txt && uv pip install -e .
-ipsec-analyze generate-data --real   # 396 synthetic pcaps + manifest
+ipsec-analyze generate-data --real   # 414 synthetic pcaps + manifest
                                      # (+ 66 real labels if data/real present;
                                      # full real set: dataset tarball, see below)
 .venv/bin/python capture/validate_pcap.py --self-test   # 15/15

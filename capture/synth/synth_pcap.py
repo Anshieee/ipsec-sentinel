@@ -1046,10 +1046,23 @@ def rebuild_manifest() -> list[dict]:
 
 
 def ingest_real() -> int:
-    """Fold data/real pcaps into labels + manifest (host-side)."""
+    """Fold data/real pcaps into labels + manifest (host-side).
+
+    Fails loudly (return 0 ingested) when data/real is absent: callers
+    turn that into a non-zero exit with an actionable message.
+    """
     from scapy.all import PcapReader
+    real_root = ROOT / "data" / "real"
+    pcaps = sorted(real_root.rglob("*.pcap")) if real_root.is_dir() else []
+    if not pcaps:
+        print("ingest-real: no pcaps under data/real.")
+        print("  Get dataset/ipsec-dataset-v1.tar.gz from the release "
+              "artifacts (sha256 + provenance: docs/RELEASE.md), extract "
+              "over data/, then re-run with --real.")
+        print("  Synthetic-only path: run without --ingest-real.")
+        return 0
     n = 0
-    for pcap in sorted((ROOT / "data" / "real").rglob("*.pcap")):
+    for pcap in pcaps:
         rel = pcap.relative_to(ROOT / "data" / "real")
         variant_id, run, traffic = rel.parts[0], rel.parts[1], rel.stem
         v = matrix.BY_ID[variant_id]
@@ -1081,6 +1094,8 @@ def main() -> int:
 
     if args.ingest_real:
         n = ingest_real()
+        if n == 0:
+            return 2
         print(f"ingested {n} real pcaps")
         return 0
     if args.manifest_only:

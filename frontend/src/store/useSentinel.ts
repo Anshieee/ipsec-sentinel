@@ -85,8 +85,17 @@ export interface DerivedValues {
   categoryScores: Record<ThreatCategory, number>
   severityCounts: Record<Severity, number>
   strideCounts: Record<StrideTag, number>
-  riskScore: number
+  /** Backend risk when the analysis is backend-mapped (null when WITHHELD); client rule-engine score otherwise. */
+  riskScore: number | null
   band: RiskBand
+  /** True when the headline comes from the backend (posture/coverage), not the client rule engine. */
+  backendHeadline: boolean
+  /** Backend score status (PUBLISHED/WITHHELD), when backend-mapped. */
+  scoreStatus: 'PUBLISHED' | 'WITHHELD' | null
+  /** Backend coverage 0..1, when backend-mapped. */
+  coverage: number | null
+  /** False when the backend saw no IPsec (dedicated UI state). */
+  ipsecDetected: boolean
   topClass: { label: TrafficLabel; probability: number }
   uncertain: boolean
 }
@@ -132,13 +141,52 @@ export function deriveValues(
       },
       riskScore: 0,
       band: 'low',
+      backendHeadline: false,
+      scoreStatus: null,
+      coverage: null,
+      ipsecDetected: true,
       topClass: { label: 'Other', probability: 0 },
       uncertain: false,
+    }
+  }
+  // Backend-mapped analyses (upload/live through the real API) carry the
+  // backend headline: posture/coverage/score_status are the ONLY headline.
+  // The client rule engine never recomputes them (it stays for fixtures
+  // and simulations, which are badged SIMULATED).
+  if (analysis.posture) {
+    const findings = analysis.findings
+    const risk = analysis.riskScore
+    const level = analysis.posture.riskLevel
+    const band: RiskBand =
+      level === 'low' ? 'low' : level === 'medium' ? 'moderate' : level === 'high' || level === 'critical' ? 'high' : 'low'
+    const top = topClass(analysis.trafficClasses)
+    return {
+      analysis,
+      findings,
+      bySeverity: {
+        critical: findings.filter((f) => f.severity === 'critical'),
+        high: findings.filter((f) => f.severity === 'high'),
+        medium: findings.filter((f) => f.severity === 'medium'),
+        low: findings.filter((f) => f.severity === 'low'),
+      },
+      matrix: threatMatrix(findings),
+      categoryScores: categoryScores(findings),
+      severityCounts: severityCounts(findings),
+      strideCounts: strideCounts(findings),
+      riskScore: risk,
+      band,
+      backendHeadline: true,
+      scoreStatus: analysis.posture.scoreStatus,
+      coverage: analysis.posture.coverage,
+      ipsecDetected: analysis.detection?.ipsecDetected ?? true,
+      topClass: top,
+      uncertain: analysis.posture.coverage < 1,
     }
   }
   const evaluation = evaluate(analysis.protocol, analysis.trafficClasses, undefined, minRuleConfidence)
   const findings = evaluation.findings
   const top = topClass(analysis.trafficClasses)
+  const score = computeRiskScore(findings)
   return {
     analysis,
     findings,
@@ -152,8 +200,12 @@ export function deriveValues(
     categoryScores: categoryScores(findings),
     severityCounts: severityCounts(findings),
     strideCounts: strideCounts(findings),
-    riskScore: computeRiskScore(findings),
-    band: riskBand(computeRiskScore(findings)),
+    riskScore: score,
+    band: riskBand(score),
+    backendHeadline: false,
+    scoreStatus: null,
+    coverage: null,
+    ipsecDetected: true,
     topClass: top,
     uncertain: top.probability < uncertainThreshold,
   }

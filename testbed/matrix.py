@@ -149,9 +149,9 @@ def _v(id, *, mode, ip_version, proto="esp", ike_version=2, cipher, auth,
 
 
 # --------------------------------------------------------------------------
-# The 20-variant matrix (spec minimum: 15).
+# The 21-variant matrix (spec minimum: 15).
 # v1-v6: spec example baselines; v7: AH; v8-v18: weak/unusual coverage;
-# v19-v20: IKE/CHILD suite mismatch (strong-IKE/weak-ESP and reverse).
+# v19-v20: IKE/CHILD suite mismatch; v21: weak IKE suite, strong ESP.
 # --------------------------------------------------------------------------
 VARIANTS = [
     _v("v1", mode="tunnel", ip_version=4, cipher="aes-128-cbc",
@@ -219,6 +219,11 @@ VARIANTS = [
        auth="aead", dh_group=20, pfs=True,
        ike_cipher="aes-128-cbc", ike_auth="hmac-sha256", ike_dh=14,
        description="mismatch: weak IKE (AES-128-CBC+HMAC-SHA256/DH14), "
+                   "strong ESP (AES-256-GCM/PFS-DH20)"),
+    _v("v21", mode="tunnel", ip_version=4, cipher="aes-256-gcm",
+       auth="aead", dh_group=20, pfs=True,
+       ike_cipher="3des-cbc", ike_auth="hmac-sha1", ike_dh=2,
+       description="weak-ike: IKE 3DES-CBC+HMAC-SHA1/DH2 (weak handshake), "
                    "strong ESP (AES-256-GCM/PFS-DH20)"),
 ]
 

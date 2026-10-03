@@ -1,7 +1,7 @@
-"""Pin live tool outputs (v1.1): posture + coverage + PFS per sample.
+"""Pin live tool outputs (v1.2): posture + coverage + PFS per sample.
 
-Posture is scored over evaluated controls only (UNKNOWN earns no credit
-and no penalty); coverage records the evidence gap. Regenerate
+Posture/coverage are confidence-weighted (OBSERVED/label 1.0, INFERRED
+its model confidence, UNKNOWN 0). Regenerate
 docs/expected-live-scores.md if the pipeline changes, then update these
 literals deliberately (never silently).
 """
@@ -17,26 +17,26 @@ from assess import assess  # noqa: E402
 # name: (posture, coverage, score_status, pfs value)
 EXPECTED = {
     "plain-web": (None, 0.0, "WITHHELD", False),
-    "real-v1-voip": (87, 0.55, "PUBLISHED", "unknown"),
-    "real-v18-voip": (87, 0.55, "PUBLISHED", "unknown"),
-    "v1-voip": (89, 0.65, "PUBLISHED", True),
-    "v10-voip": (77, 0.65, "PUBLISHED", True),
-    "v11-voip": (66, 0.65, "PUBLISHED", True),
-    "v12-voip": (76, 0.55, "PUBLISHED", "unknown"),
-    "v13-voip": (89, 0.65, "PUBLISHED", True),
-    "v14-voip": (89, 0.65, "PUBLISHED", True),
-    "v15-voip": (89, 0.65, "PUBLISHED", True),
-    "v16-voip": (89, 0.65, "PUBLISHED", True),
-    "v17-voip": (89, 0.65, "PUBLISHED", True),
-    "v18-voip": (89, 0.65, "PUBLISHED", True),
-    "v2-voip": (92, 0.65, "PUBLISHED", True),
-    "v3-voip": (83, 0.65, "PUBLISHED", False),
-    "v4-voip": (100, 0.65, "PUBLISHED", True),
-    "v5-voip": (100, 0.6, "PUBLISHED", True),
-    "v6-voip": (75, 0.6, "PUBLISHED", False),
-    "v7-voip": (66, 0.65, "PUBLISHED", True),
-    "v8-voip": (77, 0.65, "PUBLISHED", True),
-    "v9-voip": (77, 0.65, "PUBLISHED", True),
+    "real-v1-voip": (88, 0.4985, "WITHHELD", "unknown"),
+    "real-v18-voip": (88, 0.5255, "PUBLISHED", "unknown"),
+    "v1-voip": (89, 0.6684, "PUBLISHED", True),
+    "v10-voip": (76, 0.6486, "PUBLISHED", True),
+    "v11-voip": (66, 0.6269, "PUBLISHED", True),
+    "v12-voip": (78, 0.5742, "PUBLISHED", "unknown"),
+    "v13-voip": (89, 0.6759, "PUBLISHED", True),
+    "v14-voip": (89, 0.6758, "PUBLISHED", True),
+    "v15-voip": (89, 0.6613, "PUBLISHED", True),
+    "v16-voip": (89, 0.6759, "PUBLISHED", True),
+    "v17-voip": (89, 0.6759, "PUBLISHED", True),
+    "v18-voip": (89, 0.6759, "PUBLISHED", True),
+    "v2-voip": (92, 0.6389, "PUBLISHED", True),
+    "v3-voip": (85, 0.6347, "PUBLISHED", False),
+    "v4-voip": (100, 0.6204, "PUBLISHED", True),
+    "v5-voip": (100, 0.6063, "PUBLISHED", True),
+    "v6-voip": (76, 0.6025, "PUBLISHED", False),
+    "v7-voip": (68, 0.6738, "PUBLISHED", True),
+    "v8-voip": (78, 0.6591, "PUBLISHED", True),
+    "v9-voip": (78, 0.6605, "PUBLISHED", True),
 }
 
 

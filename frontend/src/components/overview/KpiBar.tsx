@@ -10,9 +10,13 @@ import { confidenceTone, TONE_TEXT } from '@/lib/severity'
 import type { AnalysisResult, Param } from '@/types/analysis'
 
 function ModeBadge({ label, param }: { label: string; param: Param<unknown> }) {
+  const unobserved = param.status === 'UNKNOWN' || param.status === 'NOT_OBSERVED' || param.status === 'NOT_APPLICABLE'
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-line bg-raised px-2 py-1 text-xs text-ink">
-      {label}
+    <span
+      className="inline-flex items-center gap-1 rounded-full border border-line bg-raised px-2 py-1 text-xs text-ink"
+      title={unobserved ? (param.note ?? 'Not observed in this capture.') : undefined}
+    >
+      {unobserved ? 'not observed' : label}
       <ProvenanceBadge provenance={param.provenance} iconOnly />
       {param.provenance === 'inferred' ? (
         <span className="tnum text-2xs text-muted">{fmtPct(param.confidence)}</span>
@@ -30,24 +34,44 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   )
 }
 
-/** KPI bar: risk gauge, detected mode, AI confidence, capture volume (spec 10.1 A). */
+/** KPI bar: risk gauge (backend headline when mapped), detected mode, AI confidence, capture volume. */
 export function KpiBar({ analysis }: { analysis: AnalysisResult }) {
   const derived = useDerived()
   const previousRiskScore = useSentinel((s) => s.previousRiskScore)
   const delta =
-    typeof previousRiskScore === 'number' && previousRiskScore !== derived.riskScore
+    typeof previousRiskScore === 'number' && derived.riskScore !== null && previousRiskScore !== derived.riskScore
       ? derived.riskScore - previousRiskScore
       : null
 
   const esp = analysis.summary.ahPackets > 0 ? 'AH' : 'ESP'
   const confidence = analysis.overallConfidence
   const tone = TONE_TEXT[confidenceTone(confidence)]
+  const withheld = derived.backendHeadline && derived.scoreStatus === 'WITHHELD'
+  const noIpsec = derived.backendHeadline && !derived.ipsecDetected
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" data-testid="kpi-bar">
       <Card>
         <CardHeader title="Global Risk Score" />
-        <RiskGauge score={derived.riskScore} band={derived.band} delta={delta} />
+        {noIpsec ? (
+          <p className="text-sm text-ink" data-testid="kpi-no-ipsec">
+            No IPsec detected in this capture — no score.
+          </p>
+        ) : withheld ? (
+          <p className="text-sm text-ink" data-testid="kpi-withheld">
+            Score withheld: insufficient evidence (coverage {fmtPct(derived.coverage ?? 0)}). Confirmed findings
+            below still apply.
+          </p>
+        ) : derived.riskScore === null ? null : (
+          <>
+            <RiskGauge score={derived.riskScore} band={derived.band} delta={delta} />
+            {derived.backendHeadline && derived.coverage !== null ? (
+              <p className="mt-1 text-[11px] text-muted" data-testid="kpi-coverage">
+                Coverage {fmtPct(derived.coverage)} · rule {analysis.posture?.ruleVersion ?? 'n/a'}
+              </p>
+            ) : null}
+          </>
+        )}
       </Card>
 
       <Card data-testid="kpi-mode">

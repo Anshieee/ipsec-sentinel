@@ -24,14 +24,14 @@
   "mode": {
    "value": "tunnel",
    "source": "model",
-   "confidence": 0.99,
+   "confidence": 0.9966666666666667,
    "status": "INFERRED",
    "detail": {
     "header_parse": "n/a",
     "reason": "ESP payload encrypted: inner IP header and next-header are not visible on the wire",
     "size_signal": {
      "value": "tunnel",
-     "confidence": 0.99
+     "confidence": 0.9966666666666667
     },
     "decided_by": "size-overhead-model"
    },
@@ -40,7 +40,7 @@
   "enc_alg": {
    "value": "aes-128-cbc",
    "source": "model",
-   "confidence": 0.9733333333333334,
+   "confidence": 0.9633333333333334,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -48,7 +48,7 @@
   "enc_key_len": {
    "value": 128,
    "source": "model",
-   "confidence": 0.9566666666666667,
+   "confidence": 0.9666666666666667,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -56,7 +56,7 @@
   "auth_alg": {
    "value": "hmac-sha256",
    "source": "model",
-   "confidence": 1.0,
+   "confidence": 0.9966666666666667,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -95,7 +95,7 @@
   "traffic_type": {
    "value": "voip",
    "source": "model",
-   "confidence": 1.0,
+   "confidence": 0.99,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -196,7 +196,7 @@
   "mode": {
    "value": "tunnel",
    "source": "model",
-   "confidence": 0.99,
+   "confidence": 0.9966666666666667,
    "status": "INFERRED",
    "detail": null,
    "evidence": {
@@ -204,7 +204,7 @@
     "reason": "ESP payload encrypted: inner IP header and next-header are not visible on the wire",
     "size_signal": {
      "value": "tunnel",
-     "confidence": 0.99
+     "confidence": 0.9966666666666667
     },
     "decided_by": "size-overhead-model"
    }
@@ -212,7 +212,7 @@
   "enc_alg": {
    "value": "aes-128-cbc",
    "source": "model",
-   "confidence": 0.9733333333333334,
+   "confidence": 0.9633333333333334,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -220,7 +220,7 @@
   "enc_key_len": {
    "value": 128,
    "source": "model",
-   "confidence": 0.9566666666666667,
+   "confidence": 0.9666666666666667,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -228,7 +228,7 @@
   "auth_alg": {
    "value": "hmac-sha256",
    "source": "model",
-   "confidence": 1.0,
+   "confidence": 0.9966666666666667,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -276,7 +276,7 @@
    "n_ike": 9
   }
  },
- "ai_confidence": 0.8109090909090909,
+ "ai_confidence": 0.8103030303030304,
  "metadata": {
   "duration_s": {
    "value": 8.339191913604736,
@@ -323,7 +323,7 @@
   "controls": [
    {
     "id": "child-cipher",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Child cipher strength",
     "status": "PASS",
     "weight": 25,
@@ -335,11 +335,13 @@
     },
     "explanation": "Child cipher aes-128-cbc scored on its own SA evidence.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "inferred",
+    "confidence": 0.9633333333333334
    },
    {
     "id": "dh-strength",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "DH group strength",
     "status": "UNKNOWN",
     "weight": 20,
@@ -351,11 +353,13 @@
     },
     "explanation": "Negotiated DH group not observed: it appears only in the clear handshake, and the IKE group describes the IKE SA.",
     "resolve_by": "Capture IKE_SA_INIT (or the IKEv1 main-mode proposal) carrying the negotiated group.",
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "integrity",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Integrity algorithm",
     "status": "PASS",
     "weight": 15,
@@ -367,11 +371,13 @@
     },
     "explanation": "Child integrity hmac-sha256 scored on its own SA evidence.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "inferred",
+    "confidence": 0.9966666666666667
    },
    {
     "id": "pfs",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Perfect forward secrecy",
     "status": "UNKNOWN",
     "weight": 10,
@@ -386,11 +392,13 @@
     },
     "explanation": "PFS state not observed: rekey content is encrypted; only rekey length hints at KE presence.",
     "resolve_by": "Capture a CREATE_CHILD_SA (or quick-mode) rekey exchange on the wire.",
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "lifetime",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "SA lifetime",
     "status": "UNKNOWN",
     "weight": 10,
@@ -404,11 +412,13 @@
     },
     "explanation": "SA lifetime not observed: rekey intervals are never visible in short captures.",
     "resolve_by": "Provide rekey intervals (configuration or long-duration capture with rekeys).",
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "replay",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Replay protection",
     "status": "UNKNOWN",
     "weight": 5,
@@ -422,11 +432,13 @@
     },
     "explanation": "Replay state not observed: sequence behavior does not prove receiver enforcement.",
     "resolve_by": "Read receiver configuration (anti-replay on, window size); packet captures cannot prove enforcement.",
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "ike-version",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "IKE version",
     "status": "FAIL",
     "weight": 10,
@@ -441,11 +453,57 @@
     },
     "explanation": "IKEv1 negotiates weakly vs IKEv2.",
     "resolve_by": null,
-    "remediation": "Migrate to IKEv2."
+    "remediation": "Migrate to IKEv2.",
+    "source": "observed",
+    "confidence": 1.0
+   },
+   {
+    "id": "ike-cipher",
+    "rule_version": "1.2.0",
+    "title": "IKE cipher strength",
+    "status": "PASS",
+    "weight": 5,
+    "points": 4,
+    "evidence": {
+     "field": "ike_sa.enc_alg",
+     "status": "OBSERVED",
+     "detail": {
+      "exchange": "ikev1-main-mode",
+      "role": "responder-selected",
+      "packet": 1
+     }
+    },
+    "explanation": "IKE SA cipher aes-128-cbc acceptable (scored on the IKE SA).",
+    "resolve_by": null,
+    "remediation": null,
+    "source": "observed",
+    "confidence": 1.0
+   },
+   {
+    "id": "ike-integrity",
+    "rule_version": "1.2.0",
+    "title": "IKE integrity strength",
+    "status": "PASS",
+    "weight": 3,
+    "points": 3,
+    "evidence": {
+     "field": "ike_sa.auth_alg",
+     "status": "OBSERVED",
+     "detail": {
+      "exchange": "ikev1-main-mode",
+      "role": "responder-selected",
+      "packet": 1
+     }
+    },
+    "explanation": "IKE SA integrity/PRF hmac-sha256 acceptable (IKE SA scope).",
+    "resolve_by": null,
+    "remediation": null,
+    "source": "observed",
+    "confidence": 1.0
    },
    {
     "id": "mode-exposure",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Mode exposure",
     "status": "PASS",
     "weight": 5,
@@ -458,21 +516,23 @@
       "reason": "ESP payload encrypted: inner IP header and next-header are not visible on the wire",
       "size_signal": {
        "value": "tunnel",
-       "confidence": 0.99
+       "confidence": 0.9966666666666667
       },
       "decided_by": "size-overhead-model"
      }
     },
     "explanation": "Tunnel mode hides inner topology.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "inferred",
+    "confidence": 0.9966666666666667
    }
   ],
-  "posture_score": 76,
-  "coverage": 0.55,
+  "posture_score": 78,
+  "coverage": 0.5742,
   "score_status": "PUBLISHED",
-  "security_score": 76,
-  "risk_score": 24,
+  "security_score": 78,
+  "risk_score": 22,
   "risk_level": "low",
   "findings": [
    {
@@ -481,7 +541,8 @@
     "likelihood": 2,
     "impact": 3,
     "text": "IKEv1 negotiates weakly vs IKEv2.",
-    "solution": "Migrate to IKEv2."
+    "solution": "Migrate to IKEv2.",
+    "verdict": "CONFIRMED"
    }
   ],
   "threat_matrix": [
@@ -500,8 +561,10 @@
    "lifetime": 0,
    "replay": 0,
    "ike": 4,
+   "ike_cipher": 4,
+   "ike_integrity": 3,
    "mode": 5
   },
-  "rule_version": "1.1.0"
+  "rule_version": "1.2.0"
  }
 }

@@ -65,10 +65,10 @@
    "evidence": null
   },
   "pfs": {
-   "value": "unknown",
+   "value": true,
    "source": "model",
-   "confidence": 0.0,
-   "status": "OBSERVED",
+   "confidence": 1.0,
+   "status": "INFERRED",
    "detail": null,
    "evidence": null
   },
@@ -189,10 +189,10 @@
    "evidence": null
   },
   "pfs": {
-   "value": "unknown",
+   "value": true,
    "source": "model",
-   "confidence": 0.0,
-   "status": "OBSERVED",
+   "confidence": 1.0,
+   "status": "INFERRED",
    "detail": null,
    "evidence": null
   },
@@ -269,12 +269,12 @@
  },
  "assessment": {
   "posture_score": 89,
-  "coverage": 0.65,
+  "coverage": 0.6509,
   "score_status": "PUBLISHED",
   "security_score": 89,
   "risk_score": 11,
   "risk_level": "low",
-  "rule_version": "1.1.0",
+  "rule_version": "1.2.0",
   "controls": [],
   "findings": [],
   "threat_matrix": [],
@@ -282,10 +282,12 @@
    "cipher": 20,
    "dh": 0,
    "integrity": 13,
-   "pfs": 0,
+   "pfs": 10,
    "lifetime": 0,
    "replay": 0,
    "ike": 10,
+   "ike_cipher": 4,
+   "ike_integrity": 3,
    "mode": 5
   }
  }

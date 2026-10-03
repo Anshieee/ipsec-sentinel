@@ -58,7 +58,7 @@
  "meta": {
   "seed": 7,
   "n_estimators": 300,
-  "train_rows": 396,
+  "train_rows": 414,
   "esp_only_drop_prefix": [
    "ike"
   ],
@@ -132,6 +132,7 @@
    "n_esp",
    "n_esp_in_udp",
    "n_flows",
+   "n_ip",
    "n_keepalive",
    "n_packets",
    "n_spis",

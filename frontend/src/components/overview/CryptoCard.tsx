@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import type { ReactNode } from 'react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { ProvenanceBadge } from '@/components/ui/ProvenanceBadge'
@@ -9,14 +10,29 @@ import { fmtPct } from '@/lib/format'
 import { setHighlightAndNavigate } from '@/lib/highlight'
 import type { AnalysisResult, Finding, Param } from '@/types/analysis'
 
-/** Rules that attach a severity badge to a given crypto row. */
+/** Rules that attach a severity badge to a given crypto row (client R-ids and backend finding ids). */
 const ROW_RULES: Record<string, string[]> = {
-  ikeEncryption: ['R02', 'R08'],
-  childEncryption: ['R02', 'R08'],
-  ikeIntegrity: ['R07'],
-  childIntegrity: ['R07'],
-  dhGroup: ['R01', 'R11'],
-  pfs: ['R04'],
+  ikeEncryption: ['R02', 'R08', 'weak-ike-cipher'],
+  childEncryption: ['R02', 'R08', 'weak-cipher'],
+  ikeIntegrity: ['R07', 'weak-ike-integ'],
+  childIntegrity: ['R07', 'weak-integ', 'no-integ'],
+  dhGroup: ['R01', 'R11', 'weak-dh', 'weak-ike-dh'],
+  pfs: ['R04', 'no-pfs'],
+}
+
+/** Display value honoring the backend honesty state: never 0/"none" for unobserved. */
+function displayValue(value: string, param: Param<unknown>): string {
+  if (param.status === 'UNKNOWN' || param.status === 'NOT_OBSERVED' || param.status === 'NOT_APPLICABLE') {
+    return 'not observed'
+  }
+  return value === '' ? 'not observed' : value
+}
+
+function notObservedTitle(param: Param<unknown>): string | undefined {
+  if (param.status === 'UNKNOWN' || param.status === 'NOT_OBSERVED' || param.status === 'NOT_APPLICABLE') {
+    return param.note ?? 'Not observed in this capture.'
+  }
+  return undefined
 }
 
 interface RowProps {
@@ -27,11 +43,12 @@ interface RowProps {
 }
 
 function CryptoRow({ label, value, param, rules }: RowProps) {
+  const title = notObservedTitle(param) ?? (rules.length > 0 ? rules.map((r) => r.title).join('; ') : undefined)
   return (
-    <div className="flex items-start justify-between gap-3 py-2">
+    <div className="flex items-start justify-between gap-3 py-2" title={title}>
       <div className="min-w-0">
         <p className="text-[12px] text-muted">{label}</p>
-        <p className="break-words text-[13px] text-ink">{value}</p>
+        <p className="break-words text-[13px] text-ink">{displayValue(value, param)}</p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
         {rules.map((finding) => (
@@ -46,12 +63,28 @@ function CryptoRow({ label, value, param, rules }: RowProps) {
             <span className="sr-only">Finding {finding.ruleId}: {finding.title}</span>
           </Link>
         ))}
+        {finding_verdict_badge(rules)}
         <ProvenanceBadge provenance={param.provenance} iconOnly />
         {param.provenance === 'inferred' ? (
           <span className="tnum text-2xs text-muted">{fmtPct(param.confidence)}</span>
         ) : null}
       </div>
     </div>
+  )
+}
+
+/** LIKELY badge when every attached rule is inferred evidence. */
+function finding_verdict_badge(rules: Finding[]): ReactNode {
+  if (rules.length === 0) return null
+  if (!rules.every((r) => r.verdict === 'LIKELY')) return null
+  const conf = rules.map((r) => r.confidence ?? null).find((c) => c !== null)
+  return (
+    <span
+      className="inline-flex items-center rounded-full border border-dashed border-violet/70 bg-violet/10 px-2 py-0.5 text-2xs text-violet"
+      title={`Inferred evidence${conf !== null && conf !== undefined ? ` (confidence ${fmtPct(conf)})` : ''} — likely, not confirmed.`}
+    >
+      LIKELY{conf !== null && conf !== undefined ? ` ${fmtPct(conf)}` : ''}
+    </span>
   )
 }
 
@@ -67,9 +100,17 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
   const ikev2 = p.ikeVersion.value === 'IKEv2'
   const findings = derived.findings
 
-  const pfsLabel = p.child.pfs.value
-    ? `Enabled${p.child.pfsGroup.value !== null ? ` · ${dhLabel(p.child.pfsGroup.value)}` : ''}`
-    : 'Disabled'
+  const pfsUnobserved =
+    p.child.pfs.status === 'UNKNOWN' || p.child.pfs.status === 'NOT_OBSERVED' || p.child.pfs.status === 'NOT_APPLICABLE'
+  const pfsLabel = pfsUnobserved
+    ? 'not observed'
+    : p.child.pfs.value
+      ? `Enabled${p.child.pfsGroup.value !== null ? ` · ${dhLabel(p.child.pfsGroup.value)}` : ''}`
+      : 'Disabled'
+  const dhUnobserved =
+    p.ike.dhGroup.status === 'UNKNOWN' ||
+    p.ike.dhGroup.status === 'NOT_OBSERVED' ||
+    p.ike.dhGroup.status === 'NOT_APPLICABLE'
 
   return (
     <Card data-testid="crypto-card">
@@ -98,7 +139,7 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
           <CryptoRow label="PRF" value={p.ike.prf.value} param={p.ike.prf} rules={[]} />
           <CryptoRow
             label="DH group"
-            value={dhLabel(p.ike.dhGroup.value)}
+            value={dhUnobserved ? '' : dhLabel(p.ike.dhGroup.value)}
             param={p.ike.dhGroup}
             rules={findRules(findings, ROW_RULES.dhGroup ?? [])}
           />
@@ -135,7 +176,7 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
             param={p.child.integrity}
             rules={findRules(findings, ROW_RULES.childIntegrity ?? [])}
           />
-          <div className="flex items-center justify-between gap-3 py-2">
+          <div className="flex items-center justify-between gap-3 py-2" title={p.child.pfs.note ?? undefined}>
             <div>
               <p className="text-[12px] text-muted">PFS</p>
               <p className="text-[13px] text-ink">{pfsLabel}</p>
@@ -147,14 +188,24 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
                   <span className="sr-only">Finding {finding.ruleId}</span>
                 </Link>
               ))}
-              <Badge tone={p.child.pfs.value ? 'safe' : 'danger'}>
-                {p.child.pfs.value ? 'Enabled' : 'Disabled'}
-              </Badge>
+              {pfsUnobserved ? (
+                <span
+                  className="inline-flex items-center rounded-full border border-dashed border-line-strong px-2 py-0.5 text-2xs text-muted"
+                  title={p.child.pfs.note ?? 'Not observed in this capture.'}
+                >
+                  not observed
+                </span>
+              ) : (
+                <Badge tone={p.child.pfs.value ? 'safe' : 'danger'}>
+                  {p.child.pfs.value ? 'Enabled' : 'Disabled'}
+                </Badge>
+              )}
             </div>
           </div>
           <div className="py-2 text-[12px] text-muted">
-            Rows below the rule confidence threshold of {fmtPct(minRuleConfidence)} are marked unknown by the rule
-            engine.
+            {analysis.posture
+              ? 'Unknown fields list the measurement that would resolve them (see Audit).'
+              : `Rows below the rule confidence threshold of ${fmtPct(minRuleConfidence)} are marked unknown by the rule engine.`}
           </div>
         </div>
       </section>

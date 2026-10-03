@@ -438,5 +438,27 @@
     "nat_t": false,
     "ike_rekey_s": 14400,
     "child_rekey_s": 3600
+  },
+  {
+    "variant": "v21",
+    "ipsec_protocol": "esp",
+    "ike_version": "ikev2",
+    "mode": "tunnel",
+    "ip_version": 4,
+    "encryption": "aes-256-gcm",
+    "key_length_bits": 256,
+    "auth": "aead",
+    "aead": true,
+    "dh_group": 20,
+    "pfs": true,
+    "ike_encryption": "3des-cbc",
+    "ike_key_length_bits": 168,
+    "ike_auth": "hmac-sha1",
+    "ike_dh_group": 2,
+    "esn": false,
+    "replay_window": 32,
+    "nat_t": false,
+    "ike_rekey_s": 14400,
+    "child_rekey_s": 3600
   }
 ]

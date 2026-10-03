@@ -92,7 +92,7 @@
   "traffic_type": {
    "value": "voip",
    "source": "model",
-   "confidence": 0.9966666666666667,
+   "confidence": 1.0,
    "status": "INFERRED",
    "detail": null,
    "evidence": null
@@ -264,7 +264,7 @@
    "n_ike": 0
   }
  },
- "ai_confidence": 0.9087878787878787,
+ "ai_confidence": 0.9090909090909091,
  "metadata": {
   "duration_s": {
    "value": 7.999086141586304,
@@ -311,7 +311,7 @@
   "controls": [
    {
     "id": "child-cipher",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Child cipher strength",
     "status": "NOT_APPLICABLE",
     "weight": 25,
@@ -321,11 +321,13 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "dh-strength",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "DH group strength",
     "status": "NOT_APPLICABLE",
     "weight": 20,
@@ -335,11 +337,13 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "integrity",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Integrity algorithm",
     "status": "NOT_APPLICABLE",
     "weight": 15,
@@ -349,11 +353,13 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "pfs",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Perfect forward secrecy",
     "status": "NOT_APPLICABLE",
     "weight": 10,
@@ -363,11 +369,13 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "lifetime",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "SA lifetime",
     "status": "NOT_APPLICABLE",
     "weight": 10,
@@ -377,11 +385,13 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "replay",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Replay protection",
     "status": "NOT_APPLICABLE",
     "weight": 5,
@@ -391,11 +401,13 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "ike-version",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "IKE version",
     "status": "NOT_APPLICABLE",
     "weight": 10,
@@ -405,11 +417,45 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
+   },
+   {
+    "id": "ike-cipher",
+    "rule_version": "1.2.0",
+    "title": "IKE cipher strength",
+    "status": "NOT_APPLICABLE",
+    "weight": 5,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
+   },
+   {
+    "id": "ike-integrity",
+    "rule_version": "1.2.0",
+    "title": "IKE integrity strength",
+    "status": "NOT_APPLICABLE",
+    "weight": 3,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    },
    {
     "id": "mode-exposure",
-    "rule_version": "1.1.0",
+    "rule_version": "1.2.0",
     "title": "Mode exposure",
     "status": "NOT_APPLICABLE",
     "weight": 5,
@@ -419,7 +465,9 @@
     },
     "explanation": "Not applicable: no IPsec was detected in this capture.",
     "resolve_by": null,
-    "remediation": null
+    "remediation": null,
+    "source": "none",
+    "confidence": 0.0
    }
   ],
   "posture_score": null,
@@ -438,7 +486,9 @@
    "lifetime": 0,
    "replay": 0,
    "ike": 0,
-   "mode": 0
+   "mode": 0,
+   "ike_cipher": 0,
+   "ike_integrity": 0
   }
  }
 }

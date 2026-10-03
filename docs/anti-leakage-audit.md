@@ -1,6 +1,6 @@
 # Anti-leakage audit
 
-Corpus: 396 synthetic pcaps. Method: stratified permutation MI (200 shuffles within family×plain strata, Fisher-combined; pass requires p > 0.01) + leave-one-run-out exact-match (pass < 0.20). ESP/AH presence markers are excluded from the incidental set: presence is a declared M3 classification target, not leakage.
+Corpus: 414 synthetic pcaps. Method: stratified permutation MI (200 shuffles within family×plain strata, Fisher-combined; pass requires p > 0.01) + leave-one-run-out exact-match (pass < 0.20). ESP/AH presence markers are excluded from the incidental set: presence is a declared M3 classification target, not leakage.
 
 | field | p | verdict |
 |---|---|---|
@@ -13,14 +13,14 @@ Corpus: 396 synthetic pcaps. Method: stratified permutation MI (200 shuffles wit
 | combined | 1.000 | PASS |
 
 Leave-one-run-out exact-match accuracy (chance ~0.10, pass < 0.20):
-- outer_src: 0.091 PASS
-- outer_dst: 0.091 PASS
-- non_ike_sports: 0.121 PASS
-- macs: 0.091 PASS
-- start_day: 0.086 PASS
-- spis: 0.091 PASS
+- outer_src: 0.087 PASS
+- outer_dst: 0.087 PASS
+- non_ike_sports: 0.116 PASS
+- macs: 0.087 PASS
+- start_day: 0.082 PASS
+- spis: 0.087 PASS
 
-SPI uniqueness: 540 distinct SPIs, 0 reused.
+SPI uniqueness: 570 distinct SPIs, 0 reused.
 values (n>=3) seen in a single variant: 0.
 
 RESULT: PASS
