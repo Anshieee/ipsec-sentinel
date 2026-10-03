@@ -241,11 +241,10 @@ def _ike_hdr(spi_i: bytes, spi_r: bytes, np: int, exch: int, flags: int,
                           28 + len(payloads)) + payloads)
 
 
-def _ike_suite(v: dict) -> tuple[str, str]:
-    """(enc, auth) for the IKE SA (AH child keeps v1 baseline)."""
-    if v["cipher"] == "none":
-        return matrix.DEFAULT_IKE_CIPHER, matrix.DEFAULT_IKE_AUTH
-    return v["cipher"], v["auth"]
+def _ike_suite(v: dict) -> tuple[str, str, int]:
+    """(enc, auth, dh) for the IKE SA: explicit per-variant suite
+    (matrix.ike_suite); the CHILD suite is never derived from this."""
+    return matrix.ike_suite(v)
 
 
 def _sk_encrypt(enc: str, keys, inner: bytes,
@@ -283,7 +282,7 @@ def _notify(next_t: int, ntype: int, data: bytes = b"",
 
 def _auth_inner(v: dict, rng: random.Random, fam: int, resp: bool) -> bytes:
     """Plausible IKE_AUTH cleartext: IDi/AUTH/SA/TSi/TSr + Notify filler."""
-    enc, _ = _ike_suite(v)
+    enc, _, _ = _ike_suite(v)
     idi = _gen(39, bytes([4 if fam == 4 else 5, 0, 0, 0])
                + rng.randbytes(4 if fam == 4 else 16))
     auth = _gen(33, struct.pack("!H", 2) + rng.randbytes(32))
@@ -343,9 +342,8 @@ def _rekey_inner(v: dict, enc: str, rng: random.Random) -> bytes:
 def build_ikev2(v: dict, rng: random.Random, ike_keys=None):
     """Return list of (t, dir, ike_bytes). SK-only rekeys like strongSwan.
     ike_keys: derived deterministic keys (validator decrypts AUTH/rekey)."""
-    enc, auth = _ike_suite(v)
+    enc, auth, dh = _ike_suite(v)
     spi_i, spi_r = rng.randbytes(8), rng.randbytes(8)
-    dh = v["dh_group"]
     msgs = []
     # SA_INIT
     sa = _v2_sa(P_KE, PROTO_IKE, enc, auth, dh)
@@ -950,7 +948,9 @@ def label_for(variant_id: str, traffic: str, run: str, fam: int,
         lab = {"variant": "plain", "ipsec_protocol": "none",
                "ike_version": "none", "mode": "none", "encryption": "none",
                "key_length_bits": 0, "auth": "none", "aead": False,
-               "dh_group": 0, "pfs": False, "esn": False, "replay_window": 0,
+               "dh_group": 0, "pfs": False, "ike_encryption": "none",
+               "ike_key_length_bits": 0, "ike_auth": "none",
+               "ike_dh_group": 0, "esn": False, "replay_window": 0,
                "nat_t": False, "ike_rekey_s": 0, "child_rekey_s": 0}
     else:
         lab = matrix.label_row(matrix.BY_ID[variant_id])

@@ -1,165 +1,103 @@
-# IPsec Security Rubric — Phase 1
+# IPsec Security Rubric — v1.1 controls
 
-## Purpose
+Rule version `1.1.0`, implemented by `engine/assess/assess.py`, pinned by
+`engine/tests/test_assess.py` (label oracles) and
+`engine/tests/test_live_scores.py` (live captures).
 
-This rubric provides a standardized scoring framework for evaluating IPsec tunnel configurations against security best practices. It is designed for use in Phase 1 of the testbed validation, with 6 variants covering different cipher suites, DH groups, modes, and PFS settings.
+## Governing rules
 
----
+1. **IKE SA and CHILD SA are scored from their own evidence.** A cipher
+   negotiated in IKE_SA_INIT never credits (or discredits) the CHILD SA,
+   and vice versa. The mismatch variants (v19/v20) pin this: v19
+   (strong IKE / weak ESP) scores 73, v20 (weak IKE / strong ESP) 100.
+2. **Missing evidence is not a fact.** Every control returns
+   PASS | FAIL | UNKNOWN | NOT_APPLICABLE with rule id, rule version,
+   evidence and explanation. UNKNOWN never earns credit and never counts
+   as FAIL: there are no "assuming weak" findings and no risk penalties
+   for unobserved fields.
+3. **Posture vs coverage.** `posture_score` (0–100) is computed over
+   controls actually evaluated (PASS/FAIL) only. `coverage` (0–1) is the
+   applicability-weighted share of controls with evidence. `score_status`
+   is PUBLISHED iff coverage ≥ 0.5, else WITHHELD: no headline risk level
+   is shown, but every confirmed FAIL still surfaces. Every UNKNOWN names
+   the measurement that would resolve it (`resolve_by`).
+4. **Weights are unchanged** (25/20/15/10/10/5/10/5, sum 100) so
+   full-visibility oracles stay comparable across releases. No weight was
+   tuned to make any number look better.
 
-## Scoring Criteria Table
+## Controls
 
-| Criterion | Weight | Score 0 | Score 25 | Score 50 | Score 75 | Score 100 |
-|-----------|--------|---------|----------|----------|----------|-----------|
-| **Cipher Suite Strength** | 15% | NULL/3DES/Blowfish | AES-128-CBC | AES-192-CBC | AES-256-CBC (non-GCM) | AES-256-GCM-16 |
-| **DH Group Strength** | 12% | DH1/DH2/DH5 | DH14 (2048-bit) | DH19 (256-bit ECDH) | DH20 (2048-bit MODP with 2048-bit) | DH21+ or ECDH P-384+ |
-| **Integrity Algorithm** | 10% | NULL/HMAC-MD5 | HMAC-SHA1 | HMAC-SHA256 | HMAC-SHA384 | AEAD (GCM integrated) |
-| **Perfect Forward Secrecy (PFS)** | 12% | Disabled | Optional | Enabled, DH14 | Enabled, DH19+ | Enabled, ECDH P-384+ |
-| **SA Lifetime** | 8% | >8h | 4h-8h | 2h-4h | 1h-2h | ≤1h |
-| **Replay Window** | 8% | >1024 | 512-1024 | 256-512 | 128-256 | ≤128 |
-| **IKE Version** | 10% | IKEv1 only | IKEv1 with strong crypto | IKEv2 optional | IKEv2 preferred | IKEv2 mandatory |
-| **Mode Exposure** | 10% | Transport | Tunnel | Hybrid | Tunnel | Tunnel (with proper endpoint isolation) |
-| **Metadata Exposure** | 15% | High (Transport) | Medium | Low | Minimal | None |
+| # | id | weight | PASS (points) | FAIL (points + finding) | UNKNOWN (no credit, no penalty) |
+|---|---|---|---|---|---|
+| 1 | child-cipher | 25 | GCM-256 25, GCM-128 24, CBC-256 22, CBC-128 20 (child evidence only) | 3DES 5 (weak-cipher, critical); ESP-none 0 (no-conf, high); AH-none 5 (no-conf, high — confirmed absence of confidentiality) | child proposals travel encrypted: capture more ESP or score from labels |
+| 2 | dh-strength | 20 | DH20 20, DH19 18, DH14 15 (child PFS-group scoped) | DH2 2 / DH5 7 (weak-dh, critical) | group only in clear handshake; IKE group is IKE evidence (see 7) |
+| 3 | integrity | 15 | aead 15, HMAC-SHA256 13 | HMAC-SHA1 5 (weak-integ, medium); ESP-none 0 (no-integ, high) | travels encrypted: capture more ESP or score from labels |
+| 4 | pfs | 10 | rekey evidence 10 | disabled 0 (no-pfs, high) | capture a CREATE_CHILD_SA / quick-mode rekey |
+| 5 | lifetime | 10 | CHILD rekey ≤1 h: 10 | >1 h: 4 (≤12 h) / 2 (long-sa, low) | intervals never on wire in short captures: provide config values |
+| 6 | replay | 5 | window ≥32 (incl. >32): 5 — larger windows are loss-tolerance, not vulnerability | window 0: 0 (no-replay, medium) | sequence behavior never proves receiver enforcement: read receiver config |
+| 7 | ike-version | 10 | ikev2 10 (group DH14+: group is IKE-SA evidence) | ikev1 4 (ikev1, medium); IKE group DH2/DH5 2 (weak-ike-dh, critical — confirmed on the wire even when the child group is unknown) | capture IKE_SA_INIT alongside ESP |
+| 8 | mode-exposure | 5 | tunnel 5 | — (no blanket transport penalty) | transport is use-case dependent (host-to-host legitimate): declare policy |
 
----
+NOT_APPLICABLE: non-IPsec captures (no IPsec score, no findings) and,
+for AH, nothing — AH cipher absence is a confirmed FAIL (no-conf), not
+N/A, because a VPN without confidentiality is a real limitation.
 
-## Aggregation Logic
-
-### Security Score (SS)
+## Aggregation
 
 ```
-SS = Σ(criterion_score × weight) / 100
+posture  = round(100 * Σ points(PASS,FAIL) / Σ weights(PASS,FAIL))
+coverage = Σ weights(PASS,FAIL) / Σ weights(applicable)
+status   = PUBLISHED if coverage >= 0.5 else WITHHELD
+risk     = 100 - posture  (PUBLISHED only; buckets low<25 med<50 high<75)
 ```
 
-- **90-100**: Strong — Meets all modern security requirements
-- **70-89**: Adequate — Secure but with minor weaknesses
-- **50-69**: Weak — Significant vulnerabilities present
-- **0-49**: Critical — Unacceptable for production use
+## Oracle table (full visibility, from labels)
 
-### Risk Score (RS)
+| Variant | Cipher | DH | Integ | PFS | Life | Replay | IKE | Mode | Posture | Findings |
+|---|---|---|---|---|---|---|---|---|---|---|
+| v1 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 88 | — |
+| v2 | 22 | 20 | 13 | 10 | 10 | 5 | 10 | 5 | 95 | — |
+| v3 | 24 | 15 | 15 | 0 | 10 | 5 | 10 | 5 | 84 | no-pfs |
+| v4 | 25 | 20 | 15 | 10 | 10 | 5 | 10 | 5 | 100 | — |
+| v5 | 25 | 18 | 15 | 10 | 10 | 5 | 10 | — | 98 | (mode UNKNOWN, cov 0.95) |
+| v6 | 22 | 15 | 13 | 0 | 10 | 5 | 10 | — | 79 | no-pfs (cov 0.95) |
+| v7 (AH) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 73 | no-conf |
+| v8 (DH2) | 20 | 2 | 13 | 10 | 10 | 5 | 2 | 5 | 67 | weak-dh, weak-ike-dh |
+| v9 (DH5) | 20 | 7 | 13 | 10 | 10 | 5 | 2 | 5 | 72 | weak-dh, weak-ike-dh |
+| v10 (SHA1) | 20 | 15 | 5 | 10 | 10 | 5 | 10 | 5 | 80 | weak-integ |
+| v11 (3DES) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 73 | weak-cipher |
+| v12 (IKEv1) | 20 | 15 | 13 | 10 | 10 | 5 | 4 | 5 | 82 | ikev1 |
+| v13 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 88 | — |
+| v14 (long life) | 20 | 15 | 13 | 10 | 4 | 5 | 10 | 5 | 82 | long-sa |
+| v15 (replay 0) | 20 | 15 | 13 | 10 | 10 | 0 | 10 | 5 | 83 | no-replay |
+| v16 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 88 | — |
+| v17 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 88 | — |
+| v18 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 88 | — |
+| v19 (strong IKE/weak ESP) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 73 | weak-cipher |
+| v20 (weak IKE/strong ESP) | 25 | 20 | 15 | 10 | 10 | 5 | 10 | 5 | 100 | — |
+| plain | — | — | — | — | — | — | — | — | WITHHELD | (NOT_APPLICABLE, no score) |
 
-```
-RS = SS - Penalty(factors)
-```
+Live captures score lower coverage (dh/lifetime/replay unobserved):
+see `docs/expected-live-scores.md`. Example: live v1 = 58/65 → 89 @
+0.65; the oracle 88 assumes label lifetimes + replay + DH.
 
-**Penalty factors (applied as deductions):**
-- Transport mode exposure: -10 points
-- PFS disabled: -15 points
-- Integrity NULL (AEAD only): -5 points (if not GCM)
-- SA lifetime >4h: -5 points
-- IKEv1 only: -10 points
-- CBC mode with integrity: -5 points
+## Remediation guidance
 
----
+- weak-cipher: migrate to AES-GCM (RFC 8221). 3DES is broken (SWEET32).
+- weak-dh / weak-ike-dh: use ECP_256+ or MODP-2048+ (RFC 8247).
+- weak-integ / no-integ: use HMAC-SHA2-256 or AEAD.
+- no-pfs: enable PFS with a strong DH group.
+- long-sa: shorten CHILD rekey (≤1 h).
+- no-replay: enable anti-replay (window 32+).
+- ikev1: migrate to IKEv2.
+- Transport mode: no automatic finding; declare tunnel-vs-transport
+  policy for the link under review.
 
-## Threat Matrix Mapping
+## Reference standards
 
-| Threat Class | Vulnerable Configuration | Mitigation | Rubric Impact |
-|--------------|--------------------------|------------|---------------|
-| Traffic Analysis | Transport mode | Use tunnel mode | -10 Security Score |
-| Key Compromise | Long SA lifetime, no PFS | Enable PFS, reduce lifetime | -15 Security Score |
-| Crypto Downgrade | Weak DH/cipher | Enforce strong groups | Cipher/DH criteria |
-| Replay Attack | Large replay window | Minimize window size | -5 Security Score |
-| Metadata Leakage | Transport mode | Use tunnel mode | -10 Security Score |
-| Algorithm Weakness | NULL/3DES, MD5 | Use AES-GCM, SHA-2 | Cipher/Integrity criteria |
-
----
-
-## Reference Standards
-
-- **NIST SP 800-77 Rev. 1** — Guide to IPsec VPNs, Sections 3.1-3.4 (Phase 2 IPsec)
-- **NIST SP 800-57 Part 1 Rev. 5** — Key Management, Tables 2-1 to 2-3 (Cryptographic algorithms)
-- **RFC 8221** — IKEv2 Cryptographic Algorithms
-- **RFC 8247** — IKEv2 Exchange and Authentication
-- **RFC 4301** — Security Architecture for IPsec (Tunnel vs Transport)
-- **RFC 5996** — IKEv2 Protocol Specification
-
----
-
-## Remediation Guidance
-
-### Finding: Cipher Suite Weak
-**Remediation:** Upgrade to AES-256-GCM-16 or AES-256-CCM. Avoid CBC modes when AEAD is available.
-
-### Finding: DH Group Insufficient
-**Remediation:** Use ECDH P-256 (DH19) minimum, prefer P-384 (DH21) or higher.
-
-### Finding: PFS Disabled
-**Remediation:** Enable PFS with DH19+ or ECDH P-256+ for Child SA rekey.
-
-### Finding: SA Lifetime Excessive
-**Remediation:** Reduce IKE SA to 4h maximum, Child SA to 1h or less with PFS.
-
-### Finding: Replay Window Too Large
-**Remediation:** Configure replay_window = 128 or lower for high-security environments.
-
-### Finding: IKEv1 Only
-**Remediation:** Migrate to IKEv2; disable IKEv1 support.
-
-### Finding: Transport Mode Exposure
-**Remediation:** Use tunnel mode for site-to-site VPNs; reserve transport for host-to-host with care.
-
-### Finding: Metadata Leakage
-**Remediation:** Use tunnel mode to hide inner packet headers; consider ESP with antireplay service.
-
----
-
-## Expected Scores — Pre-computed Oracle Table
-
-Based on testbed/DESIGN.md variants:
-
-| Variant | Mode | Cipher | DH | PFS | Integrity | IKE | Security Score | Risk Score | Notes |
-|---------|------|--------|-----|-----|-----------|-----|----------------|------------|-------|
-| v1 | tunnel | AES-128-CBC | DH14 | on | HMAC-SHA256 | IKEv2 | 72 | 67 | CBC mode penalty applies |
-| v2 | tunnel | AES-256-CBC | DH20 | on | HMAC-SHA256 | IKEv2 | 75 | 70 | CBC mode penalty; DH20 adequate |
-| v3 | tunnel | AES-128-GCM-16 | DH14 | off | AEAD | IKEv2 | 68 | 53 | PFS disabled penalty |
-| v4 | tunnel | AES-256-GCM-16 | DH20 | on | AEAD | IKEv2 | 85 | 80 | Strong configuration |
-| v5 | transport | AES-256-GCM-16 | DH19 | on | AEAD | IKEv2 | 78 | 68 | Transport mode exposure penalty |
-| v6 | transport | AES-256-CBC | DH14 | off | HMAC-SHA256 | IKEv2 | 65 | 50 | Multiple penalties: transport + no PFS + CBC |
-
-### Score Calculation Notes
-
-**v1 (AES-128-CBC, DH14, PFS on, HMAC-SHA256):**
-- Cipher: 50, DH: 50, Integrity: 75, PFS: 75, Lifetime: 75, Replay: 100, IKE: 100, Mode: 100, Metadata: 75
-- Base SS = (50×0.15 + 50×0.12 + 75×0.10 + 75×0.12 + 75×0.08 + 100×0.08 + 100×0.10 + 100×0.10 + 75×0.15) = 72
-- Penalties: CBC (-5), Transport? No, it's tunnel = 0
-- RS = 72 - 5 = 67
-
-**v2 (AES-256-CBC, DH20, PFS on, HMAC-SHA256):**
-- Cipher: 75, DH: 75, Integrity: 75, PFS: 75, Lifetime: 75, Replay: 100, IKE: 100, Mode: 100, Metadata: 75
-- Base SS = 75
-- Penalties: CBC (-5)
-- RS = 70
-
-**v3 (AES-128-GCM-16, DH14, PFS off, AEAD):**
-- Cipher: 100, DH: 50, Integrity: 100, PFS: 0, Lifetime: 75, Replay: 100, IKE: 100, Mode: 100, Metadata: 75
-- Base SS = 68
-- Penalties: PFS disabled (-15)
-- RS = 53
-
-**v4 (AES-256-GCM-16, DH20, PFS on, AEAD):**
-- Cipher: 100, DH: 75, Integrity: 100, PFS: 75, Lifetime: 75, Replay: 100, IKE: 100, Mode: 100, Metadata: 75
-- Base SS = 85
-- Penalties: CBC? No, it's GCM = 0
-- RS = 80
-
-**v5 (Transport, AES-256-GCM-16, DH19, PFS on, AEAD):**
-- Cipher: 100, DH: 75, Integrity: 100, PFS: 75, Lifetime: 75, Replay: 100, IKE: 100, Mode: 0, Metadata: 0
-- Base SS = 78
-- Penalties: Transport mode (-10), Metadata exposure (-10)
-- RS = 68
-
-**v6 (Transport, AES-256-CBC, DH14, PFS off, HMAC-SHA256):**
-- Cipher: 75, DH: 50, Integrity: 75, PFS: 0, Lifetime: 75, Replay: 100, IKE: 100, Mode: 0, Metadata: 0
-- Base SS = 65
-- Penalties: Transport (-10), No PFS (-15), CBC (-5)
-- RS = 50
-
----
-
-## Usage Notes
-
-1. Scores are computed per-SAD (Security Association Database) entry
-2. Apply penalties only once per configuration, even if multiple issues exist
-3. The oracle table is computed for the exact configurations in DESIGN.md
-4. For production deployments, aim for SS ≥ 85, RS ≥ 80
-5. Review should identify any deviations from expected scores as potential implementation defects
+- NIST SP 800-77 Rev. 1 — Guide to IPsec VPNs
+- NIST SP 800-57 Part 1 Rev. 5 — Key Management
+- RFC 8221 — IKEv2 Cryptographic Algorithms
+- RFC 8247 — IKEv2 Exchange and Authentication
+- RFC 4301 — Security Architecture for IPsec (Tunnel vs Transport)
+- RFC 7296 — IKEv2 Protocol Specification

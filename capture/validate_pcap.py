@@ -116,12 +116,19 @@ def parse_proposal(sa_body: bytes) -> dict:
 
 
 def expected_init_transforms(lab: dict):
-    """Expected [(type, id, keylen|None)] for the IKE SA proposal."""
-    enc = lab["encryption"]
+    """Expected [(type, id, keylen|None)] for the IKE SA proposal.
+
+    Uses the IKE-suite label keys (ike_encryption/ike_auth/ike_dh_group):
+    the INIT proposal describes the IKE SA, never the child suite
+    (they differ for v19/v20 and v7/AH).
+    """
+    enc = lab.get("ike_encryption", lab["encryption"])
     if enc == "none":  # AH: IKE keeps baseline suite
         enc, auth = "aes-128-cbc", "hmac-sha256"
+        dh = lab.get("ike_dh_group", lab["dh_group"])
     else:
-        auth = lab["auth"]
+        auth = lab.get("ike_auth", lab["auth"])
+        dh = lab.get("ike_dh_group", lab["dh_group"])
     aead = enc in ("aes-128-gcm", "aes-256-gcm")
     exp = []
     eid = {"aes-128-cbc": 12, "aes-256-cbc": 12, "aes-128-gcm": 20,
@@ -134,7 +141,7 @@ def expected_init_transforms(lab: dict):
         exp.append((2, {"hmac-sha256": 5, "hmac-sha1": 2}[auth], None))
     else:
         exp.append((2, {"aes-128-gcm": 5, "aes-256-gcm": 6}[enc], None))
-    exp.append((4, lab["dh_group"], None))
+    exp.append((4, dh, None))
     return exp
 
 
@@ -563,10 +570,11 @@ def check_ikev2(lab: dict, ike_list, errs: list, stats: dict,
     if ke is None:
         errs.append("INIT req missing KE")
     else:
+        ike_dh = lab.get("ike_dh_group", lab["dh_group"])
         dh = struct.unpack("!H", ke["body"][:2])[0]
-        if dh != lab["dh_group"]:
-            errs.append(f"INIT KE group {dh} != {lab['dh_group']}")
-        if len(ke["body"]) - 4 != DH_PUB_LEN[lab["dh_group"]]:
+        if dh != ike_dh:
+            errs.append(f"INIT KE group {dh} != {ike_dh}")
+        if len(ke["body"]) - 4 != DH_PUB_LEN[ike_dh]:
             errs.append("INIT KE wrong length")
     if not any(p["type"] == P_NONCE for p in reqs[0]["payloads"]):
         errs.append("INIT req missing Nonce")
@@ -618,8 +626,12 @@ def check_ikev2(lab: dict, ike_list, errs: list, stats: dict,
 
 
 def _ike_suite_algs(lab: dict):
-    enc = lab["encryption"] if lab["encryption"] != "none" else "aes-128-cbc"
-    auth = lab["auth"]
+    """Decryption suite for IKE AUTH/rekey SK blobs: the IKE SA suite
+    (ike_* label keys), never the child suite."""
+    enc = lab.get("ike_encryption", lab["encryption"])
+    if enc == "none":
+        enc = "aes-128-cbc"
+    auth = lab.get("ike_auth", lab["auth"])
     if enc.endswith("gcm"):
         auth = "aead"
     elif auth in ("aead", "none"):

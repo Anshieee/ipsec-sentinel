@@ -280,3 +280,77 @@ checks pass; currently 1437/1437):
   the generator + asserts no psk-* in tracked testbed/ files.
 - Live vs oracle: live = oracle − 15 (lifetimes/replay unobservable),
   v12 − 25 (+PFS unknown); pinned in test_live_scores (21 samples).
+
+## D21 — v1.1 correctness release: prompt-vs-repo contradictions (2026-10-03)
+
+The task prompt says `docs/DECISIONS.md`; the repo keeps `DECISIONS.md`
+at root — appending here (code reality wins).
+
+- Baseline expectation in the prompt (`pytest engine/tests`: 30 passed,
+  2 skipped, skips = real-data tests without tarball) does not match
+  this checkout: `data/real/` IS present (6 variants, 66 pcaps), so the
+  real-data tests run. Observed baseline: **33 passed, 0 skipped**.
+  Safest option: accept the greener baseline, no reinstall.
+- Prompt SETUP says recreate `.venv` via `python -m venv` + `pip install`.
+  This repo's venv is uv-managed (no seeded pip; AGENTS.md D1) and green,
+  and `.venv/bin/python` is 3.14 (AGENTS.md D1 says 3.12.13 — env drift,
+  harmless: tests pass). Recreating risks breaking a green tree, so:
+  verify only, no venv rebuild. `pip install -e .` state verified via
+  `ipsec-analyze --help` working from `.venv/bin`.
+- `/tmp` at 1% — big jobs stay in place, no `~/.tmp-work` redirect needed.
+- `git status` clean, tag `v1.0` present; `v1.0` will not be moved.
+- Label semantics decision (new in v1.1): legacy label keys
+  (`encryption`/`auth`/`dh_group`) describe the CHILD suite (what ESP
+  carries and what the size model predicts). New keys `ike_encryption` /
+  `ike_auth` / `ike_dh_group` describe the IKE SA. For the 18 mirrored
+  variants both are identical; v19/v20 (mismatch) differ; v7 (AH) keeps
+  the v1-baseline IKE suite. Child enc/auth are NEVER parsed from
+  IKE_SA_INIT — with SK-only rekeys they are model-INFERRED or UNKNOWN.
+- Child crypto models (enc/auth/keylen) train and predict on the ESP-only
+  feature view (IKE proposal bytes excluded): with mirrored suites in the
+  corpus, IKE-proposal features would teach the model the very mirroring
+  assumption v1.1 removes. Presence/count features (n_ike, has_rekey,
+  rk lengths as PFS gate) are kept. No architecture change (RF, seed 7).
+- Assessment v1.1: per-control PASS|FAIL|UNKNOWN|NOT_APPLICABLE with rule
+  id + rule version + evidence + explanation; posture_score over evaluated
+  controls only; coverage = applicability-weighted share with evidence;
+  WITHHELD below 0.5 coverage (no headline risk level, confirmed FAILs
+  still listed). UNKNOWN earns no credit and no penalty. Rule version
+  `1.1.0`. Weights unchanged (25/20/15/10/10/5/10/5); transport mode is
+  use-case dependent (UNKNOWN/INFO, no penalty); replay window >= 32
+  passes; AH cipher absence is a confirmed FAIL (no-conf, 5 pts — a VPN
+  without confidentiality is a real limitation, not N/A); plain captures
+  get ipsec_detected=false and NOT_APPLICABLE assessment with no IPsec
+  score.
+
+## D22 — v1.1 follow-ups found during implementation (2026-10-03)
+
+- Live DH2/DH5 went silent (child PFS group honestly UNKNOWN live, so
+  posture matched the baseline). An OBSERVED weak group on the IKE SA is
+  a confirmed fact, so the ike-version control now FAILs (2/10) with a
+  `weak-ike-dh` critical finding when the IKE group is 2/5 — same
+  weight, no tuning; oracle v8 moves 75 -> 67 (hand-recomputed), live
+  v8/v9 surface the FAIL at posture 77 vs v1 89. Justification: each SA
+  is scored from its own evidence, in both directions.
+- `posture_score` stays numeric when WITHHELD (it is defined over
+  evaluated controls); only the *headline* (`security_score`/`risk`
+  aliases... actually the same value under compat keys, plus
+  `risk_level`) is nulled. Frontends must gate display on
+  `score_status`, not on the presence of a number.
+- Crafted merge pcaps (foreign IKE + truncated ESP stitched by hand)
+  confuse the size model into abstention — expected OOD behavior, not a
+  bug: the genuine generator-built mismatch variants (v19/v20,
+  validator-checked) classify confidently and correctly, so regression
+  tests use corpus pcaps, not hand merges.
+- SPI-ambiguity rule corrected during implementation: the generator (like
+  real IPsec) emits one SPI per direction, so 2 fully-overlapping SPIs
+  are a NORMAL bidirectional pair (v1 email/web/whatsapp/icmp all have
+  2; the first >=3 draft wrongly abstained PFS on them and collapsed CV
+  pfs to 0.44). Final rule: 3+ concurrent SPIs + single rekey ->
+  UNKNOWN; pairs stay attributable (real forced-rekey handoffs show 2
+  SPIs with ~0.02 s gaps, never overlapping).
+- Label schema gained required ike_* keys; `label_schema.json` variant
+  pattern extended to v20; plain labels carry ike none/0. Validator
+  INIT expectations + SK-decryption suite now use ike_* keys; child
+  expectations use child keys. M1 gate re-verified 1636/1636 (ss-verify
+  container restarted, pre-existing stopped container).

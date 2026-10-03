@@ -11,7 +11,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 pip install -e .   # provides `ipsec-analyze`
-ipsec-analyze generate-data --real   # 360 synthetic + 66 real labels
+ipsec-analyze generate-data --real   # 396 synthetic + 66 real labels
 ipsec-analyze train                  # per-field RF models (seed 7)
 ipsec-analyze analyze data/pcaps/synth/v1/r1/voip.pcap
 python -m pytest engine/tests -q     # full suite green
@@ -43,7 +43,7 @@ checksummed in `dataset/checksums.sha256`). Get it from the release
 artifacts (or rebuild: recapture via `testbed/scripts/`, ~1 h), extract
 over `data/` (`tar -xzf dataset/ipsec-dataset-v1.tar.gz -C /tmp/ds && cp
 -r /tmp/ds/* data/`), then `ipsec-analyze generate-data --real` folds the
-labels. Without it, `generate-data` builds the 360 synthetic pcaps and
+labels. Without it, `generate-data` builds the 396 synthetic pcaps and
 anything referencing `data/real` skips gracefully.
 
 ## Layout

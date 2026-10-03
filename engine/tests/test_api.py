@@ -38,15 +38,28 @@ def test_analyze(tmp_path):
     r = client.post("/analyze", files={"file": ("voip.pcap", data)})
     assert r.status_code == 200
     body = r.json()
+    # Child suite is model-INFERRED (IKE_SA_INIT describes the IKE SA
+    # only); the IKE SA itself is still parsed from handshake bytes.
     assert body["fields"]["enc_alg"]["value"] == "aes-128-cbc"
-    assert body["fields"]["enc_alg"]["source"] == "parsed"
+    assert body["fields"]["enc_alg"]["source"] == "model"
+    assert body["fields"]["enc_alg"]["status"] == "INFERRED"
+    assert body["ike_sa"]["enc_alg"]["value"] == "aes-128-cbc"
+    assert body["ike_sa"]["enc_alg"]["status"] == "OBSERVED"
+    assert body["child_sa"]["proto"]["value"] == "esp"
+    assert body["detection"]["ipsec_detected"] is True
     assert body["fields"]["traffic_type"]["source"] == "model"
     assert 0.0 <= body["ai_confidence"] <= 1.0
-    # 88 (label-oracle) minus lifetime(10) and replay(5): an 8 s capture
-    # cannot observe rekey intervals, so the API scores them unknown.
-    assert body["assessment"]["security_score"] == 73
-    ids = {f["id"] for f in body["assessment"]["findings"]}
-    assert "unknown-lifetime" in ids and "unknown-replay" in ids
+    # Live v1: posture 89 over evaluated controls, coverage 0.65
+    # (dh/lifetime/replay unobserved in a short capture).
+    assert body["assessment"]["posture_score"] == 89
+    assert body["assessment"]["coverage"] == 0.65
+    assert body["assessment"]["score_status"] == "PUBLISHED"
+    ctl = {c["id"]: c for c in body["assessment"]["controls"]}
+    assert ctl["lifetime"]["status"] == "UNKNOWN"
+    assert ctl["replay"]["status"] == "UNKNOWN"
+    assert ctl["lifetime"]["resolve_by"]
+    assert not [f for f in body["assessment"]["findings"]
+                if f["id"].startswith("unknown-")]
 
 
 def test_report_and_rejects(tmp_path):
@@ -62,15 +75,15 @@ def test_variants_and_samples():
     r = client.get("/variants")
     assert r.status_code == 200
     body = r.json()
-    assert len(body["variants"]) == 18
+    assert len(body["variants"]) == 20
     assert "plain" in body
     r = client.get("/datasets/samples?limit=10")
     assert r.status_code == 200
     body = r.json()
     assert len(body["samples"]) == 10
-    # full corpus: 402 (360 synthetic + 42 real); clean checkouts that
-    # only regenerate synthetic data have 360.
-    assert body["total_rows"] >= 360
+    # full corpus: 462 rows (396 synthetic incl. plain + 66 real);
+    # clean checkouts that only regenerate synthetic data have 396.
+    assert body["total_rows"] >= 396
 
 
 def test_cors_preflight():
@@ -98,10 +111,13 @@ def test_mock_app():
     r = mc.post("/analyze", files={"file": ("x.pcap", b"data")})
     assert r.status_code == 200
     body = r.json()
-    assert body["fields"]["pfs"] == {"value": "unknown", "source": "model",
-                                     "confidence": 0.0, "detail": None}
+    assert body["fields"]["pfs"]["value"] == "unknown"
+    assert body["fields"]["pfs"]["source"] == "model"
     assert body["fields"]["mode"]["detail"]["decided_by"] == \
         "size-overhead-model"
+    assert body["ike_sa"]["version"]["value"] == "ikev2"
+    assert body["child_sa"]["proto"]["value"] == "esp"
+    assert body["detection"]["ipsec_detected"] is True
     assert mc.get("/variants").status_code == 200
     assert mc.get("/datasets/samples").status_code == 200
 

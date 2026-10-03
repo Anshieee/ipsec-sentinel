@@ -1,179 +1,437 @@
 {
  "fields": {
-  "ike_version": {
-   "value": "none",
-   "source": "parsed",
-   "confidence": 1.0,
-   "detail": null
-  },
   "ipsec_proto": {
    "value": "none",
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": {
+    "note": "packets-observed-no-esp-ah"
+   },
+   "evidence": null
+  },
+  "ike_version": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": {
+    "note": "no-ipsec-traffic"
+   },
+   "evidence": null
+  },
+  "mode": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": {
+    "note": "no-ipsec-traffic",
+    "decided_by": "no-ipsec"
+   },
+   "evidence": null
+  },
+  "enc_alg": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": {
+    "note": "no-ipsec-traffic"
+   },
+   "evidence": null
+  },
+  "enc_key_len": {
+   "value": 0,
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": {
+    "note": "no-ipsec-traffic"
+   },
+   "evidence": null
+  },
+  "auth_alg": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": {
+    "note": "no-ipsec-traffic"
+   },
+   "evidence": null
+  },
+  "dh_group": {
+   "value": "unknown",
+   "source": "none",
+   "confidence": 0.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": null
+  },
+  "pfs": {
+   "value": false,
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": {
+    "note": "no-ipsec-traffic"
+   },
+   "evidence": null
   },
   "ip_version": {
    "value": 4,
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": {
+    "note": "single-family-capture"
+   },
+   "evidence": null
+  },
+  "traffic_type": {
+   "value": "voip",
+   "source": "model",
+   "confidence": 0.9966666666666667,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
   },
   "nat_t": {
    "value": false,
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": {
+    "note": "no-esp-in-udp-observed"
+   },
+   "evidence": null
+  }
+ },
+ "ike_sa": {
+  "version": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
   },
-  "mode": {
+  "enc_alg": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
+  },
+  "auth_alg": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
+  },
+  "prf": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
+  },
+  "enc_key_len": {
+   "value": 0,
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
+  },
+  "dh_group": {
+   "value": 0,
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
+  }
+ },
+ "child_sa": {
+  "proto": {
    "value": "none",
    "source": "parsed",
    "confidence": 1.0,
-   "detail": {
-    "header_parse": "none",
-    "reason": "no ESP/AH on the wire",
-    "size_signal": {
-     "value": "none",
-     "confidence": 1.0
-    },
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": {
+    "note": "packets-observed-no-esp-ah"
+   }
+  },
+  "mode": {
+   "value": "none",
+   "source": "none",
+   "confidence": 1.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic",
     "decided_by": "no-ipsec"
    }
   },
   "enc_alg": {
    "value": "none",
-   "source": "parsed",
+   "source": "none",
    "confidence": 1.0,
-   "detail": null
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
   },
   "enc_key_len": {
    "value": 0,
-   "source": "parsed",
+   "source": "none",
    "confidence": 1.0,
-   "detail": null
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
   },
   "auth_alg": {
    "value": "none",
-   "source": "parsed",
+   "source": "none",
    "confidence": 1.0,
-   "detail": null
-  },
-  "dh_group": {
-   "value": 0,
-   "source": "parsed",
-   "confidence": 1.0,
-   "detail": null
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
   },
   "pfs": {
    "value": false,
-   "source": "parsed",
+   "source": "none",
    "confidence": 1.0,
-   "detail": null
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
   },
-  "traffic_type": {
-   "value": "voip",
-   "source": "model",
-   "confidence": 1.0,
-   "detail": null
+  "replay": {
+   "value": "unknown",
+   "source": "none",
+   "confidence": 0.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
+  },
+  "lifetime": {
+   "value": "unknown",
+   "source": "none",
+   "confidence": 0.0,
+   "status": "NOT_APPLICABLE",
+   "detail": null,
+   "evidence": {
+    "note": "no-ipsec-traffic"
+   }
   }
  },
- "ai_confidence": 1.0,
+ "detection": {
+  "ipsec_detected": false,
+  "source": "measured",
+  "confidence": 1.0,
+  "evidence": {
+   "n_packets": 403,
+   "n_esp": 0,
+   "n_ah": 0,
+   "n_ike": 0
+  }
+ },
+ "ai_confidence": 0.9087878787878787,
  "metadata": {
   "duration_s": {
    "value": 7.999086141586304,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "n_packets": {
    "value": 403,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "packet_rate": {
    "value": 50.380755109618164,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "mean_bytes": {
    "value": 202.0,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "direction_ratio": {
    "value": 1.0,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   }
  },
  "assessment": {
-  "security_score": 5,
-  "risk_score": 95,
-  "risk_level": "critical",
-  "findings": [
+  "controls": [
    {
-    "id": "no-conf",
-    "severity": "high",
-    "likelihood": 3,
-    "impact": 5,
-    "text": "AH provides no confidentiality.",
-    "solution": "Use ESP with AES-GCM for secrecy."
+    "id": "child-cipher",
+    "rule_version": "1.1.0",
+    "title": "Child cipher strength",
+    "status": "NOT_APPLICABLE",
+    "weight": 25,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
    },
    {
-    "id": "no-pfs",
-    "severity": "high",
-    "likelihood": 2,
-    "impact": 5,
-    "text": "No PFS: key compromise decrypts history.",
-    "solution": "Enable PFS with a strong DH group."
+    "id": "dh-strength",
+    "rule_version": "1.1.0",
+    "title": "DH group strength",
+    "status": "NOT_APPLICABLE",
+    "weight": 20,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
    },
    {
-    "id": "unknown-lifetime",
-    "severity": "medium",
-    "likelihood": 2,
-    "impact": 3,
-    "text": "SA lifetime unknown: assuming weak.",
-    "solution": "Provide rekey intervals for scoring."
+    "id": "integrity",
+    "rule_version": "1.1.0",
+    "title": "Integrity algorithm",
+    "status": "NOT_APPLICABLE",
+    "weight": 15,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
    },
    {
-    "id": "unknown-replay",
-    "severity": "medium",
-    "likelihood": 2,
-    "impact": 3,
-    "text": "Replay state unknown: assuming weak.",
-    "solution": "Enable anti-replay (window 32+)."
+    "id": "pfs",
+    "rule_version": "1.1.0",
+    "title": "Perfect forward secrecy",
+    "status": "NOT_APPLICABLE",
+    "weight": 10,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
+   },
+   {
+    "id": "lifetime",
+    "rule_version": "1.1.0",
+    "title": "SA lifetime",
+    "status": "NOT_APPLICABLE",
+    "weight": 10,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
+   },
+   {
+    "id": "replay",
+    "rule_version": "1.1.0",
+    "title": "Replay protection",
+    "status": "NOT_APPLICABLE",
+    "weight": 5,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
+   },
+   {
+    "id": "ike-version",
+    "rule_version": "1.1.0",
+    "title": "IKE version",
+    "status": "NOT_APPLICABLE",
+    "weight": 10,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
+   },
+   {
+    "id": "mode-exposure",
+    "rule_version": "1.1.0",
+    "title": "Mode exposure",
+    "status": "NOT_APPLICABLE",
+    "weight": 5,
+    "points": 0,
+    "evidence": {
+     "note": "no-ipsec-detected"
+    },
+    "explanation": "Not applicable: no IPsec was detected in this capture.",
+    "resolve_by": null,
+    "remediation": null
    }
   ],
-  "threat_matrix": [
-   {
-    "id": "no-conf",
-    "likelihood": 3,
-    "impact": 5,
-    "risk": 15
-   },
-   {
-    "id": "no-pfs",
-    "likelihood": 2,
-    "impact": 5,
-    "risk": 10
-   },
-   {
-    "id": "unknown-lifetime",
-    "likelihood": 2,
-    "impact": 3,
-    "risk": 6
-   },
-   {
-    "id": "unknown-replay",
-    "likelihood": 2,
-    "impact": 3,
-    "risk": 6
-   }
-  ],
+  "posture_score": null,
+  "coverage": 0.0,
+  "score_status": "WITHHELD",
+  "security_score": null,
+  "risk_score": null,
+  "risk_level": null,
+  "findings": [],
+  "threat_matrix": [],
   "breakdown": {
-   "cipher": 5,
+   "cipher": 0,
    "dh": 0,
    "integrity": 0,
    "pfs": 0,

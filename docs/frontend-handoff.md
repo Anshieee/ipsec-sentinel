@@ -22,8 +22,13 @@ CORS is open for `http://localhost:{3000,8501,8000,5173,4173}` and
   shows `pfs: unknown`; `analyze-plain` shows nones; `mock-analyze`
   shows the mock shape).
 
-## Field semantics
-Every field: `{value, source, confidence, detail|null}`.
+## Field semantics (v1.1)
+Every field: `{value, source, confidence, status, detail|null,
+evidence|null}` — see `docs/api-contract.md` (v1.1 change list) for the
+`ike_sa` / `child_sa` / `detection` objects and the controls-based
+assessment (`posture_score`, `coverage`, `score_status`). The notes below
+describe v1.0 shapes; the mapper update is queued next (frontend/ itself
+is untouched by the v1.1 release).
 `value` may be `"unknown"` (declined — render it, never drop it).
 `source`: `parsed` (bytes on the wire), `model` (statistical),
 `measured` (metadata observations). `mode.detail.decided_by` is one of

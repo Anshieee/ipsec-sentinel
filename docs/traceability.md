@@ -4,18 +4,18 @@ Original statement items (a–e + deliverables) → file → verification.
 Partial coverage is marked honestly.
 
 ## a. Testbed variations
-18-variant matrix incl. tunnel/transport, AES-128/256-CBC+SHA256,
+20-variant matrix incl. tunnel/transport, AES-128/256-CBC+SHA256,
 AES-128/256-GCM, DH 14/19/20 + weak DH2/DH5, SHA1, 3DES, IKEv1, short/long
-lifetimes, replay off, ESN on/off, NAT-T, AH.
+lifetimes, replay off, ESN on/off, NAT-T, AH, IKE/ESP mismatch.
 → `testbed/matrix.py` + `testbed/DESIGN.md`
 → `.venv/bin/python testbed/matrix.py` (self-check table) and
-→ `.venv/bin/python testbed/validate_configs.py` (M1 gate 1437/1437).
+→ `.venv/bin/python testbed/validate_configs.py` (M1 gate 1636/1636).
 
 ## b. Capture
-Real (66 pcaps, netns testbed, SAs verified) + synthetic (360 pcaps).
+Real (66 pcaps, netns testbed, SAs verified) + synthetic (396 pcaps).
 → `testbed/scripts/real-{run,rekey,tcp}.sh`, `capture/synth/synth_pcap.py`
 → `ls data/real/*/*/ | wc -l` (66) + `capture/validate_pcap.py` (rc=0,
-426/426 rows valid).
+462/462 rows valid).
 
 ## c. Identification fields
 Parsed where visible (proposal/KE/rekey/AH/IKE version/presence/NAT-T),

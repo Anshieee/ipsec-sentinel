@@ -1,7 +1,7 @@
 {
  "cv_full": {
   "ipsec_proto": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -9,7 +9,7 @@
    "unknown_rate": 0.0
   },
   "ike_version": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -17,7 +17,7 @@
    "unknown_rate": 0.0
   },
   "mode": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -25,47 +25,47 @@
    "unknown_rate": 0.0
   },
   "enc_alg": {
-   "n": 360,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "n": 396,
+   "accuracy": 0.9015,
+   "macro_p": 0.8934,
+   "macro_r": 0.7807,
+   "macro_f1": 0.817,
+   "unknown_rate": 0.0253
   },
   "enc_key_len": {
-   "n": 360,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "n": 396,
+   "accuracy": 0.9066,
+   "macro_p": 0.9327,
+   "macro_r": 0.91,
+   "macro_f1": 0.9202,
+   "unknown_rate": 0.0152
   },
   "auth_alg": {
-   "n": 360,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
+   "n": 396,
+   "accuracy": 0.9798,
+   "macro_p": 0.9872,
+   "macro_r": 0.9773,
+   "macro_f1": 0.982,
    "unknown_rate": 0.0
   },
   "dh_group": {
-   "n": 360,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "n": 396,
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
   },
   "pfs": {
-   "n": 360,
-   "accuracy": 0.95,
+   "n": 396,
+   "accuracy": 0.9545,
    "macro_p": 1.0,
-   "macro_r": 0.9688,
-   "macro_f1": 0.9839,
-   "unknown_rate": 0.05
+   "macro_r": 0.9722,
+   "macro_f1": 0.9857,
+   "unknown_rate": 0.0455
   },
   "ip_version": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -73,15 +73,31 @@
    "unknown_rate": 0.0
   },
   "traffic_type": {
-   "n": 360,
-   "accuracy": 0.9889,
-   "macro_p": 0.9943,
-   "macro_r": 0.9889,
-   "macro_f1": 0.9916,
-   "unknown_rate": 0.0056
+   "n": 396,
+   "accuracy": 0.9949,
+   "macro_p": 0.9975,
+   "macro_r": 0.9949,
+   "macro_f1": 0.9962,
+   "unknown_rate": 0.0025
   },
   "nat_t": {
-   "n": 360,
+   "n": 396,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 396,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_dh_group": {
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -91,7 +107,7 @@
  },
  "cv_esp_only": {
   "ipsec_proto": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -99,63 +115,63 @@
    "unknown_rate": 0.0
   },
   "ike_version": {
-   "n": 360,
-   "accuracy": 0.1,
-   "macro_p": 0.0333,
+   "n": 396,
+   "accuracy": 0.0909,
+   "macro_p": 0.3333,
    "macro_r": 0.3333,
-   "macro_f1": 0.0606,
-   "unknown_rate": 0.0
+   "macro_f1": 0.3333,
+   "unknown_rate": 0.9091
   },
   "mode": {
-   "n": 360,
-   "accuracy": 0.9944,
-   "macro_p": 0.9896,
-   "macro_r": 0.9896,
-   "macro_f1": 0.9896,
+   "n": 396,
+   "accuracy": 0.9949,
+   "macro_p": 0.9897,
+   "macro_r": 0.9897,
+   "macro_f1": 0.9897,
    "unknown_rate": 0.0
   },
   "enc_alg": {
-   "n": 360,
-   "accuracy": 0.9389,
-   "macro_p": 0.9794,
-   "macro_r": 0.8872,
-   "macro_f1": 0.9201,
-   "unknown_rate": 0.0167
+   "n": 396,
+   "accuracy": 0.9015,
+   "macro_p": 0.8934,
+   "macro_r": 0.7807,
+   "macro_f1": 0.817,
+   "unknown_rate": 0.0253
   },
   "enc_key_len": {
-   "n": 360,
-   "accuracy": 0.9333,
-   "macro_p": 0.9561,
-   "macro_r": 0.8738,
-   "macro_f1": 0.9094,
-   "unknown_rate": 0.0139
+   "n": 396,
+   "accuracy": 0.9066,
+   "macro_p": 0.9327,
+   "macro_r": 0.91,
+   "macro_f1": 0.9202,
+   "unknown_rate": 0.0152
   },
   "auth_alg": {
-   "n": 360,
-   "accuracy": 0.9444,
-   "macro_p": 0.9979,
-   "macro_r": 0.9729,
-   "macro_f1": 0.985,
-   "unknown_rate": 0.05
+   "n": 396,
+   "accuracy": 0.9798,
+   "macro_p": 0.9872,
+   "macro_r": 0.9773,
+   "macro_f1": 0.982,
+   "unknown_rate": 0.0
   },
   "dh_group": {
-   "n": 360,
-   "accuracy": 0.8194,
-   "macro_p": 0.7731,
-   "macro_r": 0.63,
-   "macro_f1": 0.6743,
-   "unknown_rate": 0.05
+   "n": 396,
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
   },
   "pfs": {
-   "n": 360,
-   "accuracy": 0.1,
+   "n": 396,
+   "accuracy": 0.0909,
    "macro_p": 0.5,
    "macro_r": 0.25,
    "macro_f1": 0.3333,
-   "unknown_rate": 0.9
+   "unknown_rate": 0.9091
   },
   "ip_version": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
@@ -163,20 +179,36 @@
    "unknown_rate": 0.0
   },
   "traffic_type": {
-   "n": 360,
-   "accuracy": 0.9917,
-   "macro_p": 0.9972,
-   "macro_r": 0.9917,
-   "macro_f1": 0.9944,
-   "unknown_rate": 0.0056
+   "n": 396,
+   "accuracy": 0.9975,
+   "macro_p": 0.9975,
+   "macro_r": 0.9975,
+   "macro_f1": 0.9975,
+   "unknown_rate": 0.0
   },
   "nat_t": {
-   "n": 360,
+   "n": 396,
    "accuracy": 1.0,
    "macro_p": 1.0,
    "macro_r": 1.0,
    "macro_f1": 1.0,
    "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 396,
+   "accuracy": 0.0909,
+   "macro_p": 0.1667,
+   "macro_r": 0.1667,
+   "macro_f1": 0.1667,
+   "unknown_rate": 0.9091
+  },
+  "ike_dh_group": {
+   "n": 396,
+   "accuracy": 0.0909,
+   "macro_p": 0.1667,
+   "macro_r": 0.1667,
+   "macro_f1": 0.1667,
+   "unknown_rate": 0.9091
   }
  },
  "synth2real": {
@@ -206,35 +238,35 @@
   },
   "enc_alg": {
    "n": 66,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "accuracy": 0.7121,
+   "macro_p": 0.7,
+   "macro_r": 0.5792,
+   "macro_f1": 0.6225,
+   "unknown_rate": 0.2424
   },
   "enc_key_len": {
    "n": 66,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "accuracy": 0.803,
+   "macro_p": 0.9907,
+   "macro_r": 0.8536,
+   "macro_f1": 0.9142,
+   "unknown_rate": 0.1667
   },
   "auth_alg": {
    "n": 66,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
+   "accuracy": 0.9697,
+   "macro_p": 0.9792,
+   "macro_r": 0.95,
+   "macro_f1": 0.963,
    "unknown_rate": 0.0
   },
   "dh_group": {
    "n": 66,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
   },
   "pfs": {
    "n": 66,
@@ -254,13 +286,29 @@
   },
   "traffic_type": {
    "n": 66,
-   "accuracy": 0.5152,
-   "macro_p": 0.8333,
-   "macro_r": 0.5897,
-   "macro_f1": 0.6291,
-   "unknown_rate": 0.4848
+   "accuracy": 0.5,
+   "macro_p": 0.6667,
+   "macro_r": 0.5769,
+   "macro_f1": 0.6053,
+   "unknown_rate": 0.5
   },
   "nat_t": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_dh_group": {
    "n": 66,
    "accuracy": 1.0,
    "macro_p": 1.0,
@@ -296,18 +344,18 @@
   },
   "enc_alg": {
    "n": 30,
-   "accuracy": 1.0,
+   "accuracy": 0.9667,
    "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "macro_r": 0.9375,
+   "macro_f1": 0.9643,
+   "unknown_rate": 0.0333
   },
   "enc_key_len": {
    "n": 30,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
+   "accuracy": 0.9667,
+   "macro_p": 0.9333,
+   "macro_r": 0.9848,
+   "macro_f1": 0.9552,
    "unknown_rate": 0.0
   },
   "auth_alg": {
@@ -320,11 +368,11 @@
   },
   "dh_group": {
    "n": 30,
-   "accuracy": 1.0,
-   "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
   },
   "pfs": {
    "n": 30,
@@ -357,10 +405,26 @@
    "macro_r": 1.0,
    "macro_f1": 1.0,
    "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_dh_group": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
   }
  },
  "holdout_info": {
-  "n_train": 396,
+  "n_train": 432,
   "n_test": 30,
   "test_runs": [
    "r2",

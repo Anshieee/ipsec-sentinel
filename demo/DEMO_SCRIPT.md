@@ -8,9 +8,10 @@ Replay the recorded session (no dashboard in this repo):
 
 ```bash
 ipsec-analyze analyze demo/samples/v1-voip.pcap
-# enc_alg aes-128-cbc (parsed 1.00), dh_group 14 (parsed),
+# ike_sa enc aes-128-cbc (OBSERVED, packet 2), child enc aes-128-cbc
+# (INFERRED model 0.98), flat dh_group unknown (IKE group is IKE evidence),
 # traffic_type voip (model), mode tunnel (model, basis size-overhead-model),
-# security 73/100 (lifetimes unobservable in 8 s captures)
+# posture 89/100 @ coverage 0.65 (dh/lifetimes/replay unobserved)
 ```
 
 ## 2. Machine output + PDF (30 s)

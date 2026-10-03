@@ -29,7 +29,8 @@ def test_analyze_human_and_json(tmp_path):
     r = runner.invoke(app, ["analyze", str(sample), "--json"])
     assert r.exit_code == 0
     body = json.loads(r.output)
-    assert body["fields"]["dh_group"]["value"] == 14
+    assert body["ike_sa"]["dh_group"]["value"] == 14
+    assert body["fields"]["dh_group"]["value"] == "unknown"
     assert body["fields"]["mode"]["detail"]["decided_by"] == \
         "size-overhead-model"
 

@@ -182,6 +182,25 @@
       "type": "object",
       "title": "Fields"
      },
+     "ike_sa": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/FieldResult"
+      },
+      "type": "object",
+      "title": "Ike Sa"
+     },
+     "child_sa": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/FieldResult"
+      },
+      "type": "object",
+      "title": "Child Sa"
+     },
+     "detection": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Detection"
+     },
      "ai_confidence": {
       "type": "number",
       "title": "Ai Confidence"
@@ -202,6 +221,9 @@
     "type": "object",
     "required": [
      "fields",
+     "ike_sa",
+     "child_sa",
+     "detection",
      "ai_confidence",
      "metadata",
      "assessment"
@@ -249,6 +271,11 @@
       "type": "number",
       "title": "Confidence"
      },
+     "status": {
+      "type": "string",
+      "title": "Status",
+      "default": "OBSERVED"
+     },
      "detail": {
       "anyOf": [
        {
@@ -260,6 +287,18 @@
        }
       ],
       "title": "Detail"
+     },
+     "evidence": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Evidence"
      }
     },
     "type": "object",

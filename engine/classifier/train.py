@@ -23,6 +23,9 @@ from model import (build_vectorizer, train_field, esp_only_keys,  # noqa: E402
 
 LABEL_FIELDS = ["traffic_type", "mode", "enc_alg", "enc_key_len",
                 "auth_alg", "dh_group", "pfs"]
+# Child-suite fields train on the ESP-only feature view: IKE proposal
+# bytes must not teach the model to copy IKE -> child (v1.1 boundary).
+ESP_VIEW_FIELDS = {"enc_alg", "enc_key_len", "auth_alg"}
 LABEL_KEY = {"traffic_type": "traffic_type", "mode": "mode",
              "enc_alg": "encryption", "enc_key_len": "key_length_bits",
              "auth_alg": "auth", "dh_group": "dh_group", "pfs": "pfs"}
@@ -78,6 +81,16 @@ def main() -> int:
     vec = build_vectorizer([feats[r["file"]] for r in rows])
     joblib.dump(vec, mdir / "vectorizer.joblib")
     X = vec.transform([feats[r["file"]] for r in rows])
+    # ESP-only view for child-suite fields (no IKE proposal bytes).
+    all_keys = list(feats[rows[0]["file"]].keys())
+    esp_keys = esp_only_keys(all_keys)
+    vec_esp = build_vectorizer(
+        [{k: v for k, v in feats[r["file"]].items() if k in esp_keys}
+         for r in rows])
+    joblib.dump(vec_esp, mdir / "vectorizer_esp.joblib")
+    X_esp = vec_esp.transform(
+        [{k: v for k, v in feats[r["file"]].items() if k in esp_keys}
+         for r in rows])
     keys = list(vec.feature_names_in_
                 if hasattr(vec, "feature_names_in_") else vec.get_feature_names_out())
     classes = {}
@@ -87,9 +100,10 @@ def main() -> int:
         le = LabelEncoder()
         y = le.fit_transform([json.dumps(v) for v in y_raw])
         classes[field] = list(le.classes_)
-        clf = train_field(X, y)
+        clf = train_field(X_esp if field in ESP_VIEW_FIELDS else X, y)
         joblib.dump(clf, mdir / f"{field}.joblib")
-        print(f"  {field}: {len(le.classes_)} classes")
+        print(f"  {field}: {len(le.classes_)} classes"
+              f"{' (esp-only view)' if field in ESP_VIEW_FIELDS else ''}")
     (mdir / "classes.json").write_text(json.dumps(classes, indent=1))
     (mdir / "meta.json").write_text(json.dumps({
         "seed": 7, "n_estimators": 300, "train_rows": len(rows),
@@ -98,6 +112,8 @@ def main() -> int:
         "esp_only_drop_exact": sorted(
             ["has_ike", "has_rekey", "rk_sk_req_len", "rk_sk_resp_len",
              "n_ike", "n_udp500", "n_udp4500_marked"]),
+        "esp_view_fields": sorted(ESP_VIEW_FIELDS),
+        "esp_view_keys": sorted(esp_keys),
         "model_fields": MAIN_MODEL_FIELDS,
         "ablation_extra": ABLATION_EXTRA_FIELDS,
     }, indent=1))

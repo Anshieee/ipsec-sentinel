@@ -42,25 +42,41 @@ class FieldResult(BaseModel):
     value: object
     source: str
     confidence: float
+    status: str = "OBSERVED"
     detail: dict[str, object] | None = None
+    evidence: dict[str, object] | None = None
 
 
 class AnalyzeResponse(BaseModel):
     fields: dict[str, FieldResult]
+    ike_sa: dict[str, FieldResult]
+    child_sa: dict[str, FieldResult]
+    detection: dict
     ai_confidence: float
     metadata: dict[str, FieldResult]
     assessment: dict
 
 
+def _wire(obj: dict) -> dict:
+    return {"value": obj["value"], "source": obj["source"],
+            "confidence": obj["confidence"],
+            "status": obj.get("status", "OBSERVED"),
+            "detail": obj.get("detail"),
+            "evidence": obj.get("evidence")}
+
+
 def to_response(out: dict) -> dict:
     """API-shaped dict from analyze() output (shared with the CLI)."""
-    fields = {k: {"value": v["value"], "source": v["source"],
-                  "confidence": v["confidence"], "detail": v.get("detail")}
-              for k, v in out.items() if k in SCORED}
+    fields = {k: _wire(v) for k, v in out.items() if k in SCORED}
+    ike_sa = {k: _wire(v) for k, v in out.get("ike_sa", {}).items()}
+    child_sa = {k: _wire(v) for k, v in out.get("child_sa", {}).items()}
     metadata = {k: {"value": v["value"], "source": v["source"],
-                    "confidence": v["confidence"]}
+                    "confidence": v["confidence"],
+                    "status": v.get("status", "OBSERVED")}
                 for k, v in out.get("metadata", {}).items()}
-    return {"fields": fields, "ai_confidence": out["ai_confidence"],
+    return {"fields": fields, "ike_sa": ike_sa, "child_sa": child_sa,
+            "detection": out.get("detection", {}),
+            "ai_confidence": out["ai_confidence"],
             "metadata": metadata, "assessment": assess(out)}
 
 

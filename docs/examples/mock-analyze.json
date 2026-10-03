@@ -4,18 +4,23 @@
    "value": "esp",
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "ike_version": {
    "value": "ikev2",
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "mode": {
    "value": "tunnel",
    "source": "model",
    "confidence": 0.99,
+   "status": "INFERRED",
    "detail": {
     "header_parse": "n/a",
     "reason": "ESP payload encrypted: inner IP header and next-header are not visible on the wire",
@@ -24,55 +29,199 @@
      "confidence": 0.99
     },
     "decided_by": "size-overhead-model"
-   }
+   },
+   "evidence": null
   },
   "enc_alg": {
    "value": "aes-128-cbc",
-   "source": "parsed",
-   "confidence": 1.0,
-   "detail": null
+   "source": "model",
+   "confidence": 0.93,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
   },
   "enc_key_len": {
    "value": 128,
-   "source": "parsed",
-   "confidence": 1.0,
-   "detail": null
+   "source": "model",
+   "confidence": 0.93,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
   },
   "auth_alg": {
    "value": "hmac-sha256",
-   "source": "parsed",
-   "confidence": 1.0,
-   "detail": null
+   "source": "model",
+   "confidence": 0.94,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
   },
   "dh_group": {
-   "value": 14,
-   "source": "parsed",
-   "confidence": 1.0,
-   "detail": null
+   "value": "unknown",
+   "source": "none",
+   "confidence": 0.0,
+   "status": "NOT_OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "pfs": {
    "value": "unknown",
    "source": "model",
    "confidence": 0.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "ip_version": {
    "value": 4,
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "traffic_type": {
    "value": "voip",
    "source": "model",
    "confidence": 0.97,
-   "detail": null
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
   },
   "nat_t": {
    "value": false,
    "source": "parsed",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  }
+ },
+ "ike_sa": {
+  "version": {
+   "value": "ikev2",
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "enc_alg": {
+   "value": "aes-128-cbc",
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "enc_key_len": {
+   "value": 128,
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "auth_alg": {
+   "value": "hmac-sha256",
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "prf": {
+   "value": "hmac-sha256",
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "dh_group": {
+   "value": 14,
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  }
+ },
+ "child_sa": {
+  "proto": {
+   "value": "esp",
+   "source": "parsed",
+   "confidence": 1.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "mode": {
+   "value": "tunnel",
+   "source": "model",
+   "confidence": 0.99,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
+  },
+  "enc_alg": {
+   "value": "aes-128-cbc",
+   "source": "model",
+   "confidence": 0.93,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
+  },
+  "enc_key_len": {
+   "value": 128,
+   "source": "model",
+   "confidence": 0.93,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
+  },
+  "auth_alg": {
+   "value": "hmac-sha256",
+   "source": "model",
+   "confidence": 0.94,
+   "status": "INFERRED",
+   "detail": null,
+   "evidence": null
+  },
+  "pfs": {
+   "value": "unknown",
+   "source": "model",
+   "confidence": 0.0,
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "replay": {
+   "value": "unknown",
+   "source": "none",
+   "confidence": 0.0,
+   "status": "NOT_OBSERVED",
+   "detail": null,
+   "evidence": null
+  },
+  "lifetime": {
+   "value": "unknown",
+   "source": "none",
+   "confidence": 0.0,
+   "status": "NOT_OBSERVED",
+   "detail": null,
+   "evidence": null
+  }
+ },
+ "detection": {
+  "ipsec_detected": true,
+  "source": "measured",
+  "confidence": 1.0,
+  "evidence": {
+   "n_packets": 407,
+   "n_esp": 399,
+   "n_ah": 0,
+   "n_ike": 6
   }
  },
  "ai_confidence": 0.91,
@@ -81,60 +230,59 @@
    "value": 8.34,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "n_packets": {
    "value": 407,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "packet_rate": {
    "value": 48.8,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "mean_bytes": {
    "value": 251.3,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   },
   "direction_ratio": {
    "value": 0.99,
    "source": "measured",
    "confidence": 1.0,
-   "detail": null
+   "status": "OBSERVED",
+   "detail": null,
+   "evidence": null
   }
  },
  "assessment": {
-  "security_score": 73,
-  "risk_score": 27,
-  "risk_level": "medium",
-  "findings": [
-   {
-    "id": "unknown-lifetime",
-    "severity": "medium",
-    "likelihood": 2,
-    "impact": 3,
-    "text": "SA lifetime unknown: assuming weak.",
-    "solution": "Provide rekey intervals for scoring."
-   }
-  ],
-  "threat_matrix": [
-   {
-    "id": "unknown-lifetime",
-    "likelihood": 2,
-    "impact": 3,
-    "risk": 6
-   }
-  ],
+  "posture_score": 89,
+  "coverage": 0.65,
+  "score_status": "PUBLISHED",
+  "security_score": 89,
+  "risk_score": 11,
+  "risk_level": "low",
+  "rule_version": "1.1.0",
+  "controls": [],
+  "findings": [],
+  "threat_matrix": [],
   "breakdown": {
    "cipher": 20,
-   "dh": 15,
+   "dh": 0,
    "integrity": 13,
-   "pfs": 10,
+   "pfs": 0,
    "lifetime": 0,
    "replay": 0,
    "ike": 10,

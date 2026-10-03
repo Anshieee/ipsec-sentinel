@@ -20,9 +20,10 @@ app.add_middleware(
 )
 
 
-def _f(value, source="parsed", confidence=1.0, detail=None):
+def _f(value, source="parsed", confidence=1.0, detail=None,
+       status="OBSERVED"):
     return {"value": value, "source": source, "confidence": confidence,
-            "detail": detail}
+            "status": status, "detail": detail, "evidence": None}
 
 
 SAMPLE = {
@@ -34,16 +35,38 @@ SAMPLE = {
             "reason": "ESP payload encrypted: inner IP header and "
                       "next-header are not visible on the wire",
             "size_signal": {"value": "tunnel", "confidence": 0.99},
-            "decided_by": "size-overhead-model"}),
+            "decided_by": "size-overhead-model"}, "INFERRED"),
+        "enc_alg": _f("aes-128-cbc", "model", 0.93, None, "INFERRED"),
+        "enc_key_len": _f(128, "model", 0.93, None, "INFERRED"),
+        "auth_alg": _f("hmac-sha256", "model", 0.94, None, "INFERRED"),
+        "dh_group": _f("unknown", "none", 0.0, None, "NOT_OBSERVED"),
+        "pfs": _f("unknown", "model", 0.0),
+        "ip_version": _f(4),
+        "traffic_type": _f("voip", "model", 0.97, None, "INFERRED"),
+        "nat_t": _f(False),
+    },
+    "ike_sa": {
+        "version": _f("ikev2"),
         "enc_alg": _f("aes-128-cbc"),
         "enc_key_len": _f(128),
         "auth_alg": _f("hmac-sha256"),
+        "prf": _f("hmac-sha256"),
         "dh_group": _f(14),
-        "pfs": _f("unknown", "model", 0.0),
-        "ip_version": _f(4),
-        "traffic_type": _f("voip", "model", 0.97),
-        "nat_t": _f(False),
     },
+    "child_sa": {
+        "proto": _f("esp"),
+        "mode": _f("tunnel", "model", 0.99, None, "INFERRED"),
+        "enc_alg": _f("aes-128-cbc", "model", 0.93, None, "INFERRED"),
+        "enc_key_len": _f(128, "model", 0.93, None, "INFERRED"),
+        "auth_alg": _f("hmac-sha256", "model", 0.94, None, "INFERRED"),
+        "pfs": _f("unknown", "model", 0.0),
+        "replay": _f("unknown", "none", 0.0, None, "NOT_OBSERVED"),
+        "lifetime": _f("unknown", "none", 0.0, None, "NOT_OBSERVED"),
+    },
+    "detection": {"ipsec_detected": True, "source": "measured",
+                  "confidence": 1.0,
+                  "evidence": {"n_packets": 407, "n_esp": 399, "n_ah": 0,
+                               "n_ike": 6}},
     "ai_confidence": 0.91,
     "metadata": {
         "duration_s": _f(8.34, "measured"),
@@ -53,16 +76,17 @@ SAMPLE = {
         "direction_ratio": _f(0.99, "measured"),
     },
     "assessment": {
-        "security_score": 73,
-        "risk_score": 27,
-        "risk_level": "medium",
-        "findings": [{"id": "unknown-lifetime", "severity": "medium",
-                      "likelihood": 2, "impact": 3,
-                      "text": "SA lifetime unknown: assuming weak.",
-                      "solution": "Provide rekey intervals for scoring."}],
-        "threat_matrix": [{"id": "unknown-lifetime", "likelihood": 2,
-                           "impact": 3, "risk": 6}],
-        "breakdown": {"cipher": 20, "dh": 15, "integrity": 13, "pfs": 10,
+        "posture_score": 89,
+        "coverage": 0.65,
+        "score_status": "PUBLISHED",
+        "security_score": 89,
+        "risk_score": 11,
+        "risk_level": "low",
+        "rule_version": "1.1.0",
+        "controls": [],
+        "findings": [],
+        "threat_matrix": [],
+        "breakdown": {"cipher": 20, "dh": 0, "integrity": 13, "pfs": 0,
                       "lifetime": 0, "replay": 0, "ike": 10, "mode": 5},
     },
 }
@@ -72,11 +96,16 @@ class FieldResult(BaseModel):
     value: object
     source: str
     confidence: float
+    status: str = "OBSERVED"
     detail: dict[str, object] | None = None
+    evidence: dict[str, object] | None = None
 
 
 class AnalyzeResponse(BaseModel):
     fields: dict[str, FieldResult]
+    ike_sa: dict[str, FieldResult]
+    child_sa: dict[str, FieldResult]
+    detection: dict
     ai_confidence: float
     metadata: dict[str, FieldResult]
     assessment: dict

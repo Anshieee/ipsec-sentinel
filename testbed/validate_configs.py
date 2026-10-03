@@ -371,6 +371,8 @@ def phase_schema() -> None:
         "variant": "plain", "ipsec_protocol": "none", "ike_version": "none",
         "mode": "none", "encryption": "none", "key_length_bits": 0,
         "auth": "none", "aead": False, "dh_group": 0, "pfs": False,
+        "ike_encryption": "none", "ike_key_length_bits": 0,
+        "ike_auth": "none", "ike_dh_group": 0,
         "esn": False, "replay_window": 0, "nat_t": False,
         "ike_rekey_s": 0, "child_rekey_s": 0, "ip_version": 4,
         "traffic_type": "icmp", "source": "synthetic", "run_id": "r1",

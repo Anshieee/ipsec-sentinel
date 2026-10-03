@@ -1,7 +1,14 @@
-"""Single-pcap analysis: parsed fields + model fills (M3 guardrail 2).
+"""Single-pcap analysis: parsed SA objects + model fills (M3 guardrail 2).
 
-`analyze(pcap_path, models_dir)` -> {field: {value, source, confidence}}
-plus `ai_confidence` (mean field confidence, unknown counts as 0).
+`analyze(pcap_path, models_dir)` -> flat compat fields (each with
+value/source/confidence/status) plus `ike_sa` / `child_sa` objects,
+`detection`, `ai_confidence` and `metadata`.
+
+Protocol boundary: IKE_SA_INIT describes the IKE SA only. Child crypto
+(enc/auth/keylen) is predicted from the ESP-only feature view (IKE
+proposal bytes excluded, so mirrored training suites cannot teach the
+model to copy IKE -> child); results are labeled INFERRED (model),
+never parsed. With zero packets, no inference runs at all.
 """
 from __future__ import annotations
 
@@ -13,17 +20,29 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "engine" / "features"))
 sys.path.insert(0, str(ROOT / "engine" / "classifier"))
 from extract import extract  # noqa: E402
-from parse import parse_fields  # noqa: E402
-from model import UNKNOWN_THRESHOLD  # noqa: E402
+from parse import parse_fields, NOT_OBSERVED, NOT_APPLICABLE, UNKNOWN  # noqa: E402
+from model import UNKNOWN_THRESHOLD, esp_only_keys  # noqa: E402
 
 SCORED = ["ipsec_proto", "ike_version", "mode", "enc_alg", "enc_key_len",
           "auth_alg", "dh_group", "pfs", "ip_version", "traffic_type",
           "nat_t"]
 
+# Child-suite fields: IKE proposal bytes must not leak into them.
+CHILD_ESP_VIEW = ("enc_alg", "enc_key_len", "auth_alg")
+
+REQUIRED_MODELS = ("vectorizer.joblib", "vectorizer_esp.joblib",
+                   "classes.json")
+
 
 def _load_models(models_dir: Path):
     import joblib
+    missing = [m for m in REQUIRED_MODELS if not (models_dir / m).exists()]
+    if missing:
+        raise FileNotFoundError(
+            f"models missing ({', '.join(missing)}): run "
+            f"`ipsec-analyze train` first.")
     vec = joblib.load(models_dir / "vectorizer.joblib")
+    vec_esp = joblib.load(models_dir / "vectorizer_esp.joblib")
     classes = json.loads((models_dir / "classes.json").read_text())
     clfs = {}
     for f in ("traffic_type", "mode", "enc_alg", "enc_key_len", "auth_alg",
@@ -31,82 +50,188 @@ def _load_models(models_dir: Path):
         p = models_dir / f"{f}.joblib"
         if p.exists():
             clfs[f] = joblib.load(p)
-    return vec, classes, clfs
+    return vec, vec_esp, classes, clfs
 
 
-def _model_predict(vec, classes, clfs, field, feats):
+def _model_predict(vec, classes, clfs, field, feats, status_ok="INFERRED"):
     X = vec.transform([feats])
     proba = clfs[field].predict_proba(X)[0]
     j = int(proba.argmax())
     conf = float(proba[j])
     val = json.loads(classes[field][j])
     if conf < UNKNOWN_THRESHOLD:
-        return {"value": "unknown", "source": "model", "confidence": conf}
-    return {"value": val, "source": "model", "confidence": conf}
+        return {"value": "unknown", "status": UNKNOWN, "source": "model",
+                "confidence": conf}
+    return {"value": val, "status": status_ok, "source": "model",
+            "confidence": conf}
+
+
+def _esp_view(feats: dict) -> dict:
+    keep = set(esp_only_keys(list(feats.keys())))
+    return {k: v for k, v in feats.items() if k in keep}
 
 
 def analyze(pcap_path: str | Path, models_dir: str | Path):
     mdir = Path(models_dir)
-    vec, classes, clfs = _load_models(mdir)
-    feats = extract(str(pcap_path))
+    vec, vec_esp, classes, clfs = _load_models(mdir)
+    try:
+        feats = extract(str(pcap_path))
+    except Exception as e:
+        raise ValueError(f"unreadable pcap {pcap_path}: {e}") from e
+    n_packets = feats.get("n_packets", 0)
     out = parse_fields(feats)
-    # mode basis (M4 addition 1): always report the header-structure
-    # verdict alongside the size-overhead model signal, and which decided.
-    size_sig = _model_predict(vec, classes, clfs, "mode", feats)
-    size_info = {"value": size_sig["value"],
-                 "confidence": size_sig["confidence"]}
-    if out.get("mode") is None:
-        out["mode"] = dict(size_sig)
-        out["mode"]["detail"] = {
+    ike_sa, child_sa = out["ike_sa"], out["child_sa"]
+
+    detected = bool(feats.get("has_esp") or feats.get("has_ah"))
+    detection = {"ipsec_detected": detected, "source": "measured",
+                 "confidence": 1.0,
+                 "evidence": {"n_packets": n_packets,
+                              "n_esp": feats.get("n_esp", 0),
+                              "n_ah": feats.get("n_ah", 0),
+                              "n_ike": feats.get("n_ike", 0)}}
+
+    can_infer = feats.get("n_ip", n_packets) > 0
+    # mode basis: always report the header-structure verdict alongside
+    # the size-overhead model signal, and which decided.
+    if child_sa.get("mode") is None and can_infer:
+        size_sig = _model_predict(vec, classes, clfs, "mode", feats)
+        size_info = {"value": size_sig["value"],
+                     "confidence": size_sig["confidence"]}
+        child_sa["mode"] = dict(size_sig)
+        child_sa["mode"]["evidence"] = {
             "header_parse": "n/a",
             "reason": "ESP payload encrypted: inner IP header and "
                       "next-header are not visible on the wire",
             "size_signal": size_info,
             "decided_by": "size-overhead-model"}
+    elif child_sa.get("mode") is not None and \
+            child_sa["mode"].get("status") == "OBSERVED":
+        ev = dict(child_sa["mode"].get("evidence", {}))
+        ev["decided_by"] = "ah-next-header"
+        child_sa["mode"]["evidence"] = ev
+    if child_sa.get("mode") is None and not can_infer:
+        child_sa["mode"] = {"value": "unknown", "status": NOT_OBSERVED,
+                            "source": "none", "confidence": 0.0,
+                            "evidence": None}
+    if child_sa.get("mode") is not None and \
+            child_sa["mode"].get("value") == "none":
+        ev = dict(child_sa["mode"].get("evidence") or {})
+        ev.setdefault("decided_by", "no-ipsec")
+        child_sa["mode"]["evidence"] = ev
+
+    # traffic_type is always inferred (payload encrypted).
+    if can_infer:
+        out["traffic_type"] = _model_predict(vec, classes, clfs,
+                                             "traffic_type", feats)
     else:
-        detail = dict(out["mode"].get("detail", {}))
-        detail["size_signal"] = size_info
-        if out["mode"]["value"] == "none":
-            detail["decided_by"] = "no-ipsec"
+        out["traffic_type"] = {"value": "unknown", "status": NOT_OBSERVED,
+                               "source": "none", "confidence": 0.0,
+                               "evidence": None}
+    # Child crypto: ESP-only feature view, never IKE bytes.
+    esp_feats = _esp_view(feats)
+    for k in CHILD_ESP_VIEW:
+        if child_sa.get(k) is None:
+            if can_infer and k in clfs:
+                child_sa[k] = _model_predict(vec_esp, classes, clfs, k,
+                                             esp_feats)
+            else:
+                child_sa[k] = {"value": "unknown", "status": NOT_OBSERVED,
+                               "source": "none", "confidence": 0.0,
+                               "evidence": None}
+    # PFS-from-length needs an attributable rekey SK on the wire: without
+    # one there is no evidence at all -> unknown (never a coin-flip).
+    # Three or more concurrent SPIs (overlapping lifetimes) with a single
+    # rekey cannot be attributed to one SA pair -> unknown with a note.
+    # (Two SPIs with full overlap are normal: one SPI per direction of a
+    # single bidirectional SA pair, as in real IPsec and the generator.)
+    if child_sa.get("pfs") is None:
+        n_sa_spis = feats.get("n_spis", 0) + feats.get("n_ah_spis", 0)
+        if feats.get("rk_sk_req_len", 0) > 0 and "pfs" in clfs and can_infer:
+            if feats.get("spi_overlap", 0) and n_sa_spis >= 3:
+                child_sa["pfs"] = {
+                    "value": "unknown", "status": UNKNOWN,
+                    "source": "none", "confidence": 0.0,
+                    "evidence": {"note": "rekey-spi-ambiguous",
+                                 "n_spis": feats["n_spis"],
+                                 "resolve_by": "recapture with a single SA "
+                                 "per capture, or correlate rekey timing "
+                                 "with SPI handoff"}}
+            else:
+                child_sa["pfs"] = _model_predict(vec, classes, clfs, "pfs",
+                                                 feats)
         else:
-            detail["decided_by"] = "ah-next-header"
-        out["mode"]["detail"] = detail
-    # model fills (None = not visible on the wire)
-    if out.get("mode") is None:
-        out["mode"] = _model_predict(vec, classes, clfs, "mode", feats)
-    out["traffic_type"] = _model_predict(vec, classes, clfs, "traffic_type",
-                                         feats)
-    for k in ("enc_alg", "enc_key_len", "auth_alg"):
-        if out.get(k) is None:
-            out[k] = _model_predict(vec, classes, clfs, k, feats)
-    # PFS-from-length needs a rekey SK on the wire; without one there is
-    # no evidence at all -> unknown (never a coin-flip). See also
-    # evaluate.predict_row, which mirrors this rule for fold models.
-    if out.get("pfs") is None:
-        if feats.get("rk_sk_req_len", 0) > 0 and "pfs" in clfs:
-            out["pfs"] = _model_predict(vec, classes, clfs, "pfs", feats)
+            child_sa["pfs"] = {"value": "unknown", "status": NOT_OBSERVED,
+                               "source": "none", "confidence": 0.0,
+                               "evidence": {"note": "no-rekey-on-wire",
+                                            "resolve_by": "capture a "
+                                            "CREATE_CHILD_SA rekey exchange"}}
+    if child_sa.get("auth_alg") is None:
+        child_sa["auth_alg"] = {"value": "unknown", "status": NOT_OBSERVED,
+                                "source": "none", "confidence": 0.0,
+                                "evidence": None}
+
+    # ---- flat backward-compatible fields, derived from the objects ----
+    def _flat(obj, model_inferred_ok=True):
+        d = {"value": obj["value"], "source": obj["source"],
+             "confidence": obj["confidence"], "status": obj["status"]}
+        if obj.get("evidence") is not None and isinstance(
+                obj.get("evidence"), dict):
+            d["detail"] = obj["evidence"]
         else:
-            out["pfs"] = {"value": "unknown", "source": "model",
-                          "confidence": 0.0}
-    for k in ("dh_group",):
-        if out.get(k) is None:
-            out[k] = {"value": "unknown", "source": "model",
-                      "confidence": 0.0}
-    confs = [(out[f]["confidence"] if out[f]["value"] != "unknown" else 0.0)
-             for f in SCORED]
+            d["detail"] = None
+        return d
+
+    flat = {}
+    flat["ipsec_proto"] = _flat(child_sa["proto"])
+    flat["ike_version"] = _flat(ike_sa["version"])
+    flat["mode"] = _flat(child_sa["mode"])
+    for k in CHILD_ESP_VIEW:
+        flat[k] = _flat(child_sa[k])
+    # dh_group: the CHILD PFS group is never on the wire (rekeys are
+    # encrypted); the IKE DH group describes the IKE SA only, so the flat
+    # child-scoped field is honestly unknown wherever only IKE evidence
+    # exists (i.e. every live capture).
+    if ike_sa.get("dh_group", {}).get("status") == "OBSERVED":
+        flat["dh_group"] = {
+            "value": "unknown", "source": "none", "confidence": 0.0,
+            "status": NOT_OBSERVED,
+            "detail": {"note": "ike-dh-describes-ike-sa-only"},
+            "evidence": None}
+    else:
+        st = ike_sa.get("dh_group", {}).get("status", NOT_OBSERVED)
+        flat["dh_group"] = {"value": "unknown", "source": "none",
+                            "confidence": 0.0, "status": st, "detail": None,
+                            "evidence": None}
+    flat["pfs"] = _flat(child_sa["pfs"])
+    flat["ip_version"] = _flat(out["ip_version"])
+    flat["traffic_type"] = _flat(out["traffic_type"])
+    flat["nat_t"] = _flat(out["nat_t"])
+    # keep prf visible (IKE-scoped, not scored)
+    flat["prf"] = _flat(ike_sa.get(
+        "prf", {"value": "unknown", "source": "none", "confidence": 0.0,
+                "status": NOT_OBSERVED}))
+
+    confs = [(flat[f]["confidence"] if flat[f]["value"] != "unknown" else 0.0)
+              for f in SCORED]
+    out = {**flat, "ike_sa": ike_sa, "child_sa": child_sa,
+           "detection": detection}
     out["ai_confidence"] = sum(confs) / len(confs)
-    # Metadata inference (spec M3 line 67): what a passive observer learns
-    # from ESP metadata alone. Direct measurements (source: measured).
+    # Metadata inference: direct measurements (source: measured).
     dur = feats.get("duration", 0.0) or 0.0
     n = feats.get("n_packets", 0)
     out["metadata"] = {
-        "duration_s": {"value": dur, "source": "measured", "confidence": 1.0},
-        "n_packets": {"value": n, "source": "measured", "confidence": 1.0},
+        "duration_s": {"value": dur, "source": "measured", "confidence": 1.0,
+                       "status": "OBSERVED"},
+        "n_packets": {"value": n, "source": "measured", "confidence": 1.0,
+                      "status": "OBSERVED"},
         "packet_rate": {"value": (n / dur if dur > 0 else 0.0),
-                        "source": "measured", "confidence": 1.0},
+                        "source": "measured", "confidence": 1.0,
+                        "status": "OBSERVED"},
         "mean_bytes": {"value": feats.get("pktlen_mean", 0.0),
-                       "source": "measured", "confidence": 1.0},
+                       "source": "measured", "confidence": 1.0,
+                       "status": "OBSERVED"},
         "direction_ratio": {"value": feats.get("flow_dom_ratio", 0.0),
-                            "source": "measured", "confidence": 1.0},
+                            "source": "measured", "confidence": 1.0,
+                            "status": "OBSERVED"},
     }
     return out

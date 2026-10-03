@@ -35,7 +35,7 @@
    New SPIs appear (seq restarts per SPI); the validator requires
    per-SPI contiguity and flags SPI-count anomalies.
 10. **Why RandomForest, not deep learning?**
-    426 pcaps, ~100 tabular features: RF is calibrated-enough, fast,
+    462 pcaps, ~100 tabular features: RF is calibrated-enough, fast,
     deterministic (seed 7), and importances are inspectable. xgboost/
     lightgbm are installed for follow-ups.
 11. **Replay-window/ESN/lifetimes: why not predicted?**
@@ -54,12 +54,14 @@
     Parsed = 1.0 by construction; model = RF `predict_proba` max,
     uncalibrated — treat as rank-ordering, not probability. `unknown`
     below 0.5. Mock mode returns fixed samples for UI work.
-16. **Why does a live v1 analysis score 73 while the rubric oracle gives 88?**
-    The oracle is ideal-visibility scoring from labels (every field
-    known, v1 = 88). Live analysis of a short capture cannot observe SA
-    lifetimes or replay windows, so both score 0 with explicit
-    `unknown-lifetime` / `unknown-replay` findings: −10 lifetimes, −5
-    replay → 73. (v12 loses 10 more for PFS-unknown: QM encrypted.)
-    Unknowns are penalized conservatively by design, and
-    `docs/expected-live-scores.md` pins every sample. The rubric weights
-    never change to make numbers agree.
+16. **Why does a live v1 analysis report posture 89 @ 0.65 while the rubric oracle gives 88?**
+    Posture vs evidence coverage are separate numbers. The oracle is
+    ideal-visibility scoring from labels (every field known: DH 15,
+    lifetimes 10, replay 5 → v1 = 88). A short live capture cannot
+    observe the CHILD PFS group (rekeys encrypted), SA lifetimes, or
+    receiver replay enforcement, so those three controls are UNKNOWN:
+    they leave both the numerator and the denominator (58/65 → 89) and
+    lower coverage to 0.65. An unobservable field lowers coverage, not
+    posture — v1.1 removed the old "assuming weak" penalties entirely.
+    `docs/expected-live-scores.md` pins every sample; weights never
+    change to make numbers agree.

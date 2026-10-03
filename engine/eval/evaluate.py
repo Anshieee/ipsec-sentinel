@@ -32,12 +32,15 @@ from model import (build_vectorizer, train_field, esp_only_keys,  # noqa: E402
 
 SCORED = ["ipsec_proto", "ike_version", "mode", "enc_alg", "enc_key_len",
           "auth_alg", "dh_group", "pfs", "ip_version", "traffic_type",
-          "nat_t"]
+          "nat_t", "ike_enc_alg", "ike_dh_group"]
 LABEL_KEY = {"traffic_type": "traffic_type", "mode": "mode",
              "enc_alg": "encryption", "enc_key_len": "key_length_bits",
              "auth_alg": "auth", "dh_group": "dh_group",
              "ipsec_proto": "ipsec_protocol", "ike_version": "ike_version",
-             "pfs": "pfs", "ip_version": "ip_version", "nat_t": "nat_t"}
+             "pfs": "pfs", "ip_version": "ip_version", "nat_t": "nat_t",
+             "ike_enc_alg": "ike_encryption", "ike_dh_group": "ike_dh_group"}
+# Child-suite fields use the ESP-only feature view (production parity).
+ESP_VIEW_FIELDS = ("enc_alg", "enc_key_len", "auth_alg")
 
 
 def load_split(source: str):
@@ -62,39 +65,70 @@ def feats_cached(rows, cache_path: Path):
     return features_all(rows, cache_path)
 
 
-def predict_row(feats, parsed, clfs, vec, classes, esp_only=False):
-    """Full field predictions mirroring predict.analyze (fold models)."""
-    out = dict(parsed)
-    for field in MAIN_MODEL_FIELDS:
-        if field == "traffic_type":
-            need = True
-        elif field == "mode":
-            need = out.get("mode") is None
-        elif field == "pfs":
-            # mirrors predict.analyze: length evidence required
-            need = out.get("pfs") is None and feats.get("rk_sk_req_len", 0) > 0
+def _fold_predict(vec, classes, clfs, field, feats):
+    X = vec.transform([feats])
+    proba = clfs[field].predict_proba(X)[0]
+    j = int(proba.argmax())
+    conf = float(proba[j])
+    val = json.loads(classes[field][j])
+    return {"value": val if conf >= UNKNOWN_THRESHOLD else "unknown",
+            "source": "model", "confidence": conf}
+
+
+def predict_row(feats, parsed, clfs, vec, vec_esp, classes, esp_only=False):
+    """Flat field predictions mirroring predict.analyze (fold models).
+
+    parsed is the new SA split; child crypto uses the ESP-only view.
+    ike_enc_alg / ike_dh_group score the IKE SA parse (not the child).
+    """
+    ike_sa, child_sa = parsed["ike_sa"], parsed["child_sa"]
+    out = {}
+    out["ipsec_proto"] = {"value": child_sa["proto"]["value"]}
+    out["ike_version"] = {"value": ike_sa["version"]["value"]}
+    out["ike_enc_alg"] = {"value": ike_sa["enc_alg"]["value"]}
+    out["ike_dh_group"] = {"value": ike_sa["dh_group"]["value"]}
+    out["ip_version"] = {"value": parsed["ip_version"]["value"]}
+    out["nat_t"] = {"value": parsed["nat_t"]["value"]}
+    # mode: structural for AH, else size-overhead model (full view).
+    if child_sa.get("mode") is None:
+        if "mode" in clfs:
+            out["mode"] = _fold_predict(vec, classes, clfs, "mode", feats)
         else:
-            need = out.get(field) is None
-        if not need or field not in clfs:
-            continue
-        X = vec.transform([feats])
-        proba = clfs[field].predict_proba(X)[0]
-        j = int(proba.argmax())
-        conf = float(proba[j])
-        val = json.loads(classes[field][j])
-        out[field] = {"value": val if conf >= UNKNOWN_THRESHOLD else "unknown",
-                      "source": "model", "confidence": conf}
-    for k in ("dh_group", "pfs"):
-        if out.get(k) is None:
-            if esp_only and k == "dh_group" and "dh_group" in clfs:
-                X = vec.transform([feats])
-                proba = clfs["dh_group"].predict_proba(X)[0]
-                j = int(proba.argmax())
-                out[k] = {"value": json.loads(classes["dh_group"][j]),
-                          "source": "model", "confidence": float(proba[j])}
+            out["mode"] = {"value": "unknown"}
+    else:
+        out["mode"] = {"value": child_sa["mode"]["value"]}
+    esp_feats = {k: v for k, v in feats.items()
+                 if k in esp_only_keys(list(feats.keys()))}
+    for field in ESP_VIEW_FIELDS:
+        if child_sa.get(field) is None:
+            if field in clfs:
+                out[field] = _fold_predict(vec_esp, classes, clfs, field,
+                                           esp_feats)
             else:
-                out[k] = {"value": "unknown", "source": "model",
-                          "confidence": 0.0}
+                out[field] = {"value": "unknown"}
+        else:
+            out[field] = {"value": child_sa[field]["value"]}
+    # PFS-from-length needs an attributable rekey SK (production parity:
+    # 3+ concurrent SPIs make a single rekey unattributable; a 2-SPI
+    # directional pair is normal and attributable).
+    if child_sa.get("pfs") is None:
+        n_sa = feats.get("n_spis", 0) + feats.get("n_ah_spis", 0)
+        ambiguous = feats.get("spi_overlap", 0) and n_sa >= 3
+        if feats.get("rk_sk_req_len", 0) > 0 and "pfs" in clfs \
+                and not ambiguous:
+            out["pfs"] = _fold_predict(vec, classes, clfs, "pfs", feats)
+        else:
+            out["pfs"] = {"value": "unknown"}
+    else:
+        out["pfs"] = {"value": child_sa["pfs"]["value"]}
+    # CHILD PFS group is never on the wire (rekeys encrypted): honestly
+    # unknown in every live prediction. The IKE group is scored above.
+    out["dh_group"] = {"value": "unknown"}
+    if "traffic_type" in clfs:
+        out["traffic_type"] = _fold_predict(vec, classes, clfs,
+                                            "traffic_type", feats)
+    else:
+        out["traffic_type"] = {"value": "unknown"}
     return out
 
 
@@ -199,13 +233,18 @@ def run_cv(rows, feats, labels, esp_only=False):
         tr = [rows[i] for i in tri]
         te = [rows[i] for i in tei]
         fields = MAIN_MODEL_FIELDS + (ABLATION_EXTRA_FIELDS if esp_only else [])
+        keep = esp_only_keys(sorted(feats[rows[0]["file"]].keys()))
+        tr_full = [feats[r["file"]] for r in tr]
+        tr_esp = [{k: feats[r["file"]][k] for k in keep} for r in tr]
         if esp_only:
-            keep = esp_only_keys(sorted(feats[rows[0]["file"]].keys()))
-            tr_dicts = [{k: feats[r["file"]][k] for k in keep} for r in tr]
-        else:
-            tr_dicts = [feats[r["file"]] for r in tr]
-        vec = build_vectorizer(tr_dicts)
-        Xtr = vec.transform(tr_dicts)
+            # ablation: drop every IKE-derived feature before parsing AND
+            # modeling, as if IKE packets were never captured.
+            tr_full = [{k: v for k, v in d.items() if k in keep}
+                       for d in tr_full]
+        vec = build_vectorizer(tr_full)
+        vec_esp = build_vectorizer(tr_esp)
+        Xtr = vec.transform(tr_full)
+        Xtr_esp = vec_esp.transform(tr_esp)
         clfs, classes = {}, {}
         for field in fields:
             y_raw = [labels[r["file"]][LABEL_KEY[field]] for r in tr]
@@ -213,19 +252,19 @@ def run_cv(rows, feats, labels, esp_only=False):
             le = LabelEncoder()
             y = le.fit_transform([json.dumps(v) for v in y_raw])
             classes[field] = list(le.classes_)
-            clfs[field] = train_field(Xtr, y)
+            if field in ESP_VIEW_FIELDS:
+                clfs[field] = train_field(Xtr_esp, y)
+            else:
+                clfs[field] = train_field(Xtr, y)
 
-        def predict_fn(fe, _file, _vec=vec, _clfs=clfs, _classes=classes,
-                       _esp=esp_only):
+        def predict_fn(fe, _file, _vec=vec, _vesp=vec_esp, _clfs=clfs,
+                       _classes=classes, _esp=esp_only):
             if _esp:
-                fe = blind_ike(fe)
                 keep = esp_only_keys(list(fe.keys()))
                 fe = {k: v for k, v in fe.items() if k in keep}
             parsed = parse_fields(fe)
-            if _esp:
-                return predict_row(fe, parsed, _clfs, _vec, _classes,
-                                   esp_only=True)
-            return predict_row(fe, parsed, _clfs, _vec, _classes)
+            return predict_row(fe, parsed, _clfs, _vec, _vesp, _classes,
+                               esp_only=_esp)
         fold_scored = score_rows(te, feats, labels, predict_fn)
         for f in SCORED:
             agg[f]["y_true"].extend(fold_scored[f]["y_true"])
@@ -237,13 +276,14 @@ def run_cv(rows, feats, labels, esp_only=False):
 def run_synth2real(synth_rows, real_rows, feats, labels, models_dir: Path):
     import joblib
     vec = joblib.load(models_dir / "vectorizer.joblib")
+    vec_esp = joblib.load(models_dir / "vectorizer_esp.joblib")
     classes = json.loads((models_dir / "classes.json").read_text())
     clfs = {f: joblib.load(models_dir / f"{f}.joblib")
             for f in ("traffic_type", "mode", "enc_alg", "enc_key_len",
                       "auth_alg", "dh_group", "pfs")}
 
     def predict_fn(fe, _file):
-        return predict_row(fe, parse_fields(fe), clfs, vec, classes)
+        return predict_row(fe, parse_fields(fe), clfs, vec, vec_esp, classes)
     return score_rows(real_rows, feats, labels, predict_fn)
 
 
@@ -261,8 +301,12 @@ def run_real_holdout(synth_rows, real_rows, feats, labels):
                                      if real_run_of(r) == "r1"]
     test_rows = [r for r in real_rows if real_run_of(r) != "r1"]
     tr_dicts = [feats[r["file"]] for r in train_rows]
+    keep = esp_only_keys(sorted(feats[train_rows[0]["file"]].keys()))
+    tr_esp = [{k: feats[r["file"]][k] for k in keep} for r in train_rows]
     vec = build_vectorizer(tr_dicts)
+    vec_esp = build_vectorizer(tr_esp)
     Xtr = vec.transform(tr_dicts)
+    Xtr_esp = vec_esp.transform(tr_esp)
     fields = MAIN_MODEL_FIELDS + ["dh_group"]
     clfs, classes = {}, {}
     for field in fields:
@@ -271,10 +315,13 @@ def run_real_holdout(synth_rows, real_rows, feats, labels):
         le = LabelEncoder()
         y = le.fit_transform([json.dumps(v) for v in y_raw])
         classes[field] = list(le.classes_)
-        clfs[field] = train_field(Xtr, y)
+        if field in ESP_VIEW_FIELDS:
+            clfs[field] = train_field(Xtr_esp, y)
+        else:
+            clfs[field] = train_field(Xtr, y)
 
     def predict_fn(fe, _file):
-        return predict_row(fe, parse_fields(fe), clfs, vec, classes)
+        return predict_row(fe, parse_fields(fe), clfs, vec, vec_esp, classes)
     scored = score_rows(test_rows, feats, labels, predict_fn)
     info = {"n_train": len(train_rows), "n_test": len(test_rows),
             "test_runs": sorted({real_run_of(r) for r in test_rows}),
@@ -331,15 +378,18 @@ def main() -> int:
     plots += plot_cm(hold, {"traffic_type": 1, "mode": 1},
                      ROOT / "docs" / "plots", "hold")
     synth_vars = sorted({r["variant"] for r in synth})
+    n_groups = len(set(r["variant"] + "/" + labels[r["file"]]["run_id"]
+                       for r in synth))
     sections = [
-        ("Protocol", "Grouped 5-fold CV over 360 synthetic pcaps "
-         f"({len(set(r['variant'] + '/' + labels[r['file']]['run_id'] for r in synth))} "
-         "variant-run groups); synth->real trains on all synthetic, tests the "
-         "real pcaps; real holdout trains synthetic + real r1 runs and tests "
-         "real r2/r3 runs (runs kept apart); ESP-only ablation drops every "
-         "IKE-derived feature. Unknown predictions count as errors."),
-        ("Sample counts", f"CV: 360 synthetic (18 variants + plain x 3 runs "
-         f"x 6 types). synth->real: train 360 synthetic, test {len(real)} real. "
+        ("Protocol", f"Grouped 5-fold CV over {len(synth)} synthetic pcaps "
+         f"({n_groups} variant-run groups); synth->real trains on all "
+         "synthetic, tests the real pcaps (test 66 real); real holdout "
+         "trains synthetic + real r1 runs and tests real r2/r3 runs (runs "
+         "kept apart); ESP-only ablation drops every IKE-derived feature. "
+         "Unknown predictions count as errors."),
+        ("Sample counts", f"CV: {len(synth)} synthetic (20 variants + plain "
+         f"x 3 runs x 6 types). synth->real: train {len(synth)} synthetic, "
+         f"test {len(real)} real. "
          f"holdout: train {hold_info['n_train']}, test {hold_info['n_test']}."),
         ("Grouped CV (full features)", table_md(metrics["cv_full"])),
         ("ESP-only ablation CV", table_md(metrics["cv_esp_only"])),
@@ -348,41 +398,43 @@ def main() -> int:
          f"r2/r3; n_train={hold_info['n_train']}, n_test={hold_info['n_test']}, "
          f"runs {hold_info['test_runs']}, traffic {hold_info['test_traffic']})",
          table_md(metrics["real_holdout"])),
-        ("Reading the numbers",
-         "- ~100%: deterministic wire parses (IKE proposal/KE, presence, "
-         "AH next-header). Expected: the values are sent in the clear. "
-         "Mode at ~100% is tunnel-overhead signal (inner IP header shifts "
-         "every ESP size by 20/40 B); it transfers to real captures, but "
-         "it depends on the traffic mix, not on variant identity (folds "
-         "never share a variant-run; features store no addresses).\n"
+        ("Reading the numbers (v1.1 boundary)",
+         "- ike_version / ike_enc_alg / ike_dh_group: the IKE SA parse, "
+         "still ~100% deterministic (proposal + KE travel in the clear). "
+         "These score the IKE SA only — they never fill child fields.\n"
+         "- enc_alg / enc_key_len / auth_alg (child suite): model-INFERRED "
+         "from the ESP-only feature view (IKE proposal bytes excluded, so "
+         "mirrored training suites cannot teach copy-IKE->child). Expect "
+         "below the old 1.0 (which came from reading the IKE proposal): "
+         "the tables above are the honest ESP-size signal, and the "
+         "mismatch variants (v19/v20) prove no inheritance.\n"
+         "- dh_group (CHILD PFS group): 0.0 by design — rekey content is "
+         "encrypted, so the child group is never on the wire in short "
+         "captures; every live prediction is honestly `unknown` (counted "
+         "wrong here). The IKE group is scored separately in "
+         "ike_dh_group. The old ablation's dh pockets (priors + "
+         "cipher correlation) are gone: no dh model runs in production.\n"
          "- Macro P/R/F1 average over TRUE label classes only; `unknown` "
          "predictions count as errors against their true class but are not "
          "scored as a class.\n"
          "- pfs: a length model over rekey SK blobs (KE inflates the "
-         "encrypted blob ~260 B CBC). Correct whenever a rekey is on the "
-         "wire — synthetic AND real (forced rekeys prove presence; sizes "
-         "transfer); `unknown` with no rekey (IKEv1 QM, quiet captures), "
+         "encrypted blob ~260 B CBC). Correct whenever an attributable "
+         "rekey is on the wire — synthetic AND real (forced rekeys prove "
+         "presence; sizes transfer); `unknown` with no rekey (IKEv1 QM, "
+         "quiet captures) or with concurrent SPIs (rekey unattributable), "
          "counted wrong, honestly. Never a confident error.\n"
-         "- The ESP-only ablation blinds ALL IKE-derived features before "
-         "both parsing and modeling (as if IKE packets were never "
-         "captured): dh_group there scores 0.82/0.67: majority prior 14 "
-         "(215/234) plus cipher-correlated pockets (dh19 17/18 via "
-         "GCM-transport, dh20 21/36 via AES-256) — correlation and priors, "
-         "not DH signal; dh5 0/18, dh2 6/18. "
-         "Expected: DH leaves no trace in ESP sizes/timing.\n"
-         "- traffic_type drops synth->real (0.52, 48% unknown) with ZERO "
-         "wrong guesses: voip 13/13, video/icmp 7/7, whatsapp 6/13, "
-         "email 1/13, web 0/13 — TCP abstains. Calibration works as "
-         "designed.\n"
+         "- traffic_type drops synth->real with ZERO wrong guesses on TCP "
+         "(abstains). Calibration works as designed; exact splits are in "
+         "the tables above.\n"
          "- Real data covers ONLY v1,v3,v5,v7,v12,v18 (66 pcaps incl. "
          "forced-rekey and extra-TCP runs): the synth->real and holdout "
-         "numbers say nothing about the other 12 variants; synthetic-only "
+         "numbers say nothing about the other 14 variants; synthetic-only "
          "and real-included numbers are reported in separate tables above.\n"
          "- What synthetic-only evaluation proves: the pipeline works on "
          "the synthetic distribution. What it does NOT prove: performance "
          "on other stacks, middlebox-mangled traffic, or longer captures "
-         "with rekeys. The 42 real pcaps are the only out-of-distribution "
-         "evidence and they cover 6 of 19 classes."),
+         "with rekeys. The 66 real pcaps are the only "
+         "out-of-distribution evidence and they cover 6 of 21 classes."),
     ]
     write_report(ROOT / "docs" / "model-evaluation.md", sections)
     print("plots:", len(plots))

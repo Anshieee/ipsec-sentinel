@@ -54,10 +54,10 @@ docker compose config -q                       # compose renders clean (in testb
 Executed and verified (M2):
 
 ```bash
-.venv/bin/python capture/synth/synth_pcap.py                # 360 synthetic pcaps + labels + manifest
-.venv/bin/python capture/synth/synth_pcap.py --ingest-real  # fold 66 real pcaps -> labels, rebuild manifest (426 rows)
+.venv/bin/python capture/synth/synth_pcap.py                # 396 synthetic pcaps + labels + manifest
+.venv/bin/python capture/synth/synth_pcap.py --ingest-real  # fold 66 real pcaps -> labels, rebuild manifest (462 rows)
 .venv/bin/python capture/validate_pcap.py --self-test       # 15/15 negative controls green, rc=0
-.venv/bin/python capture/validate_pcap.py                   # M2 gate: 426/426 rows valid=true, rc=0
+.venv/bin/python capture/validate_pcap.py                   # M2 gate: 462/462 rows valid=true, rc=0
 .venv/bin/python capture/audit_leakage.py                   # anti-leakage audit -> docs/anti-leakage-audit.md, rc=0
 ```
 

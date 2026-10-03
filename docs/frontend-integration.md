@@ -31,13 +31,13 @@ the backend contract does not move (only additive CORS origins changed).
 | 11 | `child.replayProtection`, `child.esn` | booleans | Not returned | Frontend: `false`, confidence 0, note "Not observed in short captures" |
 | 12 | `child.pfsGroup` | `number \| null` | dh only via label | Frontend: `dh_group` when pfs true else `null` |
 | 13 | `exchangeMode` | Main/Aggressive/v2 string | Not returned | Frontend: version-derived (`Main Mode` for IKEv1), inferred + note (our captures never use aggressive mode) |
-| 14 | CHILD cipher/integrity | separate params | Label describes CHILD; IKE mirrors it (matrix D8) | Frontend: same values as IKE suite (+note), except AH child (`None`/auth) |
+| 14 | CHILD cipher/integrity | separate params | Label describes CHILD; IKE suite is separate (`ike_*` labels; v19/v20 mismatch) — child crypto is INFERRED-or-unknown, never parsed from IKE | Frontend: read `child_sa` (was: same values as IKE suite); see `docs/api-contract.md` v1.1 change list |
 | 15 | `trafficClasses` (7 probs ≈ 1) | distribution | single label + confidence | Frontend: top-1 gets confidence, remainder split equally (max-entropy) + documented; `unknown`→`Other` |
 | 16 | `handshake`, `packets`, `sas`, `timeSeries`, `lengthHistogram`, `featureEvidence` | rich arrays | Not returned | Frontend: empty arrays; existing empty states render (verified visually) |
 | 17 | `summary.ikeHandshakes/espStreams/ahPackets` | counts | Presence only | Frontend: presence lower bounds (1/0), documented |
 | 18 | `flowStats` | 5 stats | meanLen + upDownRatio only | Frontend: those two real, rest 0, documented |
 | 19 | `riskScore` + bands | recomputed, bands 40/70 | `risk_score` + own buckets 25/50/75 | Frontend: gauge shows backend `risk_score`; band thresholds differ — backend `risk_level` displayed alongside (v1: 27 LOW-frontend vs medium-backend, labeled) |
-| 20 | Security 73/100 | no such field | `assessment.security_score` | Frontend: optional passthrough shown in Audit header (`backendAssessment`) |
+| 20 | Security 73/100 (v1.0 example) | posture + coverage + score_status (v1.1) | `assessment.posture_score` + `coverage` + `score_status` (WITHHELD → null score, FAILs still listed) | Frontend: gate headline on `score_status`; see `docs/api-contract.md` v1.1 change list |
 | 21 | Findings | ruleId/category/stride/title/evidence/... | id/severity/likelihood/impact/text/solution | Frontend: 1:1 map (category/stride via documented id table; title=text; recommendation=solution) |
 | 22 | Upload validation | `.pcap`+`.pcapng`, 200 MB | `.pcap` only, 50 MB | Frontend: client validation unchanged; backend 400/413 surfaced verbatim as friendly errors (`.pcapng` rejected server-side with its message) |
 | 23 | `POST /report` | unused by UI | returns report JSON | Unused; UI keeps client-side print export |

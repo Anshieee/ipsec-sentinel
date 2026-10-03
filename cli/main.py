@@ -50,15 +50,35 @@ def _analyze_path(pcap: Path) -> dict:
 
 def _print_human(name: str, resp: dict):
     typer.echo(f"== {name} (AI confidence {resp['ai_confidence']:.2f})")
+    det = resp.get("detection", {})
+    typer.echo(f"  ipsec_detected: {det.get('ipsec_detected')}")
+    for section in ("ike_sa", "child_sa"):
+        sa = resp.get(section, {})
+        if sa:
+            typer.echo(f"  [{section}]")
+            for k, v in sa.items():
+                typer.echo(f"    {k:11s} {str(v['value']):16s} "
+                           f"{v.get('status', ''):14s} {v['source']:7s} "
+                           f"{v['confidence']:.2f}")
+    typer.echo("  [fields]")
     for k, v in resp["fields"].items():
-        det = f" [{v['detail']['decided_by']}]" if v.get("detail") else ""
-        typer.echo(f"  {k:13s} {str(v['value']):16s} {v['source']:7s} "
-                   f"{v['confidence']:.2f}{det}")
+        d = v.get("detail") or {}
+        flag = f" [{d['decided_by']}]" if d.get("decided_by") else ""
+        typer.echo(f"    {k:13s} {str(v['value']):16s} {v['source']:7s} "
+                   f"{v['confidence']:.2f}{flag}")
     a = resp["assessment"]
-    typer.echo(f"  security {a['security_score']}/100 risk {a['risk_score']} "
-               f"({a['risk_level']})")
+    if a.get("score_status") == "WITHHELD" or \
+            a.get("security_score") is None:
+        typer.echo(f"  posture WITHHELD (coverage {a.get('coverage', 0):.2f}); "
+                   f"no headline score")
+    else:
+        typer.echo(f"  posture {a['security_score']}/100 risk {a['risk_score']} "
+                   f"({a['risk_level']}) coverage {a.get('coverage', 0):.2f}")
     for f in a["findings"][:5]:
         typer.echo(f"  [{f['severity']}] {f['text']}")
+    for c in a.get("controls", []):
+        if c["status"] == "UNKNOWN":
+            typer.echo(f"  [unknown] {c['id']}: {c.get('resolve_by', '')}")
 
 
 @app.command()

@@ -1,7 +1,7 @@
 # Dataset datasheet (M2)
 
 Composition, generation, labels, splits, limitations, real vs synthetic.
-Corpus: **426 pcaps** — 360 synthetic + 66 real — with per-pcap JSON labels
+Corpus: **462 pcaps** — 396 synthetic + 66 real — with per-pcap JSON labels
 (`data/labels/...`) and `data/manifest.csv`
 (`file,variant,traffic,ip_version,packets,esp_packets,ike_packets,source,valid`).
 
@@ -9,7 +9,7 @@ Corpus: **426 pcaps** — 360 synthetic + 66 real — with per-pcap JSON labels
 
 | source | pcaps | variants × runs × types |
 |---|---|---|
-| synthetic | 360 | 18 variants × r1–r3 × 6 types (324) + plain × {v4,v6} × r1–r3 × 6 types (36) |
+| synthetic | 396 | 20 variants × r1–r3 × 6 types (360) + plain × {v4,v6} × r1–r3 × 6 types (36) |
 | real | 42 | v1 × {r1,r2} + v3,v5,v7,v12,v18 × r1, each × 6 types |
 
 Plain negatives are unencrypted gateway-to-gateway traffic on the transit
@@ -31,7 +31,7 @@ Per-type packet counts (min/med/max) and durations (~6–9 s each):
 
 ## Generation — synthetic (`capture/synth/synth_pcap.py`, Scapy)
 
-Single source of truth: `testbed/matrix.py` (18 variants, topology,
+Single source of truth: `testbed/matrix.py` (20 variants, topology,
 proposals). Per-(variant, run, traffic) seeds (`sha256("synth"|...)`).
 
 - **IKEv2** (all but v12): UDP 500 both ports (v18: INIT on 500, AUTH +

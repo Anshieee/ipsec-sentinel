@@ -13,9 +13,12 @@ Design principles
    exactly one parameter family (cipher / integrity / DH / mode / ipver /
    ike version / lifetime / replay / esn / encap).  v2-v6 are the spec's
    example baselines.
-2. The IKE suite mirrors the CHILD (ESP/AH) suite so a label such as
-   enc=3des describes BOTH phases, except the AH variant (v7) whose CHILD
-   has no cipher - its IKE SA keeps the v1 baseline suite.
+2. The IKE suite is an EXPLICIT per-variant record (ike_cipher/ike_auth/
+   ike_dh; v1.1): mirrored with the CHILD suite by default, baseline suite
+   for the AH variant (v7, whose CHILD has no cipher), and deliberately
+   DIVERGENT for the mismatch variants (v19/v20). Labels carry separate
+   ike_* and child (*) fields; no code may derive the child suite from
+   IKE_SA_INIT contents.
 3. Endpoints: all variants use the gw<->gw transit-link addresses as
    IKE/ESP endpoints.  Tunnel mode protects the client LAN subnets;
    transport mode protects host traffic between the gateways themselves
@@ -94,8 +97,15 @@ BASELINE = {"ike_rekey_s": 14400, "child_rekey_s": 3600, "replay_window": 32}
 
 def _v(id, *, mode, ip_version, proto="esp", ike_version=2, cipher, auth,
        dh_group, pfs, esn=False, replay_window=32, nat_t=False,
-       ike_rekey_s=14400, child_rekey_s=3600, description=""):
-    """Build one validated variant record."""
+       ike_rekey_s=14400, child_rekey_s=3600, description="",
+       ike_cipher=None, ike_auth=None, ike_dh=None):
+    """Build one validated variant record.
+
+    ike_cipher/ike_auth/ike_dh describe the IKE SA suite explicitly.
+    Default (None) = mirror the CHILD suite (except AH, whose CHILD has
+    no cipher -> IKE keeps the v1 baseline). v19/v20 set them to
+    DIFFERENT suites to break the mirroring assumption on purpose.
+    """
     assert cipher in CIPHERS, cipher
     if proto == "ah":
         assert cipher == "none"
@@ -108,28 +118,40 @@ def _v(id, *, mode, ip_version, proto="esp", ike_version=2, cipher, auth,
         assert auth in AUTH_TOKENS
     if pfs:
         assert dh_group in DH_TOKENS
+    if ike_cipher is not None:
+        assert ike_cipher in CIPHERS and ike_cipher != "none", ike_cipher
+        assert ike_auth in AUTH_TOKENS or CIPHERS[ike_cipher]["aead"]
+        if CIPHERS[ike_cipher]["aead"]:
+            assert ike_auth == "aead"
+        assert ike_dh in DH_TOKENS, ike_dh
     return {
         "id": id,
         "mode": mode,                # tunnel | transport
         "ip_version": ip_version,    # 4 | 6 (IKE + protected traffic)
         "ipsec_protocol": proto,     # esp | ah
         "ike_version": ike_version,  # 1 | 2
-        "cipher": cipher,            # label: encryption
-        "auth": auth,                # label: auth algorithm
-        "dh_group": dh_group,        # label: IKE DH group; ESP DH group iff pfs
+        "cipher": cipher,            # CHILD suite: what ESP carries
+        "auth": auth,                # CHILD suite: child integrity
+        "dh_group": dh_group,        # CHILD PFS group (iff pfs)
         "pfs": pfs,                  # label: PFS (DH token present in child proposal)
         "esn": esn,                  # label: extended sequence numbers
         "replay_window": replay_window,  # label; 0 = replay protection off
         "nat_t": nat_t,              # label: ESP-in-UDP (encap)
         "ike_rekey_s": ike_rekey_s,      # label: IKE SA rekey interval
         "child_rekey_s": child_rekey_s,  # label: CHILD SA rekey interval
+        # Explicit IKE SA suite (None = mirror CHILD, except AH which
+        # keeps the v1 baseline). v19/v20 differ on purpose.
+        "ike_cipher": ike_cipher,
+        "ike_auth": ike_auth,
+        "ike_dh": ike_dh,
         "description": description,
     }
 
 
 # --------------------------------------------------------------------------
-# The 18-variant matrix (spec minimum: 15).
-# v1-v6: spec example baselines; v7: AH; v8-v18: weak/unusual coverage.
+# The 20-variant matrix (spec minimum: 15).
+# v1-v6: spec example baselines; v7: AH; v8-v18: weak/unusual coverage;
+# v19-v20: IKE/CHILD suite mismatch (strong-IKE/weak-ESP and reverse).
 # --------------------------------------------------------------------------
 VARIANTS = [
     _v("v1", mode="tunnel", ip_version=4, cipher="aes-128-cbc",
@@ -188,6 +210,16 @@ VARIANTS = [
     _v("v18", mode="tunnel", ip_version=4, cipher="aes-128-cbc",
        auth="hmac-sha256", dh_group=14, pfs=True, nat_t=True,
        description="unusual: NAT-T (ESP-in-UDP, encap=yes / forceencaps=yes)"),
+    _v("v19", mode="tunnel", ip_version=4, cipher="3des-cbc",
+       auth="hmac-sha256", dh_group=14, pfs=True,
+       ike_cipher="aes-256-gcm", ike_auth="aead", ike_dh=20,
+       description="mismatch: strong IKE (AES-256-GCM/DH20), weak ESP "
+                   "(3DES-CBC+HMAC-SHA256/PFS-DH14)"),
+    _v("v20", mode="tunnel", ip_version=4, cipher="aes-256-gcm",
+       auth="aead", dh_group=20, pfs=True,
+       ike_cipher="aes-128-cbc", ike_auth="hmac-sha256", ike_dh=14,
+       description="mismatch: weak IKE (AES-128-CBC+HMAC-SHA256/DH14), "
+                   "strong ESP (AES-256-GCM/PFS-DH20)"),
 ]
 
 VARIANT_IDS = [v["id"] for v in VARIANTS]
@@ -214,17 +246,25 @@ def _integ_token(auth: str) -> str:
     return AUTH_TOKENS[auth]
 
 
+def ike_suite(v: dict) -> tuple[str, str, int]:
+    """Explicit (cipher, auth, dh) of the IKE SA: per-variant override,
+    else the v1 baseline for AH children, else the mirrored CHILD suite.
+    The CHILD suite is NEVER derived from this (v1.1 boundary)."""
+    if v.get("ike_cipher") is not None:
+        return v["ike_cipher"], v["ike_auth"], v["ike_dh"]
+    if v["cipher"] == "none":  # AH child: IKE SA keeps the v1 baseline suite
+        return DEFAULT_IKE_CIPHER, DEFAULT_IKE_AUTH, v["dh_group"]
+    return v["cipher"], v["auth"], v["dh_group"]
+
+
 def ike_proposal(v: dict) -> str:
     """IKE SA proposal string (e.g. aes128-sha256-modp2048)."""
-    cipher = v["cipher"]
-    auth = v["auth"]
-    if cipher == "none":  # AH child: IKE SA keeps the v1 baseline suite
-        cipher, auth = DEFAULT_IKE_CIPHER, DEFAULT_IKE_AUTH
+    cipher, auth, dh = ike_suite(v)
     c = CIPHERS[cipher]
     if c["aead"]:
-        parts = [c["ike"], c["prf"], DH_TOKENS[v["dh_group"]]]
+        parts = [c["ike"], c["prf"], DH_TOKENS[dh]]
     else:
-        parts = [c["ike"], _integ_token(auth), DH_TOKENS[v["dh_group"]]]
+        parts = [c["ike"], _integ_token(auth), DH_TOKENS[dh]]
     return "-".join(parts)
 
 
@@ -301,7 +341,12 @@ def child_name(v: dict) -> str:
 
 
 def label_row(v: dict) -> dict:
-    """Per-variant ground-truth fields (merged with per-pcap fields later)."""
+    """Per-variant ground-truth fields (merged with per-pcap fields later).
+
+    Legacy keys (encryption/auth/dh_group/...) describe the CHILD suite.
+    ike_* keys describe the IKE SA (identical for mirrored variants).
+    """
+    ike_c, ike_a, ike_dh = ike_suite(v)
     return {
         "variant": v["id"],
         "ipsec_protocol": v["ipsec_protocol"],
@@ -314,6 +359,10 @@ def label_row(v: dict) -> dict:
         "aead": CIPHERS[v["cipher"]]["aead"],
         "dh_group": v["dh_group"],
         "pfs": v["pfs"],
+        "ike_encryption": ike_c,
+        "ike_key_length_bits": CIPHERS[ike_c]["len"],
+        "ike_auth": ike_a,
+        "ike_dh_group": ike_dh,
         "esn": v["esn"],
         "replay_window": v["replay_window"],
         "nat_t": v["nat_t"],

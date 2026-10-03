@@ -1,7 +1,7 @@
 """Corpus-count guards (independent review MAJOR-3/MAJOR-5).
 
 - test_doc_counts_match_manifest: the canonical numbers printed in docs
-  (360 synthetic + 66 real = 426 rows; 853 checksum entries) must match
+  (396 synthetic + 66 real = 462 rows; 925 checksum entries) must match
   data/manifest.csv and dataset/checksums.sha256. Fails on drift.
 - test_regeneration_deterministic: building the same pcap twice yields
   identical bytes; the RNG streams (ike|data) isolate IKE edits from
@@ -13,13 +13,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-EXPECTED = {"synthetic": 360, "real": 66, "total": 426, "checksums": 853}
+EXPECTED = {"synthetic": 396, "real": 66, "total": 462, "checksums": 925}
 DOC_SPOTS = [
-    ("README.md", ["360 synthetic + 66 real"]),
-    ("docs/dataset-datasheet.md", ["426 pcaps", "360 synthetic + 66 real"]),
+    ("README.md", ["396 synthetic + 66 real"]),
+    ("docs/dataset-datasheet.md", ["462 pcaps", "396 synthetic + 66 real"]),
     ("docs/model-evaluation.md", ["test 66 real", "66 pcaps incl."]),
-    ("AGENTS.md", ["66 real pcaps", "426 rows"]),
-    ("dataset/README.md", ["426 pcaps", "853 checksum entries"]),
+    ("AGENTS.md", ["66 real pcaps", "462 rows"]),
+    ("dataset/README.md", ["462 pcaps", "925 checksum entries"]),
 ]
 
 

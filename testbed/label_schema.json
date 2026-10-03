@@ -14,6 +14,10 @@
     "aead",
     "dh_group",
     "pfs",
+    "ike_encryption",
+    "ike_key_length_bits",
+    "ike_auth",
+    "ike_dh_group",
     "esn",
     "replay_window",
     "nat_t",
@@ -31,7 +35,7 @@
     "variant": {
       "description": "Variant id from testbed/matrix.py, or 'plain' for non-IPsec negatives.",
       "type": "string",
-      "pattern": "^(v([1-9]|1[0-8])|plain)$"
+      "pattern": "^(v([1-9]|1[0-9]|20)|plain)$"
     },
     "ipsec_protocol": {
       "description": "IPsec protocol of the CHILD SA (labelled on the wire as IP proto 50/51).",
@@ -49,7 +53,7 @@
       "enum": ["tunnel", "transport", "none"]
     },
     "encryption": {
-      "description": "Encryption algorithm of the CHILD SA ('none' for AH and negatives).",
+      "description": "Encryption algorithm of the CHILD SA ('none' for AH and negatives). The IKE SA suite is labelled separately (ike_encryption).",
       "type": "string",
       "enum": [
         "aes-128-cbc",
@@ -66,7 +70,7 @@
       "enum": [0, 128, 168, 256]
     },
     "auth": {
-      "description": "Integrity algorithm ('aead' when integrity is provided by the AEAD cipher, 'none' for negatives).",
+      "description": "Integrity algorithm of the CHILD SA ('aead' when integrity is provided by the AEAD cipher, 'none' for negatives). The IKE SA suite is labelled separately (ike_auth).",
       "type": "string",
       "enum": ["hmac-sha256", "hmac-sha1", "aead", "none"]
     },
@@ -75,7 +79,34 @@
       "type": "boolean"
     },
     "dh_group": {
-      "description": "IKE DH group (2/5 weak, 14/19/20 modern; 0 = negatives). The CHILD SA uses the same group for PFS iff pfs is true.",
+      "description": "CHILD SA PFS group (2/5 weak, 14/19/20 modern; 0 = negatives). The IKE SA group is labelled separately (ike_dh_group); the two are identical except on mismatch variants.",
+      "type": "integer",
+      "enum": [0, 2, 5, 14, 19, 20]
+    },
+    "ike_encryption": {
+      "description": "Encryption algorithm of the IKE SA (may differ from the CHILD suite on mismatch variants).",
+      "type": "string",
+      "enum": [
+        "aes-128-cbc",
+        "aes-256-cbc",
+        "aes-128-gcm",
+        "aes-256-gcm",
+        "3des-cbc",
+        "none"
+      ]
+    },
+    "ike_key_length_bits": {
+      "description": "IKE SA symmetric key length in bits (0 = negatives).",
+      "type": "integer",
+      "enum": [0, 128, 168, 256]
+    },
+    "ike_auth": {
+      "description": "Integrity/PRF base of the IKE SA ('aead' for GCM suites, 'none' for negatives).",
+      "type": "string",
+      "enum": ["hmac-sha256", "hmac-sha1", "aead", "none"]
+    },
+    "ike_dh_group": {
+      "description": "DH group of the IKE SA (in the clear IKE_SA_INIT KE payload).",
       "type": "integer",
       "enum": [0, 2, 5, 14, 19, 20]
     },
@@ -178,6 +209,10 @@
           "aead": {"const": false},
           "dh_group": {"const": 0},
           "pfs": {"const": false},
+          "ike_encryption": {"const": "none"},
+          "ike_key_length_bits": {"const": 0},
+          "ike_auth": {"const": "none"},
+          "ike_dh_group": {"const": 0},
           "esn": {"const": false},
           "replay_window": {"const": 0},
           "nat_t": {"const": false},

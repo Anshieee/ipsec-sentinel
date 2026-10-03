@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "capture"))
 from validate_pcap import parse_ike, IKEError  # noqa: E402  (tested parser)
 
-FEAT_VERSION = 5  # bump when the feature schema changes (invalidates cache)
+FEAT_VERSION = 6  # bump when the feature schema changes (invalidates cache)
 
 EXCHANGES = {34: "init", 35: "auth", 36: "rekey", 37: "info", 2: "mm",
              4: "qm_aggr", 32: "qm"}
@@ -31,14 +31,48 @@ def _ip_layer(p):
     return p.getlayer(IP) or p.getlayer(IPv6)
 
 
+def _walk_v6(ip):
+    """Upper-layer walk for IPv6: skip HopByHop(0)/Routing(43)/DestOpt(60)
+    extension headers so ESP(50)/AH(51)/UDP(17) behind them are still
+    found. Fragments(44): upper header only in the first fragment.
+    Returns (proto, payload_bytes, had_ext)."""
+    nh = ip.nh
+    pay = ip.payload
+    had_ext = False
+    while nh in (0, 43, 60):
+        had_ext = True
+        try:
+            nh = pay.nh
+            pay = pay.payload
+        except Exception:
+            break
+    if nh == 44:
+        try:
+            if pay.offset == 0:
+                nh = pay.nh
+                pay = pay.payload
+                had_ext = True
+        except Exception:
+            pass
+    try:
+        raw = bytes(pay)
+    except Exception:
+        raw = b""
+    return nh, raw, had_ext
+
+
 def extract(pcap_path: str | Path) -> dict:
     from scapy.all import PcapReader, IP, UDP, TCP
     feats: dict = {}
     sizes, iats = [], []
-    n_ike = n_esp = n_ah = n_4500m = n_esp_udp = n_500 = 0
+    n_ike = n_esp = n_ah = n_4500m = n_esp_udp = n_500 = n_keep = 0
+    n_ip = 0
     ah_nh = -1
     ike_msgs = []
     spi_set, seq_gaps = set(), 0
+    spi_spans: dict[int, list] = {}
+    ah_spis = set()
+    ip6_ext = 0
     last_seq: dict[int, int] = {}
     flows: dict[tuple, int] = {}
     sports, dports = set(), set()
@@ -61,9 +95,19 @@ def extract(pcap_path: str | Path) -> dict:
             ip = _ip_layer(p)
             if ip is None:
                 continue
+            n_ip += 1
             fam = 4 if ip.__class__.__name__ == "IP" else 6
             ipvers.add(fam)
-            pr = ip.proto if fam == 4 else ip.nh
+            if fam == 4:
+                pr = ip.proto
+                try:
+                    raw0 = bytes(ip.payload)
+                except Exception:
+                    raw0 = b""
+            else:
+                pr, raw0, had_ext = _walk_v6(ip)
+                if had_ext:
+                    ip6_ext = 1
             protos.add(pr)
             flows[(ip.src, ip.dst)] = flows.get((ip.src, ip.dst), 0) + 1
             if UDP in p:
@@ -77,13 +121,19 @@ def extract(pcap_path: str | Path) -> dict:
                 tcp_flags.add(int(t_.flags))
             if pr == 50:
                 n_esp += 1
-                raw = bytes(ip.payload)
+                raw = raw0
                 if len(raw) >= 8:
                     spi, seq = struct.unpack("!II", raw[:8])
                     spi_set.add(spi)
                     if spi in last_seq and seq != last_seq[spi] + 1:
                         seq_gaps += 1
                     last_seq[spi] = seq
+                    sp = spi_spans.get(spi)
+                    if sp is None:
+                        spi_spans[spi] = [t, t]
+                    else:
+                        sp[0] = min(sp[0], t)
+                        sp[1] = max(sp[1], t)
                 esp_lens.append(len(raw))
                 mods16[len(raw) % 16] += 1
                 mods8[len(raw) % 8] += 1
@@ -91,15 +141,20 @@ def extract(pcap_path: str | Path) -> dict:
             elif pr == 51:
                 n_ah += 1
                 try:
-                    raw = bytes(ip.payload)
+                    raw = raw0
                     if raw and ah_nh == -1:
                         ah_nh = raw[0]
+                    if len(raw) >= 8:
+                        ah_spis.add(struct.unpack("!I", raw[4:8])[0])
                 except Exception:
                     pass
             elif pr == 17 and UDP in p:
                 u = p[UDP]
                 pay = bytes(u.payload)
-                if u.sport in (500, 4500) or u.dport in (500, 4500):
+                if len(pay) == 1 and pay == b"\xff":
+                    # NAT-T keepalive (RFC 5946): neither IKE nor ESP.
+                    n_keep += 1
+                elif u.sport in (500, 4500) or u.dport in (500, 4500):
                     if u.dport == 500 or u.sport == 500 or \
                             pay[:4] == b"\x00" * 4:
                         n_ike += 1
@@ -109,7 +164,9 @@ def extract(pcap_path: str | Path) -> dict:
                             n_4500m += 1
                         body = pay[4:] if pay[:4] == b"\x00" * 4 else pay
                         try:
-                            ike_msgs.append(parse_ike(body))
+                            m = parse_ike(body)
+                            m["idx"] = n  # 1-based packet number: evidence ref
+                            ike_msgs.append(m)
                         except IKEError:
                             pass
                     else:
@@ -126,6 +183,7 @@ def extract(pcap_path: str | Path) -> dict:
                         mods8[len(pay) % 8] += 1
                         mods4[len(pay) % 4] += 1
     feats["n_packets"] = n
+    feats["n_ip"] = n_ip
     feats["duration"] = (t_prev - t0) if n > 1 else 0.0
     feats["n_ike"] = n_ike
     feats["n_esp"] = n_esp
@@ -133,11 +191,27 @@ def extract(pcap_path: str | Path) -> dict:
     feats["n_udp500"] = n_500
     feats["n_udp4500_marked"] = n_4500m
     feats["n_esp_in_udp"] = n_esp_udp
+    feats["n_keepalive"] = n_keep
+    feats["has_keepalive"] = int(n_keep > 0)
+    feats["ip6_ext"] = ip6_ext
+    feats["n_ah_spis"] = len(ah_spis)
     feats["has_ike"] = int(n_ike > 0)
     feats["has_esp"] = int(n_esp > 0)
     feats["has_ah"] = int(n_ah > 0)
     feats["n_spis"] = len(spi_set)
     feats["seq_gaps"] = seq_gaps
+    # Concurrent-SPIs flag: pairwise ESP-SPI lifetimes overlapping by more
+    # than 0.5 s means a rekey cannot be attributed to one SA (merges or
+    # parallel tunnels). Clean rekey handoffs (old ends as new begins,
+    # as in every real forced-rekey capture) give 0.
+    overlap = 0
+    spans = sorted(spi_spans.values())
+    for i in range(len(spans)):
+        for j in range(i + 1, len(spans)):
+            if min(spans[i][1], spans[j][1]) - \
+                    max(spans[i][0], spans[j][0]) > 0.5:
+                overlap = 1
+    feats["spi_overlap"] = overlap
     feats["n_flows"] = len(flows)
     if flows:
         top = max(flows.values())
@@ -177,7 +251,13 @@ def extract(pcap_path: str | Path) -> dict:
     feats["ike_n"] = len(ike_msgs)
     prop = ke_len = ke_group = None
     rekey = rk_req = rk_resp = 0
+    init_req_idx = init_resp_idx = -1
     for m in ike_msgs:
+        if m["exch"] == 34 and m["ver"] == 0x20:
+            if m["flags"] == 0x08 and init_req_idx == -1:
+                init_req_idx = m.get("idx", -1)
+            if m["flags"] == 0x20 and init_resp_idx == -1:
+                init_resp_idx = m.get("idx", -1)
         if m["exch"] == 36:
             rekey = 1
             sk = next((p for p in m["payloads"] if p["type"] == 46), None)
@@ -218,6 +298,11 @@ def extract(pcap_path: str | Path) -> dict:
         feats["ike_prf"] = next((t["id"] for t in tf if t["type"] == 2), -1)
     feats["ike_ke_group"] = ke_group if ke_group is not None else -1
     feats["ike_ke_len"] = ke_len if ke_len is not None else -1
+    # Evidence refs: 1-based packet numbers of the SA_INIT exchange.
+    # The responder message carries the SELECTED proposal; the initiator
+    # message only the OFFERED set.
+    feats["ike_init_req_idx"] = init_req_idx
+    feats["ike_init_resp_idx"] = init_resp_idx
     feats["has_rekey"] = rekey
     feats["rk_sk_req_len"] = rk_req
     feats["rk_sk_resp_len"] = rk_resp
@@ -226,6 +311,7 @@ def extract(pcap_path: str | Path) -> dict:
     # IKEv1 MM proposal (cleartext)
     v1 = [m for m in ike_msgs if m["ver"] == 0x10 and m["exch"] == 2]
     feats["ikev1_mm"] = len(v1)
+    feats["ikev1_mm_idx"] = v1[0].get("idx", -1) if v1 else -1
     feats["ikev1_qm"] = sum(1 for m in ike_msgs if m["ver"] == 0x10
                             and m["exch"] == 32)
     for k in ("ike1_encr_id", "ike1_keylen", "ike1_hash", "ike1_group"):

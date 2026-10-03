@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build all M4 report PDFs (req 3): executive (1-2 p), technical for 6+
-varied pcaps (weak, AH, plain, real, IKEv1, GCM), comparative over all 18
-variants + plain. Every PDF shows confidence, unknowns, and the
-synthetic-vs-real caveat. Output: reports/out/.
+"""Build all report PDFs (M4 req 3, v1.1): executive (1-2 p), technical for 6+
+varied pcaps (weak, AH, plain, real, IKEv1, GCM), comparative over all 20
+variants + plain. Every PDF shows status, unknowns, posture vs coverage,
+and the synthetic-vs-real caveat. Output: reports/out/.
 """
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def main() -> int:
         technical(to_response(r), out / f"technical-{tag}.pdf", Path(rel).name)
         print(f"technical-{tag}.pdf")
     rows = []
-    for vid in [f"v{i}" for i in range(1, 19)]:
+    for vid in [f"v{i}" for i in range(1, 21)]:
         r = analyze(str(ROOT / f"data/pcaps/synth/{vid}/r1/voip.pcap"), MODELS)
         rows.append({"variant": vid, "analysis": to_response(r)})
     r = analyze(str(ROOT / "data/pcaps/synth/plain/v4/r1/voip.pcap"), MODELS)
