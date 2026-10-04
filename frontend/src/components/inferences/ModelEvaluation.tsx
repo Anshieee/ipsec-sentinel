@@ -4,6 +4,8 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { useSentinel } from '@/store/useSentinel'
 import { confusionMatrix, reliabilityDiagram, EXPECTED_CALIBRATION_ERROR, TRAFFIC_LABELS } from '@/api/modelEval'
+import evalMetrics from '@/api/evalMetrics.json'
+import { fmtPct } from '@/lib/format'
 import { CHART_AXIS, CHART_GRID, CHART_INK, CHART_PALETTE, CHART_TOOLTIP, rgbChannels } from '@/lib/chartColors'
 
 /**
@@ -25,11 +27,12 @@ export function ModelEvaluation() {
   const points = useMemo(() => reliabilityDiagram(), [])
   const curve = points.map((point) => ({ ...point, ideal: point.predicted }))
   const liveMode = useSentinel((s) => s.settings.dataSource) === 'live'
-  const simBadge = liveMode ? (
+  if (liveMode) return <LiveModelEvaluation />
+  const simBadge = (
     <Badge tone="warn" title="Static demonstration figures, not measured from the live backend.">
       SIMULATED
     </Badge>
-  ) : null;
+  );
 
   return (
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
@@ -138,6 +141,70 @@ export function ModelEvaluation() {
             </tbody>
           </table>
         </figure>
+      </Card>
+    </div>
+  )
+}
+
+interface FieldAccuracy {
+  field: string
+  n: number
+  accuracy: number
+  unknownRate: number
+}
+
+const CV_FIELDS = ['ipsec_proto', 'ike_version', 'mode', 'enc_alg', 'enc_key_len', 'auth_alg', 'dh_group', 'pfs', 'ip_version', 'traffic_type', 'nat_t', 'ike_enc_alg', 'ike_dh_group'] as const
+
+/** Live-mode evaluation: real grouped-CV numbers from the backend's
+ * evaluation output — never invented, never simulated. Generated via
+ * `cp engine/eval/metrics.json frontend/src/api/evalMetrics.json`
+ * after each backend evaluation run. */
+function LiveModelEvaluation() {
+  const cv = (evalMetrics as { cv_full: Record<string, { n: number; accuracy: number; unknown_rate: number }> }).cv_full
+  const rows: FieldAccuracy[] = CV_FIELDS.filter((f) => cv[f]).map((f) => ({
+    field: f,
+    n: cv[f].n,
+    accuracy: cv[f].accuracy,
+    unknownRate: cv[f].unknown_rate,
+  }))
+  const n = rows[0]?.n ?? 0
+  return (
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <Card data-testid="eval-accuracy">
+        <CardHeader
+          title="Classifier accuracy (held-out grouped CV)"
+          description={`Per-field accuracy; unknown counts as error · N=${n}`}
+        />
+        <table className="w-full border-collapse text-xs">
+          <caption className="sr-only">Measured classifier accuracy per field</caption>
+          <thead>
+            <tr className="bg-raised text-left text-muted">
+              <th scope="col" className="px-3 py-2 font-medium">Field</th>
+              <th scope="col" className="px-3 py-2 font-medium">Accuracy</th>
+              <th scope="col" className="px-3 py-2 font-medium">Unknown rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.field} className="border-t border-line/60">
+                <td className="px-3 py-2 font-mono text-ink">{row.field}</td>
+                <td className="tnum px-3 py-2 text-ink">{fmtPct(row.accuracy, 1)}</td>
+                <td className="tnum px-3 py-2 text-muted">{fmtPct(row.unknownRate, 1)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="mt-2 text-[11px] text-muted" data-testid="eval-provenance">
+          Measured by grouped 5-fold CV over {n} synthetic pcaps (variant-run groups, unknown counts as error).
+          Source: the backend evaluation output — full tables in docs/model-evaluation.md.
+        </p>
+      </Card>
+      <Card data-testid="eval-reliability-unavailable">
+        <CardHeader title="Reliability diagram" description="Not measured" />
+        <p className="text-[13px] text-muted">
+          No calibration data is measured for the live models (confidences are rank-ordered, not calibrated).
+          See docs/model-evaluation.md for what the evaluation does and does not prove.
+        </p>
       </Card>
     </div>
   )

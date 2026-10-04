@@ -181,7 +181,9 @@ export function deriveValues(
       coverage: analysis.posture.coverage,
       ipsecDetected: analysis.detection?.ipsecDetected ?? true,
       topClass: top,
-      uncertain: analysis.posture.coverage < 1,
+      // Same rule as fixtures: uncertain only when top-1 probability is
+      // below the threshold (coverage shortfall is shown separately).
+      uncertain: top.probability < uncertainThreshold,
     }
   }
   const evaluation = evaluate(analysis.protocol, analysis.trafficClasses, undefined, minRuleConfidence)

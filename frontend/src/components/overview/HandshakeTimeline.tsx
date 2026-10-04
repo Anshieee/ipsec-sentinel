@@ -38,7 +38,7 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
     <Card data-testid="handshake-timeline">
       <CardHeader
         title="Handshake timeline"
-        description={steps.length === 0 ? 'No handshake steps reported for this capture' : `${steps.length} observed steps`}
+        description={steps.length === 0 ? undefined : `${steps.length} observed steps`}
       />
       {steps.length === 0 ? (
         <p className="px-1 py-2 text-[12px] text-muted">

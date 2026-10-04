@@ -11,17 +11,18 @@
  */
 :root {
   /*
-   * Material: everything above the canvas is one cool-white glass tint, drawn
-   * at a different alpha per rung. Nothing is painted solid, so panels read as
-   * layered frosted sheets over a matte-black deck.
+   * Material (v1.2.2): true near-black solids. Page #0a0a0a, card
+   * surface #101012, raised/hover #17171a, hairline borders #26262b,
+   * stronger control edges #3a3a42. Backdrop blur is retained but has
+   * no visible effect over opaque rungs (kept for /50 alpha uses).
    */
-  --color-base: #0a0a0b;
-  --color-surface: rgb(235 240 246 / 0.07);
-  --color-raised: rgb(235 240 246 / 0.13);
+  --color-base: #0a0a0a;
+  --color-surface: #101012;
+  --color-raised: #17171a;
 
-  /* Hairline = structural divider. Control edge = interactive border (>= 3:1). */
-  --color-line: rgb(235 240 246 / 0.26);
-  --color-line-strong: rgb(235 240 246 / 0.48);
+  /* Hairline = structural divider. Control edge = interactive border. */
+  --color-line: #26262b;
+  --color-line-strong: #3a3a42;
 
   /* Text */
   --color-ink: #f0f2f5;
@@ -42,15 +43,14 @@
 
   /*
    * Same tokens as RGB channels so Tailwind can apply alpha modifiers.
-   * The surface/line channels are the glass tint; their rendered strength comes
-   * from --glass-* below, folded into Tailwind's <alpha-value> slot so `/50`
-   * still scales relative to the material rather than replacing it.
+   * Channels are the solid rung values; rung strength is 1.0 so `/50`
+   * scales relative to the solid, never toward transparency-against-base.
    */
-  --color-base-rgb: 10 10 11;
-  --color-surface-rgb: 235 240 246;
-  --color-raised-rgb: 235 240 246;
-  --color-line-rgb: 235 240 246;
-  --color-line-strong-rgb: 235 240 246;
+  --color-base-rgb: 10 10 10;
+  --color-surface-rgb: 16 16 18;
+  --color-raised-rgb: 23 23 26;
+  --color-line-rgb: 38 38 43;
+  --color-line-strong-rgb: 58 58 66;
   --color-ink-rgb: 240 242 245;
   --color-muted-rgb: 167 174 184;
   --color-accent-rgb: 90 155 248;
@@ -63,11 +63,12 @@
   --color-danger-solid-rgb: 196 69 60;
   --color-violet-rgb: 167 139 250;
 
-  /* Material opacities, in the order of the ladder above. */
-  --glass-surface: 0.07;
-  --glass-raised: 0.13;
-  --glass-line: 0.26;
-  --glass-line-strong: 0.48;
+  /* Material opacities: rungs are solid, so strength is 1.0 (alpha
+   * modifiers like `/50` scale relative to the solid rung). */
+  --glass-surface: 1;
+  --glass-raised: 1;
+  --glass-line: 1;
+  --glass-line-strong: 1;
   --glass-blur: blur(22px) saturate(140%);
 
   /* Motion — explain change, then get out of the way. */

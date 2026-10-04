@@ -1,4 +1,5 @@
 import { useSentinel } from '@/store/useSentinel'
+import { APP_VERSION } from '@/lib/version'
 
 /** One-line footer with the demonstration notice and build version (spec 4.4). */
 export function Footer() {
@@ -11,7 +12,7 @@ export function Footer() {
           ? 'Live backend. Simulated surfaces (capture stream, model registry) are badged SIMULATED.'
           : 'Demonstration data. Analysis results are simulated.'}
       </span>
-      <span className="tnum">IPsec-AI Sentinel v0.1.0</span>
+      <span className="tnum">IPsec-AI Sentinel v{APP_VERSION}</span>
     </footer>
   )
 }

@@ -1,18 +1,20 @@
 import { PageHeader } from '@/components/PageHeader'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { useSentinel } from '@/store/useSentinel'
+import { useAnalysis, useSentinel } from '@/store/useSentinel'
+import { APP_VERSION } from '@/lib/version'
 import type { DataSource } from '@/api/client'
 
 /** Settings & AI Model Logs (`/settings`). Populated in phase P11. */
 export function SettingsPage() {
   const dataSource = useSentinel((s) => s.settings.dataSource)
   const setSetting = useSentinel((s) => s.setSetting)
+  const ruleVersion = useAnalysis()?.posture?.ruleVersion ?? null
   return (
     <div data-testid="page-settings">
       <PageHeader
         title="Settings"
-        description="Preferences, model registry, AI model logs and build information."
+        description="Model registry, AI model logs and build information."
       />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -34,12 +36,11 @@ export function SettingsPage() {
           ) : null}
         </Card>
         <Card>
-          <CardHeader title="Preferences" description="Persisted locally in this browser." />
-          <p className="text-[13px] text-muted">Preference controls arrive with the settings phase.</p>
-        </Card>
-        <Card>
           <CardHeader title="About" description="Build and contract information." />
-          <p className="text-[13px] text-muted">IPsec-AI Sentinel v0.1.0</p>
+          <p className="text-[13px] text-muted">IPsec-AI Sentinel v{APP_VERSION}</p>
+          {ruleVersion ? (
+            <p className="mt-1 text-[13px] text-muted">Backend assessment rule {ruleVersion} (current analysis).</p>
+          ) : null}
         </Card>
       </div>
     </div>

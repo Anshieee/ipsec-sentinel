@@ -13,31 +13,56 @@ interface Point {
   tone: Tone
 }
 
-/** Confidence breakdown for inferred parameters (spec 10.3 item 5). */
+const UNOBSERVED_STATUSES = ['UNKNOWN', 'NOT_OBSERVED', 'NOT_APPLICABLE']
+
+/** Confidence breakdown: only fields with real confidence (spec 10.3 item 5).
+ * Unknown / not-observed fields are omitted (listed below the chart). */
 export function ConfidenceBreakdown({ analysis }: { analysis: AnalysisResult }) {
   const p = analysis.protocol
 
-  const points = useMemo<Point[]>(() => {
-    const entries: Point[] = [
-      { name: 'Mode', confidence: p.mode.confidence, tone: confidenceTone(p.mode.confidence) },
-      { name: 'IKE cipher', confidence: p.ike.encryption.confidence, tone: confidenceTone(p.ike.encryption.confidence) },
-      { name: 'IKE integrity', confidence: p.ike.integrity.confidence, tone: confidenceTone(p.ike.integrity.confidence) },
-      { name: 'DH group', confidence: p.ike.dhGroup.confidence, tone: confidenceTone(p.ike.dhGroup.confidence) },
-      { name: 'CHILD cipher', confidence: p.child.encryption.confidence, tone: confidenceTone(p.child.encryption.confidence) },
-      { name: 'CHILD integrity', confidence: p.child.integrity.confidence, tone: confidenceTone(p.child.integrity.confidence) },
-      { name: 'PFS', confidence: p.child.pfs.confidence, tone: confidenceTone(p.child.pfs.confidence) },
-      { name: 'Lifetime', confidence: p.child.lifetimeSec.confidence, tone: confidenceTone(p.child.lifetimeSec.confidence) },
-      { name: 'Replay', confidence: p.child.replayProtection.confidence, tone: confidenceTone(p.child.replayProtection.confidence) },
-      { name: 'ESN', confidence: p.child.esn.confidence, tone: confidenceTone(p.child.esn.confidence) },
+  const candidates = useMemo<{ name: string; param: { confidence: number; status?: string } }[]>(() => {
+    const ip: { confidence: number; status?: string } = p.ipVersion
+    const nat: { confidence: number; status?: string } = p.natTraversal
+    return [
+      { name: 'Mode', param: p.mode },
+      { name: 'IP version', param: ip },
+      { name: 'NAT traversal', param: nat },
+      { name: 'IKE cipher', param: p.ike.encryption },
+      { name: 'IKE integrity', param: p.ike.integrity },
+      { name: 'PRF', param: p.ike.prf },
+      { name: 'DH group', param: p.ike.dhGroup },
+      { name: 'CHILD cipher', param: p.child.encryption },
+      { name: 'CHILD integrity', param: p.child.integrity },
+      { name: 'PFS', param: p.child.pfs },
     ]
-    return entries.filter((entry) => Number.isFinite(entry.confidence))
   }, [p])
+
+  const { points, omitted } = useMemo(() => {
+    const pts: Point[] = []
+    const omit: string[] = []
+    for (const entry of candidates) {
+      const st = entry.param.status
+      if (st !== undefined && UNOBSERVED_STATUSES.includes(st)) {
+        omit.push(entry.name)
+        continue
+      }
+      const c = entry.param.confidence
+      if (!Number.isFinite(c)) {
+        omit.push(entry.name)
+        continue
+      }
+      pts.push({ name: entry.name, confidence: c, tone: confidenceTone(c) })
+    }
+    return { points: pts, omitted: omit }
+  }, [candidates])
+  // Keep every category tick legible: grow the chart with the row count.
+  const height = Math.max(160, points.length * 36 + 64)
 
   return (
     <Card data-testid="confidence-breakdown">
-      <CardHeader title="Confidence breakdown" description="Calibrated probability per inferred parameter" />
+      <CardHeader title="Confidence breakdown" description="Backend confidence per observed field" />
       <figure className="m-0">
-        <div className="h-64 w-full" aria-hidden="true">
+        <div className="w-full" style={{ height }} aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={points} layout="vertical" margin={{ top: 4, right: 12, bottom: 4, left: 4 }}>
               <XAxis
@@ -51,10 +76,11 @@ export function ConfidenceBreakdown({ analysis }: { analysis: AnalysisResult }) 
               <YAxis
                 type="category"
                 dataKey="name"
-                width={96}
+                width={110}
                 tick={{ fontSize: 11, fill: CHART_AXIS }}
                 axisLine={{ stroke: CHART_GRID }}
                 tickLine={{ stroke: CHART_GRID }}
+                interval={0}
               />
               <ChartTooltip
                 formatter={(value: number | string) => [`${Number(value) * 100}%`, 'Confidence']}
@@ -70,6 +96,7 @@ export function ConfidenceBreakdown({ analysis }: { analysis: AnalysisResult }) 
         </div>
         <figcaption className="mt-1 text-[11px] text-muted">
           Bands: at least 85 % strong, 70–85 % moderate, below 70 % weak.
+          {omitted.length > 0 ? ` Not observed (omitted): ${omitted.join(', ')}.` : ''}
         </figcaption>
         <table className="sr-only">
           <caption>Confidence per inferred parameter</caption>

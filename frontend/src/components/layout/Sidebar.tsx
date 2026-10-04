@@ -5,6 +5,7 @@ import { Tooltip } from '@/components/ui/Tooltip'
 import { cn } from '@/components/ui/cn'
 import { useSentinel } from '@/store/useSentinel'
 import { fmtInt } from '@/lib/format'
+import { APP_VERSION } from '@/lib/version'
 
 export interface NavItem {
   to: string
@@ -111,7 +112,7 @@ export function Sidebar() {
             )}
           </div>
         )}
-        <p className={cn('mt-2 text-center text-2xs text-muted', collapsed ? 'sr-only' : '')}>v0.1.0</p>
+        <p className={cn('mt-2 text-center text-2xs text-muted', collapsed ? 'sr-only' : '')}>v{APP_VERSION}</p>
       </div>
     </nav>
   )

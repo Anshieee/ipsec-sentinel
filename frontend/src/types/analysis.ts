@@ -16,6 +16,8 @@ export interface Param<T> {
   confidence: number
   /** Backend honesty state; render UNKNOWN/NOT_OBSERVED as "not observed". */
   status?: FieldStatus
+  /** Evidence origin; drives the Method column (parsed/model/measured). */
+  source?: 'parsed' | 'model' | 'measured' | 'none'
   note?: string
 }
 
@@ -154,7 +156,7 @@ export interface AnalysisResult {
   /** v1.1+ backend controls; present on backend-mapped results. */
   controls?: BackendControl[]
   /** v1.1+ IPsec detection; false renders the "no IPsec detected" state. */
-  detection?: { ipsecDetected: boolean }
+  detection?: { ipsecDetected: boolean; nPackets?: number; nIke?: number; nEsp?: number; nAh?: number }
   summary: {
     packets: number
     ikeHandshakes: number

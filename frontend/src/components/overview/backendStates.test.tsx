@@ -118,7 +118,7 @@ describe('ESP-only state', () => {
         <HandshakeTimeline steps={analysis.handshake} />
       </MemoryRouter>,
     )
-    expect(screen.getAllByText(/No handshake steps reported for this capture/)).toHaveLength(2)
+    expect(screen.getAllByText(/No handshake steps reported for this capture/)).toHaveLength(1)
   })
 })
 
@@ -212,5 +212,69 @@ describe('v21 risk band', () => {
     )
     const gauge = screen.getByTestId('risk-gauge')
     expect(gauge).toHaveAttribute('aria-valuenow', '20')
+  })
+})
+
+describe('Inferences status mapping', () => {
+  beforeEach(() => {
+    useSentinel.getState().clear()
+  })
+
+  it('shows v21 replay/lifetime as not observed with source-derived methods', async () => {
+    const { InferenceTable } = await import('@/components/inferences/InferenceTable')
+    const analysis = loadMapped(
+      baseResp({
+        child_sa: {
+          proto: field('esp'),
+          mode: field('tunnel', 'model', 0.99, 'INFERRED'),
+          enc_alg: field('aes-256-gcm', 'model', 0.94, 'INFERRED'),
+          enc_key_len: field(256, 'model', 0.94, 'INFERRED'),
+          auth_alg: field('aead', 'model', 0.95, 'INFERRED'),
+          pfs: field(true, 'model', 1, 'INFERRED'),
+          replay: field('unknown', 'none', 0, 'UNKNOWN'),
+          lifetime: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+        },
+      }),
+    )
+    render(
+      <MemoryRouter>
+        <InferenceTable analysis={analysis} />
+      </MemoryRouter>,
+    )
+    const table = screen.getByTestId('inference-table')
+    expect(table.textContent).toMatch(/Replay protection[\s\S]*not observed/)
+    expect(table.textContent).toMatch(/CHILD lifetime[\s\S]*not observed/)
+    expect(table.textContent).not.toMatch(/Disabled/)
+    expect(table.textContent).not.toMatch(/GBM classifier/)
+    expect(table.textContent).not.toMatch(/Rule-based heuristic/)
+    expect(table.textContent).toMatch(/Model classifier/)
+    expect(table.textContent).toMatch(/Direct parse/)
+    expect(table.textContent).toMatch(/not provided by the analysis API/)
+  })
+
+  it('shows ESP-only PFS group as not provided, never invented', async () => {
+    const { InferenceTable } = await import('@/components/inferences/InferenceTable')
+    const resp = baseResp()
+    resp.ike_sa = {
+      version: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+      enc_alg: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+      enc_key_len: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+      auth_alg: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+      prf: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+      dh_group: field('unknown', 'none', 0, 'NOT_OBSERVED'),
+    }
+    resp.child_sa = {
+      ...resp.child_sa,
+      pfs: field('unknown', 'none', 0, 'UNKNOWN'),
+    }
+    const analysis = loadMapped(resp)
+    render(
+      <MemoryRouter>
+        <InferenceTable analysis={analysis} />
+      </MemoryRouter>,
+    )
+    const table = screen.getByTestId('inference-table')
+    expect(table.textContent).toMatch(/PFS group[\s\S]*not provided by the analysis API/)
+    expect(table.textContent).not.toMatch(/Enabled/)
   })
 })

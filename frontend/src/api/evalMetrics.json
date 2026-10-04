@@ -1,0 +1,442 @@
+{
+ "cv_full": {
+  "ipsec_proto": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_version": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "mode": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "enc_alg": {
+   "n": 414,
+   "accuracy": 0.8889,
+   "macro_p": 0.8038,
+   "macro_r": 0.7414,
+   "macro_f1": 0.7607,
+   "unknown_rate": 0.0145
+  },
+  "enc_key_len": {
+   "n": 414,
+   "accuracy": 0.8865,
+   "macro_p": 0.914,
+   "macro_r": 0.8924,
+   "macro_f1": 0.9025,
+   "unknown_rate": 0.0145
+  },
+  "auth_alg": {
+   "n": 414,
+   "accuracy": 0.9855,
+   "macro_p": 0.9906,
+   "macro_r": 0.987,
+   "macro_f1": 0.9888,
+   "unknown_rate": 0.0
+  },
+  "dh_group": {
+   "n": 414,
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
+  },
+  "pfs": {
+   "n": 414,
+   "accuracy": 0.9565,
+   "macro_p": 1.0,
+   "macro_r": 0.9737,
+   "macro_f1": 0.9865,
+   "unknown_rate": 0.0435
+  },
+  "ip_version": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "traffic_type": {
+   "n": 414,
+   "accuracy": 0.9952,
+   "macro_p": 0.9953,
+   "macro_r": 0.9952,
+   "macro_f1": 0.9952,
+   "unknown_rate": 0.0
+  },
+  "nat_t": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_dh_group": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  }
+ },
+ "cv_esp_only": {
+  "ipsec_proto": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_version": {
+   "n": 414,
+   "accuracy": 0.087,
+   "macro_p": 0.3333,
+   "macro_r": 0.3333,
+   "macro_f1": 0.3333,
+   "unknown_rate": 0.913
+  },
+  "mode": {
+   "n": 414,
+   "accuracy": 0.9928,
+   "macro_p": 0.9895,
+   "macro_r": 0.9805,
+   "macro_f1": 0.9849,
+   "unknown_rate": 0.0024
+  },
+  "enc_alg": {
+   "n": 414,
+   "accuracy": 0.8889,
+   "macro_p": 0.8038,
+   "macro_r": 0.7414,
+   "macro_f1": 0.7607,
+   "unknown_rate": 0.0145
+  },
+  "enc_key_len": {
+   "n": 414,
+   "accuracy": 0.8865,
+   "macro_p": 0.914,
+   "macro_r": 0.8924,
+   "macro_f1": 0.9025,
+   "unknown_rate": 0.0145
+  },
+  "auth_alg": {
+   "n": 414,
+   "accuracy": 0.9855,
+   "macro_p": 0.9906,
+   "macro_r": 0.987,
+   "macro_f1": 0.9888,
+   "unknown_rate": 0.0
+  },
+  "dh_group": {
+   "n": 414,
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
+  },
+  "pfs": {
+   "n": 414,
+   "accuracy": 0.087,
+   "macro_p": 0.5,
+   "macro_r": 0.25,
+   "macro_f1": 0.3333,
+   "unknown_rate": 0.913
+  },
+  "ip_version": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "traffic_type": {
+   "n": 414,
+   "accuracy": 0.9952,
+   "macro_p": 0.9976,
+   "macro_r": 0.9952,
+   "macro_f1": 0.9963,
+   "unknown_rate": 0.0024
+  },
+  "nat_t": {
+   "n": 414,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 414,
+   "accuracy": 0.087,
+   "macro_p": 0.1667,
+   "macro_r": 0.1667,
+   "macro_f1": 0.1667,
+   "unknown_rate": 0.913
+  },
+  "ike_dh_group": {
+   "n": 414,
+   "accuracy": 0.087,
+   "macro_p": 0.1667,
+   "macro_r": 0.1667,
+   "macro_f1": 0.1667,
+   "unknown_rate": 0.913
+  }
+ },
+ "synth2real": {
+  "ipsec_proto": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_version": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "mode": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "enc_alg": {
+   "n": 66,
+   "accuracy": 0.7576,
+   "macro_p": 0.65,
+   "macro_r": 0.6361,
+   "macro_f1": 0.6429,
+   "unknown_rate": 0.1515
+  },
+  "enc_key_len": {
+   "n": 66,
+   "accuracy": 0.8182,
+   "macro_p": 0.875,
+   "macro_r": 0.913,
+   "macro_f1": 0.8731,
+   "unknown_rate": 0.0758
+  },
+  "auth_alg": {
+   "n": 66,
+   "accuracy": 0.9697,
+   "macro_p": 0.9792,
+   "macro_r": 0.95,
+   "macro_f1": 0.963,
+   "unknown_rate": 0.0
+  },
+  "dh_group": {
+   "n": 66,
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
+  },
+  "pfs": {
+   "n": 66,
+   "accuracy": 0.0758,
+   "macro_p": 1.0,
+   "macro_r": 0.0857,
+   "macro_f1": 0.1576,
+   "unknown_rate": 0.9242
+  },
+  "ip_version": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "traffic_type": {
+   "n": 66,
+   "accuracy": 0.5,
+   "macro_p": 0.6667,
+   "macro_r": 0.5769,
+   "macro_f1": 0.6053,
+   "unknown_rate": 0.5
+  },
+  "nat_t": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_dh_group": {
+   "n": 66,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  }
+ },
+ "real_holdout": {
+  "ipsec_proto": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_version": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "mode": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "enc_alg": {
+   "n": 30,
+   "accuracy": 0.9333,
+   "macro_p": 1.0,
+   "macro_r": 0.875,
+   "macro_f1": 0.9167,
+   "unknown_rate": 0.0667
+  },
+  "enc_key_len": {
+   "n": 30,
+   "accuracy": 0.9667,
+   "macro_p": 1.0,
+   "macro_r": 0.9848,
+   "macro_f1": 0.9922,
+   "unknown_rate": 0.0333
+  },
+  "auth_alg": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "dh_group": {
+   "n": 30,
+   "accuracy": 0.0,
+   "macro_p": 0.0,
+   "macro_r": 0.0,
+   "macro_f1": 0.0,
+   "unknown_rate": 1.0
+  },
+  "pfs": {
+   "n": 30,
+   "accuracy": 0.1667,
+   "macro_p": 1.0,
+   "macro_r": 0.2019,
+   "macro_f1": 0.3333,
+   "unknown_rate": 0.8333
+  },
+  "ip_version": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "traffic_type": {
+   "n": 30,
+   "accuracy": 0.9,
+   "macro_p": 0.9762,
+   "macro_r": 0.9286,
+   "macro_f1": 0.9484,
+   "unknown_rate": 0.0667
+  },
+  "nat_t": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_enc_alg": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  },
+  "ike_dh_group": {
+   "n": 30,
+   "accuracy": 1.0,
+   "macro_p": 1.0,
+   "macro_r": 1.0,
+   "macro_f1": 1.0,
+   "unknown_rate": 0.0
+  }
+ },
+ "holdout_info": {
+  "n_train": 450,
+  "n_test": 30,
+  "test_runs": [
+   "r2",
+   "r3"
+  ],
+  "test_traffic": [
+   "email",
+   "icmp",
+   "video",
+   "voip",
+   "web",
+   "whatsapp"
+  ]
+ }
+}

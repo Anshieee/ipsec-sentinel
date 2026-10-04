@@ -13,7 +13,10 @@ import { readFileSync } from 'node:fs'
 import { Buffer } from 'node:buffer'
 import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { mapAnalyzeResponse, type BackendAnalyzeResponse } from './backend'
+import { InferenceTable } from '../components/inferences/InferenceTable'
 
 const API = process.env.VITE_API_URL ?? 'http://127.0.0.1:8000'
 const REPO = resolve(__dirname, '../../..')
@@ -150,6 +153,26 @@ describe.skipIf(!apiUp)('live backend mapping', () => {
     expect(mapped.posture?.postureScore).toBeNull()
     expect(mapped.riskScore).toBeNull()
     expect(mapped.findings).toEqual([])
+  })
+
+  it('shows v21 and ESP-only replay/lifetime rows as not observed', async () => {
+    for (const [file, path] of [
+      ['v21-voip.pcap', resolve(DATA_PCAPS, 'v21/r1/voip.pcap')],
+      ['esp-only-v1.pcap', resolve(SAMPLES, 'esp-only-v1.pcap')],
+    ] as const) {
+      const resp = await upload(file, path)
+      const mapped = mapAnalyzeResponse({ name: file }, resp)
+      const { unmount } = render(
+        <MemoryRouter>
+          <InferenceTable analysis={mapped} />
+        </MemoryRouter>,
+      )
+      const table = screen.getByTestId('inference-table')
+      expect(table.textContent).toMatch(/Replay protection[\s\S]*not observed/)
+      expect(table.textContent).toMatch(/CHILD lifetime[\s\S]*not observed/)
+      expect(table.textContent).not.toMatch(/GBM classifier/)
+      unmount()
+    }
   })
 
   it.each([

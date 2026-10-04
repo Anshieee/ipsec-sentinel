@@ -58,7 +58,9 @@ describe('Inferences — uncertainty threshold slider', () => {
     const expanders = table.querySelectorAll('button[aria-expanded]')
     expect(expanders).toHaveLength(16)
     expect(table).toHaveTextContent('Direct parse')
-    expect(table).toHaveTextContent('GBM classifier')
+    expect(table).toHaveTextContent('Model classifier')
+    expect(table).not.toHaveTextContent('GBM classifier')
+    expect(table).not.toHaveTextContent('Rule-based heuristic')
   })
 
   it('exposes the slider bounds and step from the spec', () => {

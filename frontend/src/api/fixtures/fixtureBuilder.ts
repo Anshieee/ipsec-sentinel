@@ -8,12 +8,13 @@ import { buildFlowStats, buildLengthHistogram, buildTimeSeries } from './stats'
 import { FEATURE_EVIDENCE } from './features'
 import type { FixtureSpec } from './spec'
 
-const observed = <T>(value: T): Param<T> => ({ value, provenance: 'observed', confidence: 1, status: 'OBSERVED' })
+const observed = <T>(value: T): Param<T> => ({ value, provenance: 'observed', confidence: 1, status: 'OBSERVED', source: 'parsed' })
 const inferred = <T>(value: T, confidence: number): Param<T> => ({
   value,
   provenance: 'inferred',
   confidence,
   status: 'INFERRED',
+  source: 'model',
 })
 
 export function buildProtocol(spec: FixtureSpec): ProtocolInfo {

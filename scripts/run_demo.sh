@@ -31,11 +31,19 @@ if port_busy 5173; then echo "port 5173 is busy (Vite already running?) — free
 
 LOGDIR="$(mktemp -d "${TMPDIR:-/tmp}/ipsec-demo.XXXXXX")"
 API_PID=""; UI_PID=""; DONE=""
+alive() { [ -n "$1" ] && kill -0 "$1" 2>/dev/null; }
 cleanup() {
   [ -n "$DONE" ] && return 0
   DONE=1
   [ -n "$API_PID" ] && kill "$API_PID" 2>/dev/null || true
   [ -n "$UI_PID" ] && kill "$UI_PID" 2>/dev/null || true
+  # Shutdown is graceful (TERM); escalate only our own PIDs, never a scan.
+  for _ in $(seq 1 25); do
+    alive "$API_PID" || alive "$UI_PID" || break
+    sleep 0.2
+  done
+  if alive "$API_PID"; then kill -9 "$API_PID" 2>/dev/null || true; fi
+  if alive "$UI_PID"; then kill -9 "$UI_PID" 2>/dev/null || true; fi
   wait 2>/dev/null || true
   echo "stopped (logs kept at $LOGDIR)"
 }

@@ -73,11 +73,16 @@ export interface BackendAssessment {
   risk_band: 'LOW' | 'MODERATE' | 'HIGH' | null
 }
 
+export interface BackendDetection {
+  ipsec_detected: boolean
+  evidence?: { n_packets?: number; n_esp?: number; n_ah?: number; n_ike?: number } | null
+}
+
 export interface BackendAnalyzeResponse {
   fields: Record<string, BackendField>
   ike_sa: Record<string, BackendField>
   child_sa: Record<string, BackendField>
-  detection: { ipsec_detected: boolean }
+  detection: BackendDetection
   ai_confidence: number
   metadata: Record<string, BackendField>
   assessment: BackendAssessment
@@ -273,6 +278,7 @@ function paramFor<T>(value: T, f: BackendField, note?: string): Param<T> {
     provenance: toProvenance(f.source),
     confidence: f.confidence,
     status: toStatus(f),
+    source: f.source,
     ...(note ? { note } : {}),
   }
 }
@@ -499,7 +505,13 @@ export function mapAnalyzeResponse(
     },
     posture: headline,
     controls: resp.assessment.controls ?? [],
-    detection: { ipsecDetected: detected },
+    detection: {
+      ipsecDetected: detected,
+      nPackets: num(resp.detection?.evidence?.n_packets, metaNum('n_packets', 0)),
+      nIke: num(resp.detection?.evidence?.n_ike, 0),
+      nEsp: num(resp.detection?.evidence?.n_esp, 0),
+      nAh: num(resp.detection?.evidence?.n_ah, 0),
+    },
     summary: {
       packets: metaNum('n_packets', 0),
       ikeHandshakes: hasIke ? 1 : 0,

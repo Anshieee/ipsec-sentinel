@@ -32,6 +32,10 @@ export function InspectorPage() {
 
   const initiatorIp = useMemo(() => analysis?.packets[0]?.src ?? '', [analysis])
 
+  // Backend-mapped results carry no packet rows: one clear notice
+  // instead of empty tables/boxes (never invented rows).
+  const noPacketDetail = analysis?.posture !== undefined && analysis.packets.length === 0 && analysis.sas.length === 0
+
   const rows = useMemo(
     () => (analysis ? analysis.packets.filter((packet) => matches(packet, filters, initiatorIp)) : []),
     [analysis, filters, initiatorIp],
@@ -51,24 +55,33 @@ export function InspectorPage() {
             counters={live.counters}
             elapsedSec={live.elapsedSec}
           />
-          <FilterBar filters={filters} onChange={setFilters} />
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12 xl:col-span-8">
-              <PacketTable
-                rows={rows}
-                sampledTotal={analysis.packets.length}
-                captureTotal={analysis.summary.packets}
-                selectedNo={selected?.no ?? null}
-                onSelect={setSelected}
-                density={density}
-              />
-            </div>
-            <div className="col-span-12 xl:col-span-4">
-              <PacketDetail packet={selected} />
-            </div>
-          </div>
-          <SaTable sas={analysis.sas} />
-          <InspectorCharts analysis={analysis} />
+          {noPacketDetail ? (
+            <p className="rounded-control border border-line bg-raised/50 p-4 text-[13px] text-muted" data-testid="no-packet-detail">
+              Packet-level detail is not returned by the analysis API; use{' '}
+              <code className="font-mono text-ink">ipsec-analyze analyze --json</code> for evidence.
+            </p>
+          ) : (
+            <>
+              <FilterBar filters={filters} onChange={setFilters} />
+              <div className="grid grid-cols-12 gap-4">
+                <div className="col-span-12 xl:col-span-8">
+                  <PacketTable
+                    rows={rows}
+                    sampledTotal={analysis.packets.length}
+                    captureTotal={analysis.summary.packets}
+                    selectedNo={selected?.no ?? null}
+                    onSelect={setSelected}
+                    density={density}
+                  />
+                </div>
+                <div className="col-span-12 xl:col-span-4">
+                  <PacketDetail packet={selected} />
+                </div>
+              </div>
+              <SaTable sas={analysis.sas} />
+              <InspectorCharts analysis={analysis} />
+            </>
+          )}
         </div>
       ) : null}
     </PageScaffold>

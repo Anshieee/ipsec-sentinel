@@ -9,12 +9,19 @@ interface Stat {
 
 function statsFor(analysis: AnalysisResult | null, counters: { packets: number; ike: number; esp: number; ah: number; other: number }, elapsedSec: number): Stat[] {
   if (analysis) {
+    // Backend-mapped results: IKE/ESP/AH come from detection.evidence
+    // packet counts; Other = total minus those (never total itself).
+    const det = analysis.detection
+    const total = det?.nPackets ?? analysis.summary.packets
+    const ike = det?.nIke ?? analysis.summary.ikeHandshakes
+    const esp = det?.nEsp ?? analysis.summary.espStreams
+    const ah = det?.nAh ?? analysis.summary.ahPackets
     return [
-      { label: 'Total', value: fmtInt(analysis.summary.packets) },
-      { label: 'IKE', value: fmtInt(analysis.summary.ikeHandshakes) },
-      { label: 'ESP', value: fmtInt(analysis.summary.espStreams) },
-      { label: 'AH', value: fmtInt(analysis.summary.ahPackets) },
-      { label: 'Other', value: fmtInt(Math.max(0, analysis.summary.packets - analysis.summary.ahPackets)) },
+      { label: 'Total', value: fmtInt(total) },
+      { label: 'IKE', value: fmtInt(ike) },
+      { label: 'ESP', value: fmtInt(esp) },
+      { label: 'AH', value: fmtInt(ah) },
+      { label: 'Other', value: fmtInt(Math.max(0, total - ike - esp - ah)) },
       { label: 'Duration', value: fmtDuration(analysis.summary.durationSec) },
     ]
   }

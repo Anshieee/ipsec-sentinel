@@ -11,11 +11,18 @@ export function OverviewBottom() {
   const derived = useDerived()
   const setReportOpen = useSentinel((s) => s.setReportOpen)
   const [selection, setSelection] = useState<MatrixSelection | null>(null)
+  const noIpsec = derived.backendHeadline && !derived.ipsecDetected
 
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="col-span-12">
-        <ThreatMatrixCard matrix={derived.matrix} selection={selection} onSelect={setSelection} />
+        {noIpsec ? (
+          <p className="rounded-control border border-line bg-raised/50 p-4 text-[13px] text-muted" data-testid="matrix-not-applicable">
+            Threat matrix: not applicable — no IPsec detected in this capture.
+          </p>
+        ) : (
+          <ThreatMatrixCard matrix={derived.matrix} selection={selection} onSelect={setSelection} />
+        )}
       </div>
       <div className="col-span-12">
         <FindingsList findings={derived.findings} selection={selection} />
