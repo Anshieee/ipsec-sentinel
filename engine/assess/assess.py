@@ -20,7 +20,7 @@ measurement that would resolve it.
 """
 from __future__ import annotations
 
-RULE_VERSION = "1.2.0"
+RULE_VERSION = "1.2.1"
 
 CIPHER_POINTS = {"aes-256-gcm": 25, "aes-128-gcm": 24, "aes-256-cbc": 22,
                  "aes-128-cbc": 20, "3des-cbc": 5, "none": 5}
@@ -169,7 +169,8 @@ def assess(classification: dict, lifetimes: dict | None = None) -> dict:
         return {"controls": controls, "posture_score": None,
                 "coverage": 0.0, "score_status": "WITHHELD",
                 "security_score": None, "risk_score": None,
-                "risk_level": None, "findings": [], "threat_matrix": [],
+                "risk_level": None, "risk_band": None,
+                "findings": [], "threat_matrix": [],
                 "breakdown": {k: 0 for k in WEIGHTS}}
 
     proto, proto_status = val(child_sa, "proto")
@@ -618,8 +619,24 @@ def assess(classification: dict, lifetimes: dict | None = None) -> dict:
         security, risk = posture, 100 - posture
         bucket = "low" if risk < 25 else "medium" if risk < 50 else \
             "high" if risk < 75 else "critical"
+        # Headline band (v1.2.1): the band from the numeric risk, raised
+        # to at least the band implied by the worst CONFIRMED finding
+        # (critical -> HIGH, high -> MODERATE). LIKELY findings never
+        # raise the band. Posture/coverage/weights/numeric risk untouched.
+        base = "LOW" if risk < 25 else "MODERATE" if risk < 50 else "HIGH"
+        floor = "LOW"
+        for f in findings:
+            if f.get("verdict", "CONFIRMED") != "CONFIRMED":
+                continue
+            if f["severity"] == "critical":
+                floor = "HIGH"
+                break
+            if f["severity"] == "high":
+                floor = "MODERATE"
+        order = {"LOW": 0, "MODERATE": 1, "HIGH": 2}
+        band = base if order[base] >= order[floor] else floor
     else:
-        security, risk, bucket = None, None, None
+        security, risk, bucket, band = None, None, None, None
     threats = [{"id": f["id"], "likelihood": f["likelihood"],
                 "impact": f["impact"],
                 "risk": f["likelihood"] * f["impact"]} for f in findings]
@@ -634,6 +651,7 @@ def assess(classification: dict, lifetimes: dict | None = None) -> dict:
     return {"controls": controls, "posture_score": posture,
             "coverage": round(coverage, 4), "score_status": status,
             "security_score": security, "risk_score": risk,
-            "risk_level": bucket, "findings": findings,
+            "risk_level": bucket, "risk_band": band,
+            "findings": findings,
             "threat_matrix": threats, "breakdown": breakdown,
             "rule_version": RULE_VERSION}

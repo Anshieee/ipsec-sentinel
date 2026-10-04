@@ -21,7 +21,8 @@ export interface Param<T> {
 
 export interface ProtocolInfo {
   ikeVersion: Param<'IKEv1' | 'IKEv2'>
-  exchangeMode: Param<'IKEv2 (IKE_SA_INIT + IKE_AUTH)' | 'Main Mode' | 'Aggressive Mode'>
+  /** Derived from ike_sa evidence (never hard-coded): observed exchanges or "not observed". */
+  exchangeMode: Param<string>
   mode: Param<'tunnel' | 'transport'>
   ipVersion: Param<'IPv4' | 'IPv6'>
   natTraversal: Param<boolean>
@@ -103,6 +104,8 @@ export interface AssessmentHeadline {
   scoreStatus: ScoreStatus
   riskScore: number | null
   riskLevel: string | null
+  /** v1.2.1 headline band: numeric-risk band floored by the worst CONFIRMED finding. */
+  riskBand: 'LOW' | 'MODERATE' | 'HIGH' | null
   ruleVersion: string
 }
 

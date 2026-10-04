@@ -54,8 +54,11 @@ response carries two objects next to the flat `fields`:
 ## Assessment (v1.1 controls)
 
 `assessment` = `{controls[], posture_score, coverage, score_status,
-security_score, risk_score, risk_level, findings[], threat_matrix[],
-breakdown{}, rule_version}`. Each control returns PASS|FAIL|UNKNOWN|
+security_score, risk_score, risk_level, risk_band, findings[],
+threat_matrix[], breakdown{}, rule_version}`. `risk_band` (v1.2.1) is
+LOW/MODERATE/HIGH (null when WITHHELD): the band from the numeric risk,
+raised to at least the band implied by the worst CONFIRMED finding
+(critical → HIGH, high → MODERATE; LIKELY never raises). Each control returns PASS|FAIL|UNKNOWN|
 NOT_APPLICABLE with rule id, rule version, evidence, explanation (and
 `resolve_by` when UNKNOWN). `posture_score` covers evaluated controls
 only; `coverage` is the evidence-weighted share; `score_status` is
@@ -78,8 +81,8 @@ AnalyzeResponse = `{fields: {11 scored fields (+prf in ike_sa)},
 ike_sa, child_sa, detection, ai_confidence,
 metadata: {duration_s, n_packets, packet_rate, mean_bytes,
 direction_ratio}, assessment: {controls, posture_score, coverage,
-score_status, security_score, risk_score, risk_level, findings[],
-threat_matrix[], breakdown{}}}`.
+score_status, security_score, risk_score, risk_level, risk_band,
+findings[], threat_matrix[], breakdown{}}}`.
 
 ## Errors
 
@@ -125,5 +128,14 @@ CHANGED: `posture_score`/`coverage` are confidence-weighted
 (OBSERVED/label 1.0, INFERRED its confidence, UNKNOWN 0) — coverage
 values shift vs v1.1 (e.g. live v1 0.65 → 0.6684); the 0.5 WITHHELD
 gate is unchanged. `breakdown` gains `ike_cipher`, `ike_integrity`.
-`rule_version` is now `1.2.0`. `GET /variants` returns 21 rows
+`rule_version` was `1.2.0`. `GET /variants` returns 21 rows
 (new v21 weak-IKE variant).
+
+## v1.2 → v1.2.1 change list
+
+ADDED assessment key `risk_band` (LOW/MODERATE/HIGH, null when
+WITHHELD): numeric-risk band floored by the worst CONFIRMED finding
+(critical → HIGH, high → MODERATE; LIKELY never raises). Posture,
+coverage, weights and numeric risk are unchanged. `rule_version` is now
+`1.2.1`. The UI gauge colour and label must read `risk_band` only —
+never recompute bands client-side.

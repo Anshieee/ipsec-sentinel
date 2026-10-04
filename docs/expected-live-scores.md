@@ -31,29 +31,29 @@ mode 5 = 108; factor f per control):
   v1 live; their label oracles differ (pinned in `test_assess.py`).
 - plain-web: WITHHELD, no score (non-IPsec → NOT_APPLICABLE).
 
-| sample | posture | coverage | status | enc | pfs |
-|---|---|---|---|---|---|
-| plain-web | WITHHELD | 0.0 | WITHHELD | none | False (N/A) |
-| real-v1-voip | 88 | 0.4985 | WITHHELD | aes-128-cbc | unknown |
-| real-v18-voip | 88 | 0.5255 | PUBLISHED | aes-128-cbc | unknown |
-| v1-voip | 89 | 0.6684 | PUBLISHED | aes-128-cbc | True |
-| v10-voip | 76 | 0.6486 | PUBLISHED | aes-128-cbc | True |
-| v11-voip | 66 | 0.6269 | PUBLISHED | 3des-cbc | True |
-| v12-voip | 78 | 0.5742 | PUBLISHED | aes-128-cbc | unknown |
-| v13-voip | 89 | 0.6759 | PUBLISHED | aes-128-cbc | True |
-| v14-voip | 89 | 0.6758 | PUBLISHED | aes-128-cbc | True |
-| v15-voip | 89 | 0.6613 | PUBLISHED | aes-128-cbc | True |
-| v16-voip | 89 | 0.6759 | PUBLISHED | aes-128-cbc | True |
-| v17-voip | 89 | 0.6759 | PUBLISHED | aes-128-cbc | True |
-| v18-voip | 89 | 0.6759 | PUBLISHED | aes-128-cbc | True |
-| v2-voip | 92 | 0.6389 | PUBLISHED | aes-256-cbc | True |
-| v3-voip | 85 | 0.6347 | PUBLISHED | aes-128-gcm | False |
-| v4-voip | 100 | 0.6204 | PUBLISHED | aes-256-gcm | True |
-| v5-voip | 100 | 0.6063 | PUBLISHED | aes-256-gcm | True |
-| v6-voip | 76 | 0.6025 | PUBLISHED | aes-256-cbc | False |
-| v7-voip | 68 | 0.6738 | PUBLISHED | none (AH) | True |
-| v8-voip | 78 | 0.6591 | PUBLISHED | aes-128-cbc | True |
-| v9-voip | 78 | 0.6605 | PUBLISHED | aes-128-cbc | True |
+| sample | posture | coverage | status | band | enc | pfs |
+|---|---|---|---|---|---|---|
+| plain-web | WITHHELD | 0.0 | WITHHELD | — | none | False (N/A) |
+| real-v1-voip | 88 | 0.4985 | WITHHELD | — | aes-128-cbc | unknown |
+| real-v18-voip | 88 | 0.5255 | PUBLISHED | LOW | aes-128-cbc | unknown |
+| v1-voip | 89 | 0.6684 | PUBLISHED | LOW | aes-128-cbc | True |
+| v10-voip | 76 | 0.6486 | PUBLISHED | LOW | aes-128-cbc | True |
+| v11-voip | 66 | 0.6269 | PUBLISHED | MODERATE | 3des-cbc | True |
+| v12-voip | 78 | 0.5742 | PUBLISHED | LOW | aes-128-cbc | unknown |
+| v13-voip | 89 | 0.6759 | PUBLISHED | LOW | aes-128-cbc | True |
+| v14-voip | 89 | 0.6758 | PUBLISHED | LOW | aes-128-cbc | True |
+| v15-voip | 89 | 0.6613 | PUBLISHED | LOW | aes-128-cbc | True |
+| v16-voip | 89 | 0.6759 | PUBLISHED | LOW | aes-128-cbc | True |
+| v17-voip | 89 | 0.6759 | PUBLISHED | LOW | aes-128-cbc | True |
+| v18-voip | 89 | 0.6759 | PUBLISHED | LOW | aes-128-cbc | True |
+| v2-voip | 92 | 0.6389 | PUBLISHED | LOW | aes-256-cbc | True |
+| v3-voip | 85 | 0.6347 | PUBLISHED | LOW | aes-128-gcm | False |
+| v4-voip | 100 | 0.6204 | PUBLISHED | LOW | aes-256-gcm | True |
+| v5-voip | 100 | 0.6063 | PUBLISHED | LOW | aes-256-gcm | True |
+| v6-voip | 76 | 0.6025 | PUBLISHED | LOW | aes-256-cbc | False |
+| v7-voip | 68 | 0.6738 | PUBLISHED | MODERATE | none (AH) | True |
+| v8-voip | 78 | 0.6591 | PUBLISHED | HIGH | aes-128-cbc | True |
+| v9-voip | 78 | 0.6605 | PUBLISHED | HIGH | aes-128-cbc | True |
 
 Live dh_group is always `unknown` (NOT_OBSERVED): the IKE DH group
 describes the IKE SA only (visible in `ike_sa`, scored there when weak).

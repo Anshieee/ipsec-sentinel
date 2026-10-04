@@ -1,4 +1,4 @@
-Script started on 2026-10-04 00:41:42+05:30 [COMMAND=" set -x ipsec-analyze analyze demo/samples/v1-voip.pcap ipsec-analyze analyze demo/samples/v12-voip.pcap --json | head -25 ipsec-analyze serve & SRV=$!; sleep 4 curl -s localhost:8000/health; echo curl -s -F file=@demo/samples/real-v18-voip.pcap localhost:8000/analyze | head -c 600; echo kill $SRV; wait 2>/dev/null || true ipsec-analyze serve --mock & SRV=$!; sleep 4 curl -s localhost:8000/analyze -F file=@demo/samples/v1-voip.pcap | head -c 400; echo kill $SRV; wait 2>/dev/null || true " <not executed on terminal>]
+Script started on 2026-10-04 07:20:26+05:30 [COMMAND=" set -x ipsec-analyze analyze demo/samples/v1-voip.pcap ipsec-analyze analyze demo/samples/v12-voip.pcap --json | head -25 ipsec-analyze serve & SRV=$!; sleep 4 curl -s localhost:8000/health; echo curl -s -F file=@demo/samples/real-v18-voip.pcap localhost:8000/analyze | head -c 600; echo kill $SRV; wait 2>/dev/null || true ipsec-analyze serve --mock & SRV=$!; sleep 4 curl -s localhost:8000/analyze -F file=@demo/samples/v1-voip.pcap | head -c 400; echo kill $SRV; wait 2>/dev/null || true " <not executed on terminal>]
 + ipsec-analyze analyze demo/samples/v1-voip.pcap
 == demo/samples/v1-voip.pcap (AI confidence 0.90)
   ipsec_detected: True
@@ -30,7 +30,7 @@ Script started on 2026-10-04 00:41:42+05:30 [COMMAND=" set -x ipsec-analyze anal
     ip_version    4                parsed  1.00
     traffic_type  voip             model   1.00
     nat_t         False            parsed  1.00
-  posture 89/100 risk 11 (low) coverage 0.67
+  posture 89/100 risk 11 (low band LOW) coverage 0.67
   [unknown] dh-strength: Capture IKE_SA_INIT (or the IKEv1 main-mode proposal) carrying the negotiated group.
   [unknown] lifetime: Provide rekey intervals (configuration or long-duration capture with rekeys).
   [unknown] replay: Read receiver configuration (anti-replay on, window size); packet captures cannot prove enforcement.
@@ -61,48 +61,48 @@ Script started on 2026-10-04 00:41:42+05:30 [COMMAND=" set -x ipsec-analyze anal
   },
   "mode": {
    "value": "tunnel",
-+ SRV=988322
++ SRV=1661134
 + sleep 4
 + ipsec-analyze serve
-[32mINFO[0m:     Started server process [[36m988322[0m]
+[32mINFO[0m:     Started server process [[36m1661134[0m]
 [32mINFO[0m:     Waiting for application startup.
 [32mINFO[0m:     Application startup complete.
 [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:8000[0m (Press CTRL+C to quit)
 + curl -s localhost:8000/health
-[32mINFO[0m:     127.0.0.1:46918 - "[1mGET /health HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34922 - "[1mGET /health HTTP/1.1[0m" [32m200 OK[0m
 {"status":"ok","models_loaded":true}+ echo
 
 + curl -s -F file=@demo/samples/real-v18-voip.pcap localhost:8000/analyze
 + head -c 600
-[32mINFO[0m:     127.0.0.1:46926 - "[1mPOST /analyze HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34928 - "[1mPOST /analyze HTTP/1.1[0m" [32m200 OK[0m
 {"fields":{"ipsec_proto":{"value":"esp","source":"parsed","confidence":1.0,"status":"OBSERVED","detail":{"note":"ip-proto-50-observed"},"evidence":null},"ike_version":{"value":"ikev2","source":"parsed","confidence":1.0,"status":"OBSERVED","detail":{"exchange":"ike-sa-init","role":"responder-selected","packet":2},"evidence":null},"mode":{"value":"tunnel","source":"model","confidence":0.67,"status":"INFERRED","detail":{"header_parse":"n/a","reason":"ESP payload encrypted: inner IP header and next-header are not visible on the wire","size_signal":{"value":"tunnel","confidence":0.67},"decided_by":+ echo
 
-+ kill 988322
++ kill 1661134
 + wait
 [32mINFO[0m:     Shutting down
 [32mINFO[0m:     Waiting for application shutdown.
 [32mINFO[0m:     Application shutdown complete.
-[32mINFO[0m:     Finished server process [[36m988322[0m]
-+ SRV=988529
+[32mINFO[0m:     Finished server process [[36m1661134[0m]
++ SRV=1661358
 + sleep 4
 + ipsec-analyze serve --mock
 mock API on :8000 (deterministic samples)
-[32mINFO[0m:     Started server process [[36m988529[0m]
+[32mINFO[0m:     Started server process [[36m1661358[0m]
 [32mINFO[0m:     Waiting for application startup.
 [32mINFO[0m:     Application startup complete.
 [32mINFO[0m:     Uvicorn running on [1mhttp://127.0.0.1:8000[0m (Press CTRL+C to quit)
-[32mINFO[0m:     127.0.0.1:46928 - "[1mGET /health HTTP/1.1[0m" [32m200 OK[0m
-[32mINFO[0m:     127.0.0.1:46928 - "[1mGET /v1/models HTTP/1.1[0m" [31m404 Not Found[0m
+[32mINFO[0m:     127.0.0.1:49792 - "[1mGET /health HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:49792 - "[1mGET /v1/models HTTP/1.1[0m" [31m404 Not Found[0m
 + curl -s localhost:8000/analyze -F file=@demo/samples/v1-voip.pcap
 + head -c 400
-[32mINFO[0m:     127.0.0.1:46936 - "[1mPOST /analyze HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:49794 - "[1mPOST /analyze HTTP/1.1[0m" [32m200 OK[0m
 {"fields":{"ipsec_proto":{"value":"esp","source":"parsed","confidence":1.0,"status":"OBSERVED","detail":null,"evidence":null},"ike_version":{"value":"ikev2","source":"parsed","confidence":1.0,"status":"OBSERVED","detail":null,"evidence":null},"mode":{"value":"tunnel","source":"model","confidence":0.99,"status":"INFERRED","detail":{"header_parse":"n/a","reason":"ESP payload encrypted: inner IP head+ echo
 
-+ kill 988529
++ kill 1661358
 + wait
 [32mINFO[0m:     Shutting down
 [32mINFO[0m:     Waiting for application shutdown.
 [32mINFO[0m:     Application shutdown complete.
-[32mINFO[0m:     Finished server process [[36m988529[0m]
+[32mINFO[0m:     Finished server process [[36m1661358[0m]
 
-Script done on 2026-10-04 00:41:57+05:30 [COMMAND_EXIT_CODE="0"]
+Script done on 2026-10-04 07:20:41+05:30 [COMMAND_EXIT_CODE="0"]

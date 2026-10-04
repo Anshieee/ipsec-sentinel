@@ -96,6 +96,27 @@ def test_mismatch_oracles_score_own_sa():
     assert a21["breakdown"]["cipher"] == 25, a21["breakdown"]
 
 
+def test_risk_band_oracles():
+    # Band from numeric risk, floored by worst CONFIRMED finding
+    # (critical -> HIGH, high -> MODERATE). Posture/risk untouched.
+    expected = {
+        "v1": "LOW", "v2": "LOW", "v3": "MODERATE", "v4": "LOW",
+        "v5": "LOW", "v6": "MODERATE", "v7": "MODERATE", "v8": "HIGH",
+        "v9": "HIGH", "v10": "LOW", "v11": "HIGH", "v12": "LOW",
+        "v13": "LOW", "v14": "LOW", "v15": "LOW", "v16": "LOW",
+        "v17": "LOW", "v18": "LOW", "v19": "HIGH", "v20": "LOW",
+        "v21": "HIGH",
+    }
+    assert set(expected) == set(matrix.VARIANT_IDS)
+    for vid, band in expected.items():
+        a = assess(*classify_from_label(vid))
+        assert a["risk_band"] == band, (vid, a["risk_band"])
+        # numeric risk unchanged by the floor
+        assert a["risk_score"] == 100 - a["posture_score"], vid
+    rp = assess(*classify_from_label("plain"))
+    assert rp["risk_band"] is None
+
+
 def test_orderings_and_bounds():
     scores = {}
     for vid in matrix.VARIANT_IDS:
@@ -133,7 +154,7 @@ def test_findings():
         for f in res["findings"]:
             assert tm[f["id"]]["risk"] == f["likelihood"] * f["impact"], name
     for c in r11["controls"]:
-        assert c["rule_version"] == "1.2.0", c
+        assert c["rule_version"] == "1.2.1", c
         assert c["evidence"] is not None, c
         assert c["source"] in ("observed", "inferred", "label", "none"), c
 

@@ -291,3 +291,29 @@ def test_v21_live_weak_ike_strong_esp():
     assert a["coverage"] == 0.6576, a["coverage"]
     assert a["score_status"] == "PUBLISHED"
     assert a["breakdown"]["cipher"] == 25, a["breakdown"]
+
+
+# --------------------------------------------------------------------------
+# v1.2.1: headline risk_band (test-first)
+# --------------------------------------------------------------------------
+def test_risk_band_floor():
+    """risk_band: band from the numeric risk, raised to at least the band
+    implied by the worst CONFIRMED finding (critical -> HIGH,
+    high -> MODERATE). LIKELY findings do not raise. WITHHELD/plain ->
+    None. Posture/coverage/weights/numeric risk unchanged."""
+    assert assess(cls_for(strong_ike()))["risk_band"] == "LOW"  # v1-like
+    a21 = assess(cls_for(strong_ike(enc="3des-cbc", keylen=168,
+                                    auth="hmac-sha1", prf="hmac-sha1", dh=2),
+                         child=strong_esp_child()))
+    assert a21["risk_band"] == "HIGH", (a21["risk_band"], a21["risk_score"])
+    # numeric risk untouched by the floor
+    assert a21["risk_score"] == 100 - a21["posture_score"]
+    # LIKELY-only weak child: no raise (stays numeric band)
+    child = strong_esp_child()
+    child["enc_alg"] = _inf("3des-cbc", 0.87)
+    child["enc_key_len"] = _inf(168, 0.87)
+    a19 = assess(cls_for(strong_ike(), child=child))
+    assert a19["risk_band"] == "MODERATE", a19["risk_band"]
+    # plain / withheld: no band
+    assert assess({"ike_sa": {}, "child_sa": {},
+                   "detection": {"ipsec_detected": False}})["risk_band"] is None

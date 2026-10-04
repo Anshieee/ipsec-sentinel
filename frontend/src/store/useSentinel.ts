@@ -156,9 +156,10 @@ export function deriveValues(
   if (analysis.posture) {
     const findings = analysis.findings
     const risk = analysis.riskScore
-    const level = analysis.posture.riskLevel
+    // Gauge colour + label read the backend risk_band ONLY (v1.2.1):
+    // never recompute bands client-side for backend results.
     const band: RiskBand =
-      level === 'low' ? 'low' : level === 'medium' ? 'moderate' : level === 'high' || level === 'critical' ? 'high' : 'low'
+      analysis.posture.riskBand === 'HIGH' ? 'high' : analysis.posture.riskBand === 'MODERATE' ? 'moderate' : 'low'
     const top = topClass(analysis.trafficClasses)
     return {
       analysis,

@@ -82,7 +82,8 @@ SAMPLE = {
         "security_score": 89,
         "risk_score": 11,
         "risk_level": "low",
-        "rule_version": "1.2.0",
+        "risk_band": "LOW",
+        "rule_version": "1.2.1",
         "controls": [],
         "findings": [],
         "threat_matrix": [],
@@ -102,6 +103,21 @@ class FieldResult(BaseModel):
     evidence: dict[str, object] | None = None
 
 
+class AssessmentOut(BaseModel):
+    controls: list[dict] = []
+    posture_score: int | None = None
+    coverage: float = 0.0
+    score_status: str = "WITHHELD"
+    security_score: int | None = None
+    risk_score: int | None = None
+    risk_level: str | None = None
+    risk_band: str | None = None
+    findings: list[dict] = []
+    threat_matrix: list[dict] = []
+    breakdown: dict[str, int] = {}
+    rule_version: str = ""
+
+
 class AnalyzeResponse(BaseModel):
     fields: dict[str, FieldResult]
     ike_sa: dict[str, FieldResult]
@@ -109,7 +125,7 @@ class AnalyzeResponse(BaseModel):
     detection: dict
     ai_confidence: float
     metadata: dict[str, FieldResult]
-    assessment: dict
+    assessment: AssessmentOut
 
 
 @app.get("/health")

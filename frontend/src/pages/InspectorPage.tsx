@@ -6,6 +6,7 @@ import { PacketTable } from '@/components/inspector/PacketTable'
 import { PacketDetail } from '@/components/inspector/PacketDetail'
 import { SaTable } from '@/components/inspector/SaTable'
 import { InspectorCharts } from '@/components/inspector/InspectorCharts'
+import { NoIpsecBanner, isNoIpsec } from '@/components/ui/NoIpsecBanner'
 import { useAnalysis, useSentinel } from '@/store/useSentinel'
 import type { PacketRow } from '@/types/analysis'
 
@@ -44,6 +45,7 @@ export function InspectorPage() {
     >
       {analysis ? (
         <div className="space-y-4">
+          {isNoIpsec(analysis) ? <NoIpsecBanner /> : null}
           <StatsStrip
             analysis={analysis}
             counters={live.counters}

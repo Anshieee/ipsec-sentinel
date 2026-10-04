@@ -213,9 +213,7 @@
       "title": "Metadata"
      },
      "assessment": {
-      "additionalProperties": true,
-      "type": "object",
-      "title": "Assessment"
+      "$ref": "#/components/schemas/AssessmentOut"
      }
     },
     "type": "object",
@@ -229,6 +227,118 @@
      "assessment"
     ],
     "title": "AnalyzeResponse"
+   },
+   "AssessmentOut": {
+    "properties": {
+     "controls": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Controls",
+      "default": []
+     },
+     "posture_score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Posture Score"
+     },
+     "coverage": {
+      "type": "number",
+      "title": "Coverage",
+      "default": 0.0
+     },
+     "score_status": {
+      "type": "string",
+      "title": "Score Status",
+      "default": "WITHHELD"
+     },
+     "security_score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Security Score"
+     },
+     "risk_score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Risk Score"
+     },
+     "risk_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Risk Level"
+     },
+     "risk_band": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Risk Band"
+     },
+     "findings": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Findings",
+      "default": []
+     },
+     "threat_matrix": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Threat Matrix",
+      "default": []
+     },
+     "breakdown": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Breakdown",
+      "default": {}
+     },
+     "rule_version": {
+      "type": "string",
+      "title": "Rule Version",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "title": "AssessmentOut",
+    "description": "Typed assessment headline (v1.2.1 adds risk_band).\n\nControls/findings keep free-form dicts (rule sets evolve); the\nheadline keys are frozen so code generators name them."
    },
    "Body_analyze_pcap_analyze_post": {
     "properties": {

@@ -16,8 +16,9 @@ export function AuditSummary() {
   const previousRiskScore = useSentinel((s) => s.previousRiskScore)
   const analysis = useAnalysis()
   const backend = analysis?.posture
+  const liveMode = useSentinel((s) => s.settings.dataSource === 'live')
   const delta =
-    typeof previousRiskScore === 'number' && derived.riskScore !== null && previousRiskScore !== derived.riskScore
+    !liveMode && typeof previousRiskScore === 'number' && derived.riskScore !== null && previousRiskScore !== derived.riskScore
       ? derived.riskScore - previousRiskScore
       : null
   const withheld = derived.backendHeadline && derived.scoreStatus === 'WITHHELD'

@@ -17,6 +17,10 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 export function Header() {
   const sidebarCollapsed = useSentinel((s) => s.sidebarCollapsed)
   const toggleSidebar = useSentinel((s) => s.toggleSidebar)
+  // Live mode: the bell accumulates per-upload/per-tick notices that grow
+  // without bound and mix simulated events with real ones — hidden here
+  // (findings live on the Audit page with their own verdicts).
+  const dataSource = useSentinel((s) => s.settings.dataSource)
   const searchRef = useRef<HTMLInputElement | null>(null)
   const [overflowOpen, setOverflowOpen] = useState(false)
   const narrow = !useMediaQuery('(min-width: 1024px)', true)
@@ -78,7 +82,7 @@ export function Header() {
           </Popover>
         ) : null}
 
-        <NotificationBell />
+        {dataSource === 'live' ? null : <NotificationBell />}
 
         <Tooltip content="Analyst account">
           <AnalystMenu />

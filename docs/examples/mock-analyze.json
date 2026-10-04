@@ -268,14 +268,14 @@
   }
  },
  "assessment": {
+  "controls": [],
   "posture_score": 89,
   "coverage": 0.6509,
   "score_status": "PUBLISHED",
   "security_score": 89,
   "risk_score": 11,
   "risk_level": "low",
-  "rule_version": "1.2.0",
-  "controls": [],
+  "risk_band": "LOW",
   "findings": [],
   "threat_matrix": [],
   "breakdown": {
@@ -289,6 +289,7 @@
    "ike_cipher": 4,
    "ike_integrity": 3,
    "mode": 5
-  }
+  },
+  "rule_version": "1.2.1"
  }
 }

@@ -72,10 +72,13 @@ def _print_human(name: str, resp: dict):
         typer.echo(f"  posture WITHHELD (coverage {a.get('coverage', 0):.2f}); "
                    f"no headline score")
     else:
+        band = a.get("risk_band")
+        band_txt = f" band {band}" if band else ""
         typer.echo(f"  posture {a['security_score']}/100 risk {a['risk_score']} "
-                   f"({a['risk_level']}) coverage {a.get('coverage', 0):.2f}")
+                   f"({a['risk_level']}{band_txt}) coverage {a.get('coverage', 0):.2f}")
     for f in a["findings"][:5]:
-        typer.echo(f"  [{f['severity']}] {f['text']}")
+        verdict = f" {f['verdict']}" if f.get("verdict") == "LIKELY" else ""
+        typer.echo(f"  [{f['severity']}{verdict}] {f['text']}")
     for c in a.get("controls", []):
         if c["status"] == "UNKNOWN":
             typer.echo(f"  [unknown] {c['id']}: {c.get('resolve_by', '')}")

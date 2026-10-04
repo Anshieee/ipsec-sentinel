@@ -70,6 +70,7 @@ export interface BackendAssessment {
   threat_matrix: { id: string; likelihood: number; impact: number; risk: number }[]
   breakdown: Record<string, number>
   rule_version: string
+  risk_band: 'LOW' | 'MODERATE' | 'HIGH' | null
 }
 
 export interface BackendAnalyzeResponse {
@@ -190,8 +191,80 @@ function notObservedNote(field: string, f: BackendField): string {
   return `${field}: not observed in this capture — absence of evidence, not evidence of absence.`
 }
 
+/** Exchange subtitle derived from ike_sa evidence — never hard-coded.
+ * OBSERVED: the observed exchange + role + packet ref; NOT_OBSERVED:
+ * "IKE handshake not observed (ESP only)". */
+export function describeExchange(version: BackendField): Param<string> {
+  const st = toStatus(version)
+  const ev = (version.evidence ?? {}) as { exchange?: string; role?: string; packet?: number }
+  if (st === 'OBSERVED' && typeof ev.exchange === 'string') {
+    const role = typeof ev.role === 'string' ? ev.role.replace(/-/g, ' ') : 'observed'
+    const pkt = typeof ev.packet === 'number' ? ` (packet ${ev.packet})` : ''
+    const exch = ev.exchange === 'ike-sa-init' ? 'IKE_SA_INIT' : ev.exchange === 'ikev1-main-mode' ? 'Main Mode' : ev.exchange
+    return {
+      value: `${str(version.value, '').toUpperCase()} · ${exch} ${role}${pkt}`,
+      provenance: toProvenance(version.source),
+      confidence: version.confidence,
+      status: st,
+    }
+  }
+  if (st === 'NOT_APPLICABLE') {
+    return { value: 'Not applicable (no IPsec)', provenance: 'observed', confidence: 1, status: st }
+  }
+  return {
+    value: 'IKE handshake not observed (ESP only)',
+    provenance: 'observed',
+    confidence: 1,
+    status: st,
+    note: 'No handshake packets in this capture; CHILD fields are inferred or unknown.',
+  }
+}
+
 interface MappedProtocol {
   protocol: AnalysisResult['protocol']
+}
+
+/** Handshake steps from observed SA evidence (packet index, exchange,
+ * role). Only evidence with a packet index becomes a step — times and
+ * sizes are unknown (0) and rendered as "packet N". Never invented. */
+export function handshakeFromEvidence(
+  ikeSa: Record<string, BackendField>,
+  childSa: Record<string, BackendField>,
+): import('@/types/analysis').HandshakeStep[] {
+  const byPacket = new Map<number, { exchange: string; role: string }>()
+  const consider = (f: BackendField | undefined): void => {
+    if (!f || toStatus(f) !== 'OBSERVED') return
+    const ev = (f.evidence ?? {}) as { exchange?: string; role?: string; packet?: number }
+    if (typeof ev.packet !== 'number' || typeof ev.exchange !== 'string') return
+    if (!byPacket.has(ev.packet)) byPacket.set(ev.packet, { exchange: ev.exchange, role: ev.role ?? 'observed' })
+  }
+  for (const k of ['version', 'enc_alg', 'auth_alg', 'prf', 'dh_group']) consider(ikeSa[k])
+  for (const k of ['proto', 'mode']) consider(childSa[k])
+  return [...byPacket.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([packet, { exchange, role }]) => {
+      const name =
+        exchange === 'ike-sa-init'
+          ? role === 'responder-selected'
+            ? 'IKE_SA_INIT response (selected suite)'
+            : 'IKE_SA_INIT request (offered suite)'
+          : exchange === 'ikev1-main-mode'
+            ? 'IKEv1 Main Mode proposal'
+            : exchange
+      return {
+        id: `hs-pkt-${packet}`,
+        step: name,
+        index: packet,
+        timeSec: 0,
+        direction: (role.includes('responder') ? 'responder->initiator' : role.includes('initiator') ? 'initiator->responder' : 'n/a') as
+          | 'initiator->responder'
+          | 'responder->initiator'
+          | 'n/a',
+        sizeBytes: 0,
+        encrypted: false,
+        details: { packet: String(packet), role: role.replace(/-/g, ' '), exchange },
+      }
+    })
 }
 
 function paramFor<T>(value: T, f: BackendField, note?: string): Param<T> {
@@ -271,23 +344,7 @@ export function mapProtocol(
 
   return {
     ikeVersion,
-    exchangeMode:
-      ikeVer === 'ikev1'
-        ? { value: 'Main Mode', provenance: 'inferred', confidence: 0.5, status: toStatus(ike('version')), note: 'Aggressive mode never observed; backend does not distinguish.' }
-        : ikeVer === 'ikev2'
-          ? {
-              value: 'IKEv2 (IKE_SA_INIT + IKE_AUTH)',
-              provenance: toProvenance(ike('version').source),
-              confidence: ike('version').confidence,
-              status: toStatus(ike('version')),
-            }
-          : {
-              value: 'IKEv2 (IKE_SA_INIT + IKE_AUTH)',
-              provenance: 'observed',
-              confidence: 0,
-              status: 'NOT_OBSERVED',
-              note: 'Not observed — no handshake captured.',
-            },
+    exchangeMode: describeExchange(ike('version')),
     mode,
     ipVersion: (() => {
       const v = getMeta('ip_version')
@@ -403,6 +460,7 @@ function headlineOf(a: BackendAssessment): AssessmentHeadline {
     scoreStatus: a.score_status,
     riskScore: a.risk_score,
     riskLevel: a.risk_level,
+    riskBand: a.risk_band,
     ruleVersion: a.rule_version,
   }
 }
@@ -454,7 +512,7 @@ export function mapAnalyzeResponse(
       trafficLabel === 'unknown' || trafficLabel === '' ? undefined : trafficLabel,
       tConf,
     ),
-    handshake: [],
+    handshake: handshakeFromEvidence(resp.ike_sa ?? {}, resp.child_sa ?? {}),
     findings: (resp.assessment.findings ?? []).map((finding) => mapFinding(finding, resp.assessment.controls ?? [])),
     sas: [],
     packets: [],

@@ -8,10 +8,12 @@ import { HandshakeTimeline } from '@/components/overview/HandshakeTimeline'
 import { LiveTicker } from '@/components/overview/LiveTicker'
 import { OverviewBottom } from '@/components/overview/OverviewBottom'
 import { useAnalysis } from '@/store/useSentinel'
+import { isNoIpsec } from '@/components/ui/NoIpsecBanner'
 
 /** Dashboard Overview (`/`), spec 10.1. */
 export function OverviewPage() {
   const analysis = useAnalysis()
+  const noIpsec = isNoIpsec(analysis)
 
   return (
     <PageScaffold
@@ -28,12 +30,12 @@ export function OverviewPage() {
           <div className="col-span-12 grid grid-cols-12 gap-4 lg:grid-cols-12">
             <div className="col-span-12 space-y-4 xl:col-span-5">
               <UploadZone />
-              <CryptoCard analysis={analysis} />
-              <StatusChipsRow analysis={analysis} />
+              {noIpsec ? null : <CryptoCard analysis={analysis} />}
+              {noIpsec ? null : <StatusChipsRow analysis={analysis} />}
             </div>
 
             <div className="col-span-12 space-y-4 xl:col-span-7">
-              <ClassChart classes={analysis.trafficClasses} />
+              {noIpsec ? null : <ClassChart classes={analysis.trafficClasses} />}
               <HandshakeTimeline steps={analysis.handshake} />
               <LiveTicker />
             </div>

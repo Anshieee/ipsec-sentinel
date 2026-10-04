@@ -36,7 +36,16 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
 
   return (
     <Card data-testid="handshake-timeline">
-      <CardHeader title="Handshake timeline" description={`${steps.length} observed steps`} />
+      <CardHeader
+        title="Handshake timeline"
+        description={steps.length === 0 ? 'No handshake steps reported for this capture' : `${steps.length} observed steps`}
+      />
+      {steps.length === 0 ? (
+        <p className="px-1 py-2 text-[12px] text-muted">
+          No handshake steps reported for this capture — upload a capture containing the IKE handshake to see
+          them.
+        </p>
+      ) : (
       <ol className="relative space-y-1">
         <span className="absolute bottom-2 left-[15px] top-2 w-px bg-line" aria-hidden="true" />
         {steps.map((step, index) => {
@@ -87,8 +96,14 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
                     {step.encrypted ? <Badge tone="safe">Encrypted</Badge> : null}
                   </span>
                   <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-muted">
-                    <span className="tnum">+{step.timeSec.toFixed(3)} s</span>
-                    <span className="tnum">{fmtInt(step.sizeBytes)} B</span>
+                    {step.details.packet ? (
+                      <span className="tnum">packet {step.details.packet}</span>
+                    ) : (
+                      <>
+                        <span className="tnum">+{step.timeSec.toFixed(3)} s</span>
+                        <span className="tnum">{fmtInt(step.sizeBytes)} B</span>
+                      </>
+                    )}
                     <span className="inline-flex items-center gap-1">
                       <ArrowRight size={11} aria-hidden="true" />
                       {step.direction === 'n/a' ? 'n/a' : step.direction.replace('->', ' → ')}
@@ -111,6 +126,7 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
           )
         })}
       </ol>
+      )}
       <p className="sr-only">
         Use the up and down arrow keys to move between steps and Enter or Space to expand a step. Current step index:{' '}
         {currentIndex + 1}

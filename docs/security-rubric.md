@@ -1,6 +1,6 @@
 # Security rubric (M3 assessment, v1.2)
 
-Weighted criteria over the *classified SA objects*, rule version `1.2.0`
+Weighted criteria over the *classified SA objects*, rule version `1.2.1`
 (`engine/assess/assess.py`). Full statement, oracles and remediation:
 `docs/review/security-rubric.md` (the two files are kept in sync).
 References: NIST SP 800-77r1 (IPsec), SP 800-57 (key strength),
@@ -32,8 +32,10 @@ score_status = PUBLISHED iff coverage ≥ 0.5 else WITHHELD (no headline
 risk level, confirmed FAILs still listed). UNKNOWN earns no credit and
 no penalty — an unobserved field lowers coverage, never posture.
 INFERRED FAILs surface as LIKELY (severity capped one level); only
-OBSERVED FAILs are CONFIRMED. Full formula + hand-worked example:
-`docs/review/security-rubric.md`.
+OBSERVED FAILs are CONFIRMED. `risk_band` (LOW/MODERATE/HIGH, null when
+WITHHELD): numeric-risk band floored by the worst CONFIRMED finding
+(critical → HIGH, high → MODERATE; LIKELY never raises). Full formula +
+hand-worked example: `docs/review/security-rubric.md`.
 
 **Oracle vs live:** label-fed oracles (e.g. v1 = 88 = 95/108) assume
 ideal visibility of lifetimes/replay/DH. Live analysis of a short

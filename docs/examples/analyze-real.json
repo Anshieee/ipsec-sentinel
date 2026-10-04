@@ -327,7 +327,7 @@
   "controls": [
    {
     "id": "child-cipher",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "Child cipher strength",
     "status": "PASS",
     "weight": 25,
@@ -345,7 +345,7 @@
    },
    {
     "id": "dh-strength",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "DH group strength",
     "status": "UNKNOWN",
     "weight": 20,
@@ -363,7 +363,7 @@
    },
    {
     "id": "integrity",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "Integrity algorithm",
     "status": "PASS",
     "weight": 15,
@@ -381,7 +381,7 @@
    },
    {
     "id": "pfs",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "Perfect forward secrecy",
     "status": "UNKNOWN",
     "weight": 10,
@@ -402,7 +402,7 @@
    },
    {
     "id": "lifetime",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "SA lifetime",
     "status": "UNKNOWN",
     "weight": 10,
@@ -422,7 +422,7 @@
    },
    {
     "id": "replay",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "Replay protection",
     "status": "UNKNOWN",
     "weight": 5,
@@ -442,7 +442,7 @@
    },
    {
     "id": "ike-version",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "IKE version",
     "status": "PASS",
     "weight": 10,
@@ -464,7 +464,7 @@
    },
    {
     "id": "ike-cipher",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "IKE cipher strength",
     "status": "PASS",
     "weight": 5,
@@ -486,7 +486,7 @@
    },
    {
     "id": "ike-integrity",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "IKE integrity strength",
     "status": "PASS",
     "weight": 3,
@@ -508,7 +508,7 @@
    },
    {
     "id": "mode-exposure",
-    "rule_version": "1.2.0",
+    "rule_version": "1.2.1",
     "title": "Mode exposure",
     "status": "PASS",
     "weight": 5,
@@ -539,6 +539,7 @@
   "security_score": 88,
   "risk_score": 12,
   "risk_level": "low",
+  "risk_band": "LOW",
   "findings": [],
   "threat_matrix": [],
   "breakdown": {
@@ -553,6 +554,6 @@
    "ike_integrity": 3,
    "mode": 5
   },
-  "rule_version": "1.2.0"
+  "rule_version": "1.2.1"
  }
 }

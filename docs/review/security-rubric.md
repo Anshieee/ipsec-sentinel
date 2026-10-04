@@ -1,6 +1,6 @@
 # IPsec Security Rubric — v1.2 controls
 
-Rule version `1.2.0`, implemented by `engine/assess/assess.py`, pinned by
+Rule version `1.2.1`, implemented by `engine/assess/assess.py`, pinned by
 `engine/tests/test_assess.py` (label oracles),
 `engine/tests/test_v12_scoring.py` (IKE coverage + inferred symmetry)
 and `engine/tests/test_live_scores.py` (live captures).
@@ -34,6 +34,13 @@ posture  = round(100 * SUM(points_c * f_c) / SUM(weight_c * f_c)), f_c > 0
 coverage = SUM(weight_c * f_c) / SUM(weights of applicable controls)
 status   = PUBLISHED if coverage >= 0.5 else WITHHELD
 risk     = 100 - posture  (PUBLISHED only; buckets low<25 med<50 high<75)
+risk_band = band(numeric risk) raised to at least the band implied by
+  the worst CONFIRMED finding: critical -> HIGH, high -> MODERATE.
+  LIKELY findings never raise the band. WITHHELD/plain -> no band.
+  Posture, coverage, weights and numeric risk are untouched by the
+  floor: a v21-style case (risk 20, three CONFIRMED IKE FAILs incl. a
+  critical) reports risk 20 with band HIGH instead of a "LOW RISK"
+  headline.
 ```
 
 Hand-worked example (live v1, `demo/samples/v1-voip.pcap`):
@@ -81,30 +88,30 @@ NOT_APPLICABLE: non-IPsec captures (no IPsec score, no findings).
 
 ## Oracle table (full visibility, from labels, f = 1.0 throughout)
 
-| Variant | Cipher | DH | Integ | PFS | Life | Replay | IKE | IKEc | IKEi | Mode | Posture | Findings |
+| Variant | Cipher | DH | Integ | PFS | Life | Replay | IKE | IKEc | IKEi | Mode | Posture | Band | Findings |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| v1 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | — |
-| v2 | 22 | 20 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 94 | — |
-| v3 | 24 | 15 | 15 | 0 | 10 | 5 | 10 | 5 | 3 | 5 | 85 | no-pfs |
-| v4 | 25 | 20 | 15 | 10 | 10 | 5 | 10 | 5 | 3 | 5 | 100 | — |
-| v5 | 25 | 18 | 15 | 10 | 10 | 5 | 10 | 5 | 3 | — | 98 | (mode UNKNOWN, cov 0.9537) |
-| v6 | 22 | 15 | 13 | 0 | 10 | 5 | 10 | 4 | 3 | — | 80 | no-pfs (cov 0.9537) |
-| v7 (AH) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 74 | no-conf |
-| v8 (DH2) | 20 | 2 | 13 | 10 | 10 | 5 | 2 | 4 | 3 | 5 | 69 | weak-dh, weak-ike-dh |
-| v9 (DH5) | 20 | 7 | 13 | 10 | 10 | 5 | 2 | 4 | 3 | 5 | 73 | weak-dh, weak-ike-dh |
-| v10 (SHA1) | 20 | 15 | 5 | 10 | 10 | 5 | 10 | 4 | 1 | 5 | 79 | weak-integ, weak-ike-integ |
-| v11 (3DES) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 1 | 3 | 5 | 71 | weak-cipher, weak-ike-cipher |
-| v12 (IKEv1) | 20 | 15 | 13 | 10 | 10 | 5 | 4 | 4 | 3 | 5 | 82 | ikev1 |
-| v13 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | — |
-| v14 (long life) | 20 | 15 | 13 | 10 | 4 | 5 | 10 | 4 | 3 | 5 | 82 | long-sa |
-| v15 (replay 0) | 20 | 15 | 13 | 10 | 10 | 0 | 10 | 4 | 3 | 5 | 83 | no-replay |
-| v16 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | — |
-| v17 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | — |
-| v18 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | — |
-| v19 (strong IKE/weak ESP) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 3 | 5 | 75 | weak-cipher |
-| v20 (weaker IKE/strong ESP) | 25 | 20 | 15 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 99 | — |
-| v21 (weak IKE/strong ESP) | 25 | 20 | 15 | 10 | 10 | 5 | 2 | 1 | 1 | 5 | 87 | weak-ike-dh, weak-ike-cipher, weak-ike-integ |
-| plain | — | — | — | — | — | — | — | — | — | — | WITHHELD | (NOT_APPLICABLE, no score) |
+| v1 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | LOW | — |
+| v2 | 22 | 20 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 94 | LOW | — |
+| v3 | 24 | 15 | 15 | 0 | 10 | 5 | 10 | 5 | 3 | 5 | 85 | MODERATE | no-pfs |
+| v4 | 25 | 20 | 15 | 10 | 10 | 5 | 10 | 5 | 3 | 5 | 100 | LOW | — |
+| v5 | 25 | 18 | 15 | 10 | 10 | 5 | 10 | 5 | 3 | — | 98 | LOW | (mode UNKNOWN, cov 0.9537) |
+| v6 | 22 | 15 | 13 | 0 | 10 | 5 | 10 | 4 | 3 | — | 80 | MODERATE | no-pfs (cov 0.9537) |
+| v7 (AH) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 74 | MODERATE | no-conf |
+| v8 (DH2) | 20 | 2 | 13 | 10 | 10 | 5 | 2 | 4 | 3 | 5 | 69 | HIGH | weak-dh, weak-ike-dh |
+| v9 (DH5) | 20 | 7 | 13 | 10 | 10 | 5 | 2 | 4 | 3 | 5 | 73 | HIGH | weak-dh, weak-ike-dh |
+| v10 (SHA1) | 20 | 15 | 5 | 10 | 10 | 5 | 10 | 4 | 1 | 5 | 79 | LOW | weak-integ, weak-ike-integ |
+| v11 (3DES) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 1 | 3 | 5 | 71 | HIGH | weak-cipher, weak-ike-cipher |
+| v12 (IKEv1) | 20 | 15 | 13 | 10 | 10 | 5 | 4 | 4 | 3 | 5 | 82 | LOW | ikev1 |
+| v13 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | LOW | — |
+| v14 (long life) | 20 | 15 | 13 | 10 | 4 | 5 | 10 | 4 | 3 | 5 | 82 | LOW | long-sa |
+| v15 (replay 0) | 20 | 15 | 13 | 10 | 10 | 0 | 10 | 4 | 3 | 5 | 83 | LOW | no-replay |
+| v16 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | LOW | — |
+| v17 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | LOW | — |
+| v18 | 20 | 15 | 13 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 88 | LOW | — |
+| v19 (strong IKE/weak ESP) | 5 | 15 | 13 | 10 | 10 | 5 | 10 | 5 | 3 | 5 | 75 | HIGH | weak-cipher |
+| v20 (weaker IKE/strong ESP) | 25 | 20 | 15 | 10 | 10 | 5 | 10 | 4 | 3 | 5 | 99 | LOW | — |
+| v21 (weak IKE/strong ESP) | 25 | 20 | 15 | 10 | 10 | 5 | 2 | 1 | 1 | 5 | 87 | HIGH | weak-ike-dh, weak-ike-cipher, weak-ike-integ |
+| plain | — | — | — | — | — | — | — | — | — | — | WITHHELD | — | (NOT_APPLICABLE, no score) |
 
 v21 check: 25+20+15+10+10+5+2+1+1+5 = 94/108 = 87.0 → **87**, not 83!
 Recheck: 25+20=45, +15=60, +10=70, +10=80, +5=85, +2=87, +1=88, +1=89, +5=94. 94/108 = 0.8704 → 87. I wrote 83 — wrong. Verify by running, then fix the table.

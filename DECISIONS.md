@@ -381,3 +381,18 @@ Task prompt says `docs/DECISIONS.md`; the repo keeps root `DECISIONS.md`
   boundary, pinned in tests.
 - PFS honesty: the control explanation now states observed (label oracle)
   vs inferred-from-rekey-length (model, group unconfirmed).
+
+## D24 — v1.2.1 headline risk_band (2026-10-04)
+
+Screenshots showed live v21 (three CONFIRMED IKE FAILs incl. DH2
+critical) under a "20/100 LOW RISK" gauge: the numeric risk averages
+dilute a single critical into a low mean. New headline `risk_band`:
+base band from numeric risk (LOW<25, MODERATE<50, else HIGH — the UI's
+three bands), raised to at least HIGH if any CONFIRMED finding is
+critical, MODERATE if any CONFIRMED finding is high. LIKELY findings
+never raise (they are capped-severity hypotheses). WITHHELD/plain ->
+null (no band without a score). Posture, coverage, weights and numeric
+risk are byte-identical to v1.2 (rule bumped to 1.2.1 for the new
+output key only). UI gauge colour+label read `risk_band` from the
+backend; the client `riskBand()` helper stays for fixtures/simulations
+only.

@@ -3,6 +3,7 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { ConfidenceBar } from '@/components/ui/ConfidenceBar'
 import { ProvenanceBadge } from '@/components/ui/ProvenanceBadge'
+import { NoIpsecBanner } from '@/components/ui/NoIpsecBanner'
 import { RiskGauge } from './RiskGauge'
 import { useSentinel, useDerived } from '@/store/useSentinel'
 import { fmtDuration, fmtInt, fmtPct } from '@/lib/format'
@@ -38,8 +39,11 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 export function KpiBar({ analysis }: { analysis: AnalysisResult }) {
   const derived = useDerived()
   const previousRiskScore = useSentinel((s) => s.previousRiskScore)
+  // Live mode: uploads are unrelated captures — a "since previous"
+  // delta would compare apples to oranges. Mock only.
+  const liveMode = useSentinel((s) => s.settings.dataSource === 'live')
   const delta =
-    typeof previousRiskScore === 'number' && derived.riskScore !== null && previousRiskScore !== derived.riskScore
+    !liveMode && typeof previousRiskScore === 'number' && derived.riskScore !== null && previousRiskScore !== derived.riskScore
       ? derived.riskScore - previousRiskScore
       : null
 
@@ -51,6 +55,11 @@ export function KpiBar({ analysis }: { analysis: AnalysisResult }) {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" data-testid="kpi-bar">
+      {noIpsec ? (
+        <div className="sm:col-span-2 xl:col-span-4">
+          <NoIpsecBanner />
+        </div>
+      ) : null}
       <Card>
         <CardHeader title="Global Risk Score" />
         {noIpsec ? (
@@ -76,35 +85,43 @@ export function KpiBar({ analysis }: { analysis: AnalysisResult }) {
 
       <Card data-testid="kpi-mode">
         <CardHeader title="Detected mode" />
-        <div className="flex flex-wrap gap-2">
-          <ModeBadge label={analysis.protocol.ikeVersion.value} param={analysis.protocol.ikeVersion} />
-          <ModeBadge
-            label={analysis.protocol.mode.value === 'tunnel' ? 'Tunnel Mode' : 'Transport Mode'}
-            param={analysis.protocol.mode}
-          />
-          <ModeBadge label={esp} param={{ value: esp, provenance: 'observed', confidence: 1 }} />
-        </div>
-        <p className="mt-3 text-[11px] text-muted">{analysis.protocol.exchangeMode.value}</p>
+        {noIpsec ? (
+          <p className="text-[12px] text-muted">Not applicable — no IPsec detected.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            <ModeBadge label={analysis.protocol.ikeVersion.value} param={analysis.protocol.ikeVersion} />
+            <ModeBadge
+              label={analysis.protocol.mode.value === 'tunnel' ? 'Tunnel Mode' : 'Transport Mode'}
+              param={analysis.protocol.mode}
+            />
+            <ModeBadge label={esp} param={{ value: esp, provenance: 'observed', confidence: 1 }} />
+          </div>
+        )}
+        {noIpsec ? null : (
+          <p className="mt-3 text-[11px] text-muted">{analysis.protocol.exchangeMode.value}</p>
+        )}
       </Card>
 
-      <Card data-testid="kpi-confidence">
-        <CardHeader
-          title="AI Confidence"
-          description="Overall AI confidence (calibrated probability)"
-          actions={
-            <Tooltip content="Mean of inferred-parameter confidences weighted by parameter importance.">
-              <span className="inline-flex text-muted" tabIndex={0} aria-label="How confidence is aggregated">
-                <CircleHelp size={14} aria-hidden="true" />
-              </span>
-            </Tooltip>
-          }
-        />
-        <p className="tnum text-kpi font-semibold text-ink">{fmtPct(confidence)}</p>
-        <ConfidenceBar value={confidence} showValue={false} ariaLabel="Overall AI confidence" className="mt-2" />
-        <p className={`mt-1 text-[11px] ${tone}`}>
-          {confidence >= 0.85 ? 'Strong estimate' : confidence >= 0.7 ? 'Moderate estimate' : 'Weak estimate'}
-        </p>
-      </Card>
+      {noIpsec ? null : (
+        <Card data-testid="kpi-confidence">
+          <CardHeader
+            title="AI Confidence"
+            description="Overall AI confidence (calibrated probability)"
+            actions={
+              <Tooltip content="Mean of inferred-parameter confidences weighted by parameter importance.">
+                <span className="inline-flex text-muted" tabIndex={0} aria-label="How confidence is aggregated">
+                  <CircleHelp size={14} aria-hidden="true" />
+                </span>
+              </Tooltip>
+            }
+          />
+          <p className="tnum text-kpi font-semibold text-ink">{fmtPct(confidence)}</p>
+          <ConfidenceBar value={confidence} showValue={false} ariaLabel="Overall AI confidence" className="mt-2" />
+          <p className={`mt-1 text-[11px] ${tone}`}>
+            {confidence >= 0.85 ? 'Strong estimate' : confidence >= 0.7 ? 'Moderate estimate' : 'Weak estimate'}
+          </p>
+        </Card>
+      )}
 
       <Card data-testid="kpi-volume">
         <CardHeader title="Capture volume" />

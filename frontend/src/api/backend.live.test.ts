@@ -33,13 +33,13 @@ async function probe(): Promise<boolean> {
 const apiUp = await probe()
 if (!apiUp) console.info(`[live-integration] API down at ${API}, skipping`)
 
-function cliHeadline(path: string): { posture: number | null; coverage: number; status: string } | null {
+function cliHeadline(path: string): { posture: number | null; coverage: number; status: string; band: string | null } | null {
   try {
     const raw = execFileSync(CLI, ['analyze', path, '--json'], { timeout: 120000, encoding: 'utf-8' })
     const body = JSON.parse(raw) as {
-      assessment: { posture_score: number | null; coverage: number; score_status: string }
+      assessment: { posture_score: number | null; coverage: number; score_status: string; risk_band: string | null }
     }
-    return { posture: body.assessment.posture_score, coverage: body.assessment.coverage, status: body.assessment.score_status }
+    return { posture: body.assessment.posture_score, coverage: body.assessment.coverage, status: body.assessment.score_status, band: body.assessment.risk_band }
   } catch {
     return null
   }
@@ -77,20 +77,21 @@ async function upload(name: string, path: string, bytes?: Uint8Array): Promise<B
   throw lastError
 }
 
-const headlineCases: { file: string; path: string; posture: number | null; coverage: number; status: string }[] = [
-  { file: 'v1-voip.pcap', path: resolve(SAMPLES, 'v1-voip.pcap'), posture: 89, coverage: 0.6684, status: 'PUBLISHED' },
-  { file: 'v19-voip.pcap', path: resolve(DATA_PCAPS, 'v19/r1/voip.pcap'), posture: 72, coverage: 0.6258, status: 'PUBLISHED' },
-  { file: 'v20-voip.pcap', path: resolve(DATA_PCAPS, 'v20/r1/voip.pcap'), posture: 99, coverage: 0.6327, status: 'PUBLISHED' },
-  { file: 'v21-voip.pcap', path: resolve(DATA_PCAPS, 'v21/r1/voip.pcap'), posture: 80, coverage: 0.6576, status: 'PUBLISHED' },
+const headlineCases: { file: string; path: string; posture: number | null; coverage: number; status: string; band: string | null }[] = [
+  { file: 'v1-voip.pcap', path: resolve(SAMPLES, 'v1-voip.pcap'), posture: 89, coverage: 0.6684, status: 'PUBLISHED', band: 'LOW' },
+  { file: 'v19-voip.pcap', path: resolve(DATA_PCAPS, 'v19/r1/voip.pcap'), posture: 72, coverage: 0.6258, status: 'PUBLISHED', band: 'MODERATE' },
+  { file: 'v20-voip.pcap', path: resolve(DATA_PCAPS, 'v20/r1/voip.pcap'), posture: 99, coverage: 0.6327, status: 'PUBLISHED', band: 'LOW' },
+  { file: 'v21-voip.pcap', path: resolve(DATA_PCAPS, 'v21/r1/voip.pcap'), posture: 80, coverage: 0.6576, status: 'PUBLISHED', band: 'HIGH' },
 ]
 
 describe.skipIf(!apiUp)('live backend mapping', () => {
-  it.each(headlineCases)('maps $file to posture $posture @ $coverage ($status)', async ({ file, path, posture, coverage, status }) => {
+  it.each(headlineCases)('maps $file to posture $posture @ $coverage ($status, $band)', async ({ file, path, posture, coverage, status, band }) => {
     const resp = await upload(file, path)
     const mapped = mapAnalyzeResponse({ name: file }, resp)
     expect(mapped.posture?.postureScore).toBe(posture)
     expect(mapped.posture?.coverage).toBeCloseTo(coverage, 4)
     expect(mapped.posture?.scoreStatus).toBe(status)
+    expect(mapped.posture?.riskBand).toBe(band)
     expect(mapped.riskScore).toBe(status === 'PUBLISHED' && posture !== null ? 100 - posture : null)
     expect(mapped.detection?.ipsecDetected).toBe(true)
     // Displayed headline equals the CLI --json values for the same file.
@@ -99,6 +100,7 @@ describe.skipIf(!apiUp)('live backend mapping', () => {
       expect(mapped.posture?.postureScore).toBe(cli.posture)
       expect(mapped.posture?.coverage).toBeCloseTo(cli.coverage, 4)
       expect(mapped.posture?.scoreStatus).toBe(cli.status)
+      expect(mapped.posture?.riskBand).toBe(cli.band)
     }
     // IKE SA and CHILD SA are separate cards with per-field status.
     expect(mapped.protocol.ike.encryption.value).not.toBe('')

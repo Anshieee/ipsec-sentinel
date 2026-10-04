@@ -8,20 +8,27 @@ import { StrideBreakdown } from '@/components/audit/StrideBreakdown'
 import { RemediationPlan } from '@/components/audit/RemediationPlan'
 import { ThreatMatrixCard } from '@/components/overview/ThreatMatrixCard'
 import { useDerived } from '@/store/useSentinel'
+import { NoIpsecBanner, isNoIpsec } from '@/components/ui/NoIpsecBanner'
 import type { MatrixSelection } from '@/components/overview/ThreatMatrixCard'
 
 /** Security Audit & Threat Matrix (`/audit`), spec 10.4. */
 export function AuditPage() {
   const derived = useDerived()
   const [selection, setSelection] = useState<MatrixSelection | null>(null)
+  const noIpsec = isNoIpsec(derived.analysis)
 
   return (
     <PageScaffold
       title="Security Audit"
-      description="Findings from the rule engine, threat matrix and the remediation plan."
+      description="Backend findings, threat matrix and the remediation plan (fixtures use the client rule engine)."
       testId="page-audit"
     >
       <div className="grid grid-cols-12 gap-4">
+        {noIpsec ? (
+          <div className="col-span-12">
+            <NoIpsecBanner />
+          </div>
+        ) : null}
         <div className="col-span-12">
           <AuditSummary />
         </div>
