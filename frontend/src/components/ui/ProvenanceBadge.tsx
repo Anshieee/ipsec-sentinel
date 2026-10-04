@@ -6,7 +6,7 @@ import { CHIP_CLASS, CHIP_ICON } from './Chip'
 export const PROVENANCE_TOOLTIP: Record<Provenance, string> = {
   observed: 'Read directly from cleartext protocol fields.',
   inferred:
-    'Estimated by an AI model from encrypted-traffic characteristics. Confidence is a calibrated probability.',
+    'Estimated by an AI model from encrypted-traffic characteristics. Model confidence is rank-ordered, not calibrated.',
 }
 
 const LABEL: Record<Provenance, string> = {

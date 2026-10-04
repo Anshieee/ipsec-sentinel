@@ -29,6 +29,9 @@
   /* Range-slider track: #63636e is >= 3:1 against card surfaces. */
   --color-track: #63636e;
   --color-track-rgb: 99 99 110;
+  /* Gauge track: decorative ring, exactly --border (#292929). */
+  --gauge-track: #292929;
+  --gauge-track-rgb: 41 41 41;
 
   /* Text: primary body/headings, secondary text, muted for large text,
    * icons and decoration only, muted-small for small muted text,

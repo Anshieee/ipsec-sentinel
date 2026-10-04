@@ -174,7 +174,7 @@ const FINDING_STRIDE: Record<string, StrideTag> = {
 }
 
 /** Finding id -> control id, for LIKELY confidence lookup. */
-const FINDING_CONTROL: Record<string, string> = {
+export const FINDING_CONTROL: Record<string, string> = {
   'weak-cipher': 'child-cipher',
   'no-conf': 'child-cipher',
   'weak-dh': 'dh-strength',
@@ -228,16 +228,18 @@ export function describeExchange(version: BackendField): Param<string> {
       provenance: toProvenance(version.source),
       confidence: version.confidence,
       status: st,
+      source: version.source,
     }
   }
   if (st === 'NOT_APPLICABLE') {
-    return { value: 'Not applicable (no IPsec)', provenance: 'observed', confidence: 1, status: st }
+    return { value: 'Not applicable (no IPsec)', provenance: 'observed', confidence: 1, status: st, source: version.source }
   }
   return {
     value: 'IKE handshake not observed (ESP only)',
     provenance: 'observed',
     confidence: 1,
     status: st,
+    source: version.source,
     note: 'No handshake packets in this capture; CHILD fields are inferred or unknown.',
   }
 }
@@ -331,6 +333,7 @@ export function mapProtocol(
           provenance: toProvenance(ike('version').source),
           confidence: ike('version').confidence,
           status: toStatus(ike('version')),
+          source: ike('version').source,
           ...(isUnobserved(ike('version')) ? { note: notObservedNote('IKE version', ike('version')) } : {}),
         }
       : {
@@ -338,6 +341,7 @@ export function mapProtocol(
           provenance: 'observed',
           confidence: 0,
           status: 'NOT_OBSERVED',
+          source: 'none',
           note: 'Not observed — no handshake captured.',
         };
 
@@ -356,6 +360,12 @@ export function mapProtocol(
           provenance: toProvenance(child('mode').source),
           confidence: child('mode').confidence,
           status: toStatus(child('mode')),
+          source: child('mode').source,
+          ...(modeDetail?.decided_by === 'size-overhead-model'
+            ? { method: 'Size-overhead model' }
+            : modeDetail?.decided_by === 'ah-next-header'
+              ? { method: 'AH next-header parse' }
+              : {}),
           ...(modeNote ? { note: modeNote } : {}),
         }
       : {

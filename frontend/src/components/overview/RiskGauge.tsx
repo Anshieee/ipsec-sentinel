@@ -53,7 +53,7 @@ export function RiskGauge({ score, band, delta }: RiskGaugeProps) {
             stroke="currentColor"
             strokeWidth={14}
             strokeLinecap="round"
-            className="text-text-muted"
+            className="text-gauge-track"
           />
           <motion.path
             d="M 20 100 A 80 80 0 0 1 180 100"

@@ -3,6 +3,7 @@ import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip as ChartTo
 import { Card, CardHeader } from '@/components/ui/Card'
 import { fmtInt } from '@/lib/format'
 import { SEVERITY_TONE, TONE_HEX } from '@/lib/severity'
+import { FINDING_CONTROL } from '@/api/backend'
 import type { Tone } from '@/lib/severity'
 import { CHART_AXIS, CHART_GRID, CHART_TOOLTIP } from '@/lib/chartColors'
 import type { Finding } from '@/types/analysis'
@@ -27,17 +28,36 @@ export interface BackendControlLike {
 /** Per-control points lost, scaled so the bars sum exactly to the
  * displayed total risk: lost_c = (w_c−p_c)·f_c, bar_c = lost_c·risk/Σlost.
  * Evidence factor f: 1.0 observed/label, confidence when inferred. */
-export function waterfallBars(controls: BackendControlLike[], riskScore: number | null): WaterfallBar[] {
+export function waterfallBars(
+  controls: BackendControlLike[],
+  riskScore: number | null,
+  findings: { id: string; severity: 'low' | 'medium' | 'high' | 'critical' }[] = [],
+): WaterfallBar[] {
   const factor = (c: BackendControlLike): number =>
     c.source === 'inferred' ? Math.min(Math.max(c.confidence, 0), 1) : c.source === 'observed' || c.source === 'label' ? 1 : 0
   const lost = controls
     .map((c) => ({ id: c.id, lost: (c.weight - c.points) * factor(c) }))
     .filter((e) => e.lost > 0)
   const sumLost = lost.reduce((s, e) => s + e.lost, 0)
+  const severityOf = (controlId: string): Tone => {
+    const rank: Record<string, number> = { low: 0, medium: 1, high: 2, critical: 3 }
+    let worst: 'low' | 'medium' | 'high' | 'critical' = 'low'
+    let found = false
+    for (const [findingId, mappedId] of Object.entries(FINDING_CONTROL)) {
+      if (mappedId !== controlId) continue
+      const hit = findings.find((f) => f.id === findingId)
+      if (hit && (!found || rank[hit.severity] > rank[worst])) {
+        worst = hit.severity
+        found = true
+      }
+    }
+    if (!found) return 'neutral'
+    return SEVERITY_TONE[worst]
+  }
   const entries = lost.map((e) => ({
     name: e.id,
     weight: sumLost > 0 && riskScore !== null ? (e.lost * riskScore) / sumLost : 0,
-    tone: 'neutral' as Tone,
+    tone: severityOf(e.id),
   }))
   return riskScore === null
     ? entries
@@ -62,7 +82,7 @@ export function ScoreWaterfall({
   controls?: BackendControlLike[]
 }) {
   const bars = useMemo<WaterfallBar[]>(() => {
-    if (backend && controls) return waterfallBars(controls, total ?? 0)
+    if (backend && controls) return waterfallBars(controls, total, findings)
     const sorted = [...findings].sort((a, b) => WEIGHT[b.severity] - WEIGHT[a.severity])
     const entries = sorted.map((finding, index) => ({
       name: `${finding.ruleId} ${index + 1}`,

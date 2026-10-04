@@ -18,6 +18,9 @@ export default {
         'border-strong': 'rgb(var(--border-strong-rgb) / <alpha-value>)',
         /* Range-slider track: neutral grey at >= 3:1 against card surface. */
         track: 'rgb(var(--color-track-rgb) / <alpha-value>)',
+        /* Gauge track: decorative ring equal to --border; the filled arc
+           must dominate it. Never reused for inputs (see track). */
+        'gauge-track': 'rgb(var(--gauge-track-rgb) / <alpha-value>)',
         'text-primary': 'rgb(var(--text-primary-rgb) / <alpha-value>)',
         'text-secondary': 'rgb(var(--text-secondary-rgb) / <alpha-value>)',
         /* #737373: large text, icons and decoration only (never small text). */

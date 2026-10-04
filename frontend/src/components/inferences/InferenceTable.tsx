@@ -9,13 +9,17 @@ import { dhLabel } from '@/lib/dh'
 import { setHighlightAndNavigate } from '@/lib/highlight'
 import type { AnalysisResult, FieldStatus, Finding, Param } from '@/types/analysis'
 
-/** Method text derives from the evidence source — never hard-coded per row. */
+/** Method text derives from the evidence source — never hard-coded per row.
+ * Falls back to provenance when the source is absent (simulated rows):
+ * observed parses read bytes, inferred rows classify them. */
 function methodFor(param: Param<unknown>, provided: boolean): string {
   if (!provided) return 'Not provided by the analysis API'
   if (param.method) return param.method
   if (param.source === 'parsed') return 'Direct parse'
   if (param.source === 'model') return 'Model classifier'
   if (param.source === 'measured') return 'Measured'
+  if (param.provenance === 'observed') return 'Direct parse'
+  if (param.provenance === 'inferred') return 'Model classifier'
   return '—'
 }
 

@@ -5,7 +5,7 @@ import { TONE_BG } from '@/lib/severity'
 import { cn } from './cn'
 
 export interface ConfidenceBarProps {
-  /** 0..1 calibrated probability. */
+  /** 0..1 model confidence (not calibrated). */
   value: number
   className?: string
   /** `auto` applies the 0.85 / 0.7 bands. */
@@ -15,7 +15,7 @@ export interface ConfidenceBarProps {
   ariaLabel?: string
 }
 
-/** Thin bar plus `%` text. Confidence is a calibrated probability, never "accuracy". */
+/** Thin bar plus `%` text. Model confidence, never "accuracy", and not calibrated. */
 export function ConfidenceBar({ value, className, tone = 'auto', showValue = true, ariaLabel }: ConfidenceBarProps) {
   const clamped = Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0))
   const resolved: Tone = tone === 'auto' ? confidenceTone(clamped) : tone

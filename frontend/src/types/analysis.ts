@@ -12,7 +12,7 @@ export type TrafficLabel = 'VoIP' | 'Video Streaming' | 'Web Browsing' | 'ICMP' 
 export interface Param<T> {
   value: T
   provenance: Provenance
-  /** 0..1, exactly 1 when observed. Calibrated probability, never "accuracy". */
+  /** 0..1, exactly 1 when observed. Model confidence (not calibrated), never "accuracy". */
   confidence: number
   /** Backend honesty state; render UNKNOWN/NOT_OBSERVED as "not observed". */
   status?: FieldStatus

@@ -111,9 +111,9 @@ export function KpiBar({ analysis }: { analysis: AnalysisResult }) {
         <Card data-testid="kpi-confidence">
           <CardHeader
             title="AI Confidence"
-            description="Overall AI confidence (calibrated probability)"
+            description="Model confidence (not calibrated)"
             actions={
-              <Tooltip content="Mean of inferred-parameter confidences weighted by parameter importance.">
+              <Tooltip content="Mean of inferred-parameter confidences. Model confidences are rank-ordered, not calibrated probabilities.">
                 <span className="inline-flex text-text-secondary" tabIndex={0} aria-label="How confidence is aggregated">
                   <CircleHelp size={14} aria-hidden="true" />
                 </span>
@@ -123,7 +123,7 @@ export function KpiBar({ analysis }: { analysis: AnalysisResult }) {
           <p className="tnum text-kpi font-semibold text-text-primary">{fmtPct(confidence)}</p>
           <ConfidenceBar value={confidence} showValue={false} ariaLabel="Overall AI confidence" className="mt-2" />
           <p className={`mt-1 text-[11px] ${tone}`}>
-            {confidence >= 0.85 ? 'Strong estimate' : confidence >= 0.7 ? 'Moderate estimate' : 'Weak estimate'}
+            {confidence >= 0.85 ? 'High model confidence' : confidence >= 0.7 ? 'Moderate model confidence' : 'Weak model confidence'}
           </p>
         </Card>
       )}
