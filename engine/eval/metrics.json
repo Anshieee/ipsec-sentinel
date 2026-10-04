@@ -230,11 +230,11 @@
   },
   "mode": {
    "n": 66,
-   "accuracy": 1.0,
+   "accuracy": 0.9848,
    "macro_p": 1.0,
-   "macro_r": 1.0,
-   "macro_f1": 1.0,
-   "unknown_rate": 0.0
+   "macro_r": 0.95,
+   "macro_f1": 0.9737,
+   "unknown_rate": 0.0152
   },
   "enc_alg": {
    "n": 66,
@@ -254,11 +254,11 @@
   },
   "auth_alg": {
    "n": 66,
-   "accuracy": 0.9697,
+   "accuracy": 0.9545,
    "macro_p": 0.9792,
-   "macro_r": 0.95,
-   "macro_f1": 0.963,
-   "unknown_rate": 0.0
+   "macro_r": 0.925,
+   "macro_f1": 0.9488,
+   "unknown_rate": 0.0152
   },
   "dh_group": {
    "n": 66,
@@ -344,19 +344,19 @@
   },
   "enc_alg": {
    "n": 30,
-   "accuracy": 0.9333,
+   "accuracy": 0.9,
    "macro_p": 1.0,
-   "macro_r": 0.875,
-   "macro_f1": 0.9167,
-   "unknown_rate": 0.0667
+   "macro_r": 0.8125,
+   "macro_f1": 0.85,
+   "unknown_rate": 0.1
   },
   "enc_key_len": {
    "n": 30,
-   "accuracy": 0.9667,
+   "accuracy": 0.9333,
    "macro_p": 1.0,
-   "macro_r": 0.9848,
-   "macro_f1": 0.9922,
-   "unknown_rate": 0.0333
+   "macro_r": 0.9697,
+   "macro_f1": 0.9841,
+   "unknown_rate": 0.0667
   },
   "auth_alg": {
    "n": 30,

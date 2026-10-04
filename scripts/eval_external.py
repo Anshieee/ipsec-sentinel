@@ -149,6 +149,9 @@ def main() -> int:
     ap.add_argument("--out", default="results/external-eval.json")
     ap.add_argument("--include-protocol-sessions", action="store_true",
                     help="also score the 5 handshake-visible protocol_validation rows (ike/crypto only)")
+    ap.add_argument("--split", default=None, choices=("dev", "test"),
+                    help="score only the frozen DEV or TEST split "
+                         "(docs/head-to-head-split.json, sha256 lists)")
     args = ap.parse_args()
     their = Path(args.their_root)
     meta_path = their / "metadata.csv"
@@ -161,6 +164,11 @@ def main() -> int:
     scope = [(r, False) for r in known]
     if args.include_protocol_sessions:
         scope += [(r, True) for r in proto]
+    if args.split:
+        split = json.loads((REPO / "docs" / "head-to-head-split.json").read_text())
+        want = set(split[args.split])
+        scope = [(r, p) for (r, p) in scope if r.get("sha256") in want]
+        print(f"frozen split {args.split}: {len(scope)} files")
     print(f"their rows: {len(meta)} total, {len(known)} train_known, "
           f"{len(proto)} protocol_validation; scoring {len(scope)} files")
 

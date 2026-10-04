@@ -97,3 +97,17 @@
     SHA384/DH15 suites outside our schema. Reported as weak, no
     cherry-picking; unmappable fields excluded with counts. Their repo
     has no license, so only our script and aggregates ship here.
+20. **What happens on data unlike your training data?**
+    Three honest behaviors, all visible in the output. (1) An invariant:
+    detected IPsec is never plain/none — a model vote for plain on an
+    IPsec-positive capture becomes NOT_OBSERVED with a reason. (2) An
+    OOD gate: an INFERRED vote abstains (UNKNOWN + reason
+    "capture outside the training distribution: …") iff the capture
+    trips ≥ 5 training range checks AND confidence is below 0.6 —
+    calibrated for ≤ 2% false-abstain on held-out folds (measured 0)
+    and real captures (~0.8%). Either signal alone never abstains.
+    (3) What the gate cannot do: residual confident errors persist
+    where our own correct answers live (few violations, moderate
+    confidence) — e.g. AES-256 predicted as AES-128, both wire-identical
+    in ESP size structure. Those stay wrong, stated plainly in
+    docs/head-to-head.md, never tuned away on the test split.

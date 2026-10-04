@@ -50,10 +50,10 @@ CV: 414 synthetic (21 variants + plain x 3 runs x 6 types). synth->real: train 4
 |---|---|---|---|---|---|---|
 | ipsec_proto | 66 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
 | ike_version | 66 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
-| mode | 66 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
+| mode | 66 | 0.9848 | 1.0 | 0.95 | 0.9737 | 0.0152 |
 | enc_alg | 66 | 0.7576 | 0.65 | 0.6361 | 0.6429 | 0.1515 |
 | enc_key_len | 66 | 0.8182 | 0.875 | 0.913 | 0.8731 | 0.0758 |
-| auth_alg | 66 | 0.9697 | 0.9792 | 0.95 | 0.963 | 0.0 |
+| auth_alg | 66 | 0.9545 | 0.9792 | 0.925 | 0.9488 | 0.0152 |
 | dh_group | 66 | 0.0 | 0.0 | 0.0 | 0.0 | 1.0 |
 | pfs | 66 | 0.0758 | 1.0 | 0.0857 | 0.1576 | 0.9242 |
 | ip_version | 66 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
@@ -69,8 +69,8 @@ CV: 414 synthetic (21 variants + plain x 3 runs x 6 types). synth->real: train 4
 | ipsec_proto | 30 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
 | ike_version | 30 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
 | mode | 30 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
-| enc_alg | 30 | 0.9333 | 1.0 | 0.875 | 0.9167 | 0.0667 |
-| enc_key_len | 30 | 0.9667 | 1.0 | 0.9848 | 0.9922 | 0.0333 |
+| enc_alg | 30 | 0.9 | 1.0 | 0.8125 | 0.85 | 0.1 |
+| enc_key_len | 30 | 0.9333 | 1.0 | 0.9697 | 0.9841 | 0.0667 |
 | auth_alg | 30 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 |
 | dh_group | 30 | 0.0 | 0.0 | 0.0 | 0.0 | 1.0 |
 | pfs | 30 | 0.1667 | 1.0 | 0.2019 | 0.3333 | 0.8333 |
@@ -82,6 +82,12 @@ CV: 414 synthetic (21 variants + plain x 3 runs x 6 types). synth->real: train 4
 
 ## Reading the numbers (v1.2 boundary)
 
+- Robustness (v1.2.7): detected IPsec is never plain/none (a model vote
+  for plain on IPsec becomes NOT_OBSERVED), and INFERRED votes abstain
+  when the capture trips >= 5 training range checks with confidence
+  below 0.6 (OOD gate, calibrated for <= 2% false-abstain on held-out
+  folds + real captures; measured 0 on folds, ~0.8% on real rows above).
+  Unknowns count as errors above, honestly.
 - ike_version / ike_enc_alg / ike_dh_group: the IKE SA parse, still ~100% deterministic (proposal + KE travel in the clear). These score the IKE SA only — they never fill child fields.
 - enc_alg / enc_key_len / auth_alg (child suite): model-INFERRED from the ESP-only feature view (IKE proposal bytes excluded, so mirrored training suites cannot teach copy-IKE->child). Expect below the old 1.0 (which came from reading the IKE proposal): the tables above are the honest ESP-size signal, and the mismatch variants (v19/v20) prove no inheritance.
 - ike_enc_alg is parsed from IKE_SA_INIT at ~100%: the v1.2 ike-cipher / ike-integrity assessment controls read this parse, never the child suite.

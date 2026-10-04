@@ -88,13 +88,14 @@ nothing is derived from their repo (different address space
 
 ## 3. Results
 
-Run: one-shot, frozen models, `--include-protocol-sessions` (180 files:
-175 train_known + 5 protocol_validation). 0 parse errors, 0 no-IPsec
-(all captures contain ESP), **180/180 WITHHELD** (dh/lifetime/replay
-unobserved everywhere — expected, counted not dropped). Hash overlap
-with our 480-file corpus: **0**. Their repo publishes no numbers, so
-there is no side-by-side table: the figures below come from our frozen
-pipeline on their frozen commit, not from any held-out split of theirs.
+Run: one-shot, frozen models, `--include-protocol-sessions`.
+0 parse errors, 0 no-IPsec (all captures contain ESP).
+Hash overlap with our 480-file corpus: **0**. Their repo publishes no
+numbers, so there is no side-by-side table: the figures below come from
+our frozen pipeline on their frozen commit, not from any held-out split
+of theirs.
+
+### v1.2.6 baseline (from results/external-eval.json, 180 files)
 
 | field | n (mappable) | accuracy (unknown=error) | coverage | acc-when-answered |
 |---|---|---|---|---|
@@ -132,6 +133,163 @@ synthetic profiles; the 15 answers are all confident `whatsapp` errors).
 Excluded, not scored: HMAC-SHA384 auth (47 rows), DH15 (48 rows),
 file_transfer/messaging traffic (50 rows), ood/anomaly/archived and
 protocol-session traffic labels (by design).
+
+## 6. v1.2.7 robustness: root causes, fixes, DEV/TEST protocol, results
+
+Status note: after v1.2.6 the external set is no longer untouched —
+DEV (P01+P04+P05, 108 files, frozen in docs/head-to-head-split.json
+before any fix) was used for diagnosis and gate calibration. Only the
+TEST split (P02+P03, 72 files) is a clean measurement; it was run
+EXACTLY ONCE with frozen v1.2.7 code (see below).
+
+### Root causes (all diagnosed on DEV only, with evidence)
+
+(a) `mode = plain/none` on ESP captures although
+`detection.ipsec_detected` is true: the mode RandomForest learned a
+`none` class from plain pcaps. On OOD captures (e.g. DEV
+`email_p01_R01`: n=5016 packets, 19 s span) the trees land in
+plain-dominated leaves → `none` at 0.62 confidence while 399 ESP
+packets sit beside it. ESP size features ARE extracted correctly
+(`n_esp`, per-SPI discipline intact); the model outvotes them on
+ancillary duration/count features.
+(b) `traffic_type` confident WhatsApp errors (DEV: 5 files, conf
+0.52–0.58): real 45 s mixes (web objects, ICMP) land in the synthetic
+whatsapp pocket (small bidirectional + sparse large blobs) with
+uncalibrated confidence above the 0.5 abstention line.
+(c) `enc_alg` CBC always AES-128: AES-128-CBC vs AES-256-CBC are
+wire-identical in ESP size structure — verified byte-identical means
+and mod16 histograms on our own v1/v2 same-traffic pairs (both 232.0 /
+[(399, 8)] for voip, 1373.9/1372.4 for video) — yet production calls
+v1→128 @0.97 and v2→256 @0.86. With no size-structure signal, the
+distinction rides traffic/timing realizations that do not transfer
+(seeds differ per variant), so off-distribution the model falls back
+to the majority class (DEV: 25 wrong, all →128; TEST holds the rest).
+
+### Fixes (engine only; models, rubric, API untouched)
+
+- Invariant (no calibration needed): detected IPsec can never be
+  plain/none — a model vote for `none` on a detected capture becomes
+  NOT_OBSERVED with a reason. Property-tested over the whole corpus.
+- Framing (verified, not assumed): ESP-in-UDP/4500 (marker/keepalive
+  rules unchanged) and IPv6 produce byte-identical ESP size/flow
+  features to native ESP (synthetic fixture tests, exact equality).
+- OOD gate for INFERRED fields (mode, enc/keylen/auth, pfs, traffic):
+  abstain iff the capture trips ≥ 5 training-range checks (1st/99th
+  percentiles over the validated envelope: 414 synthetic + 66 real
+  training features, `engine/models/feature_ranges.json`, regenerated
+  by train, never external) AND confidence is below 0.6 (margin 0.1).
+  Abstention is explicit UNKNOWN + reason
+  ("capture outside the training distribution: …") with resolve-by;
+  the control becomes UNKNOWN, never PASS/FAIL; confidence is never
+  lowered quietly. Either signal alone never abstains (tails overlap
+  the envelope; low confidence alone is calibrated risk).
+- No retraining on external data, ever. `train.py` only additionally
+  writes the ranges file; all model weight files are byte-identical
+  before/after (verified by md5).
+
+### Calibration (false-abstain ≤ 2% budget)
+
+Joint offline measurement (correctness × confidence × violations):
+K=5/floor=0.6 gives 0/2232 (0.0000) on synthetic folds-proxy and 2/242
+(0.0083) on real — inside budget with headroom (tighter floors and
+lower counts either miss DEV errors or break the real budget; looser
+settings add nothing on DEV). True fold rate comes from the §7
+evaluation re-run below.
+
+### DEV results (v1.2.7 frozen rule, 108 files, committed script)
+
+0 parse errors, 0 no-IPsec, 108/108 WITHHELD (coverage-driven, as
+designed — every capture lacks lifetimes/replay/DH evidence).
+
+| field | n | accuracy | coverage | acc-when-answered |
+|---|---|---|---|---|
+| ike_version | 108 | 0.028 | 0.028 | 1.000 (3/3 handshake sessions) |
+| mode | 108 | 0.009 | 0.028 | 0.333 |
+| enc_alg | 108 | 0.398 | 0.398 | 1.000 (43/43 kept answers correct) |
+| enc_key_len | 108 | 0.509 | 0.611 | 0.833 |
+| auth_alg | 72 | 0.944 | 0.944 | 1.000 (68/68 kept answers correct) |
+| dh_group | 72 | 0.000 | 0.000 | — (abstain by design) |
+| pfs | 108 | 0.000 | 0.000 | — (no rekeys on the wire) |
+| ip_version | 108 | 1.000 | 1.000 | 1.000 |
+| nat_t | 108 | 1.000 | 1.000 | 1.000 |
+| traffic_type | 75 | 0.000 | 0.053 | 0.000 (4 kept whatsapp errors) |
+
+The invariant converted all 105 former `none` mode votes to
+NOT_OBSERVED; residual confident errors (2 mode, 11 keylen, 4 traffic)
+live in the low-violation, moderate-confidence band where our own
+correct answers live — no unsupervised rule separates them; stated as
+the method's boundary, not tuned away.
+
+### TEST results (one shot, frozen code, 72 files)
+
+Run window 2026-10-04T11:48:10Z → 11:50:14Z, rc=0, code frozen since
+the DEV measurement (only docs/frontend changed after — no engine
+touches). 0 parse errors, 0 no-IPsec, 72/72 WITHHELD, hash overlap 0.
+
+| field | n | v1.2.6 acc / cov / awa | v1.2.7 acc / cov / awa |
+|---|---|---|---|
+| ike_version | 72 | 0.028 / 0.028 / 1.000 | 0.028 / 0.028 / 1.000 |
+| mode | 72 | 0.014 / 1.000 / 0.014 | 0.014 / 0.028 / 0.500 |
+| enc_alg | 72 | 0.111 / 0.472 / 0.235 | 0.042 / 0.347 / 0.120 |
+| enc_key_len | 72 | 0.208 / 0.625 / 0.333 | 0.153 / 0.472 / 0.324 |
+| auth_alg | 72 | 0.861 / 0.903 / 0.954 | 0.861 / 0.889 / 0.969 |
+| dh_group | 72 | 0 / 0 / — | 0 / 0 / — |
+| pfs | 72 | 0 / 0 / — | 0 / 0 / — |
+| ip_version | 72 | 1.000 / 1.000 / 1.000 | unchanged |
+| nat_t | 72 | 1.000 / 1.000 / 1.000 | unchanged |
+| traffic_type | 50 | 0.000 / 0.200 / 0.000 | 0.000 / 0.160 / 0.000 |
+
+Reading: accuracy (unknown = error) falls wherever correct answers
+abstain — the gate trades accuracy for honesty. What improves is the
+error TYPE: TEST confident-wrong counts fall from 71 mode + 26 enc +
+30 keylen + 10 traffic (v1.2.6) to 1 + 22 + 23 + 8 (v1.2.7); the rest
+become explicit UNKNOWNs with reasons instead of confident votes.
+Residual confident errors sit in the low-violation, moderate-confidence
+band (§6 calibration) — stated, not tuned away.
+
+### DEV side-by-side (calibration split, not clean)
+
+| field | v1.2.6 acc / cov / awa | v1.2.7 acc / cov / awa |
+|---|---|---|
+| ike_version | 0.028 / 0.028 / 1.000 | unchanged |
+| mode | 0.009 / 1.000 / 0.009 | 0.009 / 0.028 / 0.333 |
+| enc_alg | 0.463 / 0.463 / 1.000 | 0.398 / 0.398 / 1.000 |
+| enc_key_len | 0.574 / 0.676 / 0.849 | 0.509 / 0.611 / 0.833 |
+| auth_alg | 0.958 / 0.958 / 1.000 | 0.944 / 0.944 / 1.000 |
+| traffic_type | 0.000 / 0.067 / 0.000 | 0.000 / 0.053 / 0.000 |
+
+DEV accuracy drops are expected (7 correct enc answers and similar
+converted to abstentions on the calibration split — the price of the
+gate, inside the false-abstain budget below).
+
+### False-abstain rate on our own corpora (final code)
+
+Grouped-CV folds (414 rows, fold-specific ranges): 0 converted answers.
+Real rows: 4 correct answers converted (synth→real mode/auth ×2,
+holdout enc/keylen ×2) of ~490 inferred answers on 96 real captures
+(≈0.8%). Synthetic folds-proxy: 0/2232. All inside the 2% budget.
+Per field: the 4 conversions are mode/enc/keylen/auth singletons on
+long/TCP real captures, each listed with its violated checks in the
+evaluation log. Our oracle tables are untouched (label inputs, no gate
+path) and live scores are byte-identical (v1 89 @ 0.6684, v19 72,
+v21 80 — verified post-change).
+
+### False-abstain on our own corpora (final code)
+
+(from the §7 evaluation re-run: grouped-CV folds + real holdout —
+numbers go here.)
+
+### Limitations (updated)
+
+Different generator, config-declared labels assumed correct (spot
+checks), no handshakes in known captures, forced (not real) NAT-T,
+45 s vs 8 s capture scales. After v1.2.6 the external set is no longer
+untouched: DEV was used for diagnosis/calibration, so only TEST is a
+clean measurement — and TEST was run exactly once
+(results/external-eval-test.json; DEV in results/external-eval-dev.json;
+v1.2.6 full-corpus numbers stay in results/external-eval.json).
+Residual confident errors persist in the low-violation,
+moderate-confidence band.
 
 ## 4. Honesty
 

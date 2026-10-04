@@ -109,3 +109,11 @@ do not survive a different generator). Reproduce:
 (check out `c0cf256`), then `.venv/bin/python scripts/eval_external.py`.
 Their repo carries no license, so no third-party pcaps or labels ship
 in ours — only our script and aggregate results.
+
+Robustness (v1.2.7): the head-to-head exposed confident errors under
+shift (mode voted plain on ESP, uncalibrated traffic pockets, CBC key
+length majority-guesses). Fixed without touching models or weights: a
+detected-IPsec-never-plain invariant, ESP framing verified byte-identical
+across native/UDP-encap/IPv6, and an explicit-abstain OOD gate for
+inferred fields (≥ 5 range violations + confidence below 0.6; ≤ 2%
+false-abstain measured). See `docs/head-to-head.md` §6.

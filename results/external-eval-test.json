@@ -1,0 +1,4087 @@
+{
+ "their_ref": {
+  "url": "https://github.com/naman9271/ipsec-pcap-lab",
+  "commit": "c0cf25647b88c1cdb0649a43049e192e269f4cc6"
+ },
+ "mapping": "docs/head-to-head.md \u00a71",
+ "method": "frozen models, no retraining/tuning; unknown counts as error; unmappable fields excluded with counts",
+ "n_scored": 72,
+ "n_protocol_sessions": 2,
+ "failures": {
+  "parse_error": 0,
+  "no_ipsec": 0,
+  "withheld": 72
+ },
+ "hash_overlap": [],
+ "aggregates": {
+  "ike_version": {
+   "n": 72,
+   "accuracy": 0.0278,
+   "coverage": 0.0278,
+   "accuracy_when_answered": 1.0,
+   "by_provenance": {
+    "observed": {
+     "n": 2,
+     "accuracy": 1.0,
+     "coverage": 1.0
+    },
+    "inferred": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "abstained": {
+     "n": 70,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "mode": {
+   "n": 72,
+   "accuracy": 0.0139,
+   "coverage": 0.0278,
+   "accuracy_when_answered": 0.5,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 2,
+     "accuracy": 0.5,
+     "coverage": 1.0
+    },
+    "abstained": {
+     "n": 70,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "enc_alg": {
+   "n": 72,
+   "accuracy": 0.0417,
+   "coverage": 0.3472,
+   "accuracy_when_answered": 0.12,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 25,
+     "accuracy": 0.12,
+     "coverage": 1.0
+    },
+    "abstained": {
+     "n": 47,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "enc_key_len": {
+   "n": 72,
+   "accuracy": 0.1528,
+   "coverage": 0.4722,
+   "accuracy_when_answered": 0.3235,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 34,
+     "accuracy": 0.3235,
+     "coverage": 1.0
+    },
+    "abstained": {
+     "n": 38,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "auth_alg": {
+   "n": 72,
+   "accuracy": 0.8611,
+   "coverage": 0.8889,
+   "accuracy_when_answered": 0.9688,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 64,
+     "accuracy": 0.9688,
+     "coverage": 1.0
+    },
+    "abstained": {
+     "n": 8,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "dh_group": {
+   "n": 72,
+   "accuracy": 0.0,
+   "coverage": 0.0,
+   "accuracy_when_answered": null,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "abstained": {
+     "n": 72,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "pfs": {
+   "n": 72,
+   "accuracy": 0.0,
+   "coverage": 0.0,
+   "accuracy_when_answered": null,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "abstained": {
+     "n": 72,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "ip_version": {
+   "n": 72,
+   "accuracy": 1.0,
+   "coverage": 1.0,
+   "accuracy_when_answered": 1.0,
+   "by_provenance": {
+    "observed": {
+     "n": 72,
+     "accuracy": 1.0,
+     "coverage": 1.0
+    },
+    "inferred": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "abstained": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    }
+   }
+  },
+  "nat_t": {
+   "n": 72,
+   "accuracy": 1.0,
+   "coverage": 1.0,
+   "accuracy_when_answered": 1.0,
+   "by_provenance": {
+    "observed": {
+     "n": 72,
+     "accuracy": 1.0,
+     "coverage": 1.0
+    },
+    "inferred": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "abstained": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    }
+   }
+  },
+  "traffic_type": {
+   "n": 50,
+   "accuracy": 0.0,
+   "coverage": 0.16,
+   "accuracy_when_answered": 0.0,
+   "by_provenance": {
+    "observed": {
+     "n": 0,
+     "accuracy": null,
+     "coverage": null
+    },
+    "inferred": {
+     "n": 8,
+     "accuracy": 0.0,
+     "coverage": 1.0
+    },
+    "abstained": {
+     "n": 42,
+     "accuracy": 0.0,
+     "coverage": 0.0
+    }
+   }
+  },
+  "enc_alg_confusion": {
+   "aes-256-gcm": {
+    "unknown": 32,
+    "aes-128-cbc": 1,
+    "aes-256-gcm": 3
+   },
+   "aes-256-cbc": {
+    "aes-128-cbc": 21,
+    "unknown": 15
+   }
+  },
+  "traffic_confusion": {
+   "email": {
+    "unknown": 10
+   },
+   "icmp": {
+    "unknown": 10
+   },
+   "video": {
+    "unknown": 10
+   },
+   "voip": {
+    "unknown": 10
+   },
+   "web": {
+    "unknown": 2,
+    "whatsapp": 8
+   }
+  }
+ },
+ "per_file": [
+  {
+   "sha256": "4d08dbd698dc9b02ccb5b78e0eade0820d491a451101d4d76a6f865ca7f754df",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1051,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "301ecd7fedcea9e89b7848db660bf6a1c89d870b22318131b4a8fadde0c807e7",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1051,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "771246386822b0438b5e33c563fd0243d581f8b9f7f57e2fc1aa3442cb3ba73e",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1051,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "a9af7f5a927c5bd4540f22bf1da4e7a2076d6d7848329a56ba2f59f3e26d5443",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1065,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "dad9ded2ec0051bd2ead93d868ad30aabe62383ad8cad20473ec5b5da5ba6b80",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1051,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "2347db86da5a0eb6dc720a7ab1a727976e11556ffbf92e876f2ad7cf1ae4e668",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2762,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "3baf28d06aeaeccf2a50d3dfbe7ad93a7aa08f44aa1b79d86a9277b8861d85f2",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2775,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "eebbd35eab05e26ad2a99f664b98300323d85d011bbdfe99bd0109b06ed479c5",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2779,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "64bfc0ebdc320926a830e9f21f09450e07bc7c835ca0c7aaa49fba0eccc8f022",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2782,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "1854790a80d72c1608fd44fb3210ad0817fa3c7ec5ed156dba542dc86ad32cc3",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2772,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "2cebf449d0e6c1a336157ff965700d6759e7f5fd683a8ba498ef52e09b665e02",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": null,
+    "coverage": 0.0,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "0f9f2d9d8007987c467124965ce40330ca09328cf2f106241e92f78c66cba66c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2971,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "9a162c1dfbb148e5a26949fc30c4f8ae4cbfa6b11bacc0e48d3a664eb683418f",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": null,
+    "coverage": 0.0,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "bc2bffc8987fcbb0a0a3381a936388d821bc132994b99e04a7c72e1cd61c8d8c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.0907,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "ea29ba7f37634d8a67cf6858c17ad2efd4cbc2ac7b5d57cc3c2d1ea12567f24c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": null,
+    "coverage": 0.0,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "3a1091ca8eab1695cae60782d962575a5deacdea451ec9db0369b7e3f8326b46",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.0898,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "96ef7d1b3502e55bf3a264c255b583583882967ea7554f3ff758ba2ef3101d42",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.283,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "7af4d1b338276e84a84565a16c1156f621cc086188ce4e3306916945a0fa0438",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2983,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "e5dd80f09a161f8bc0f85e528c007d7b41252742d8893ff9fe79fb8535bc0ba5",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2924,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "771e4fd3f28712a754d27ca54ab68f5f5637bd27cc97179041970892d00d7018",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2994,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "47f3fb2cafb362267ac934714e8ac3896aee7ab2a06ea58d7bca905dae4f5b7c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha1",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 61,
+    "coverage": 0.2062,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "2632e6818cbfeaf0273d0d79ee2b6a448bdba4ed1409925587a98ee0aa200d85",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-256-gcm",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.2168,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "7b48b516d1a05dad6f33038ea052fae478deb648e7ffbea1d48e1999acafae0c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-256-gcm",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.2148,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "b095a682172f964efbd8d3df1389a8fb1b9d3ae0952ff4b4201569ed19d7f486",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.088,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "8454192b23916a62ae350b51bee0ffb6a9e5f67d22ca2439d4f75ec625251387",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2292,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "c46b6f08edc0d0612c0671b9fee8b5634ca9624753aa08c0c5c1945fdd080354",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1134,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "dff32d978c377df323bef99c08351bd467bad89118f96af8bc1ac624c466e916",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.106,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "b65de8537384d20400eda694085cf5cf384ab3efb204550b29b15b771041986c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.233,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "eb4060f9ac3650e733f62875c1423e0d26b9c58933634e2089b68ceec34747a8",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": null,
+    "coverage": 0.0,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "8a4e37288062d4a8c5bd3288343cdbd31bee23d267cbcdf0529bc0b6837ee38d",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": null,
+    "coverage": 0.0,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "7e6182ec5da3f897f2f63f3909ab85e5e8ed482dc4558d815de654d1be9552bd",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1079,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "795697a25343b7b14fdc4695033b664b047831cf2549a6bebd9ef1a22b98a2fd",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1083,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "5623849daf022d1e98ed333de4fc576b02c08568c68f0e7532844c4f45f2e8a3",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1097,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "8263de9d5b739d74737ef39d4eba95f8f232500a1b51042a42ff9fd215095f6d",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-256-gcm",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.2373,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "99b25883444129fe180df1ea97f2d50e7d15a8f21cd42545f0e531f4c7f90b2e",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1083,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "0d772f78d89bf5bfee1a9941189e418117812da185622670cad932bdf52165c0",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1157,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "5dc6de3d4e929e4285a7a343be2876569f817294809a43f8d5a82fde45e5085a",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1065,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "302fd831cec4a3ebf3d7a52b72e736931cb87faab4e1a0061347893ca1cb248e",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1037,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "82e6e2e9c1e5bb51c99c31e24865ca11e025b7fa97f36e5a1049d46ca3018c9f",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.106,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "fee7cc7d9bd179abbebdf13348139112f1bce3ea8c6fe69502d34b4b0e950799",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1157,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "4917ad0a54d85b4997026955e892bd7ed4bff280cfcbce22a4a197eb0e32fa0b",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1093,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "904bfd654654cf6289b91112b74c70dcae0e930736edb3fd7ec04f981ddff871",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1106,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "5a3fdeff51b73eb64641bbd270e44c59bdf42a327fd91317db2eae0d905464ea",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1106,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "a5a59a349c4943dde69903542ae54918f33ad514a9df926820f93f9457520c24",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1088,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "6f5472b3e71df0c4e5a68e97ee221d3f14e223418a30befc127cd76c29ff4375",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1093,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "569437fbddcd008fc4d4c8a1cbb359f644ee03c434e3f124bc0eab452d2ed982",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2952,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "d6b813c0c23966bd4caf68e7a725a8ce929cd2ebf8c7383451a944661dab6caa",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2941,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "6ec93c24f3ee472ee43c02f2b1b9619b0a88eff76043b350fad27af555d26841",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2941,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "f3f6c8615271c0859df037e207fdb6adf62ee957238fed3808ae23d0c067d0d9",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2941,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "52b39ccac0fb0d430111932ea146769f7d2d69324a5b1fdaf93996309116c3bc",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2941,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "63da72189e7b9596bd309e17f143a72f0f687ded233cdbd24e805ff76705bf03",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1028,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "d8ef1b50b2f56518384120b969ad44b3f64870bf68fba4b355585b893a58f01a",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1032,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "6ee8d63838b7daa4140f13f545df562b55254c3de628553b0a1252260f162277",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.106,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "9e6bee66b65edb3dedc0f7f298e8a5a929fd5370691479cd3484aa81cacea938",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1056,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "b3d93731caa3b58cd8282307bc14b228cb5f159b859f187380bb4c2077cb295b",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1056,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "7375a0be40867aca12b258fb631055e954acb8a88e3fb26bd796fdc48724d6e9",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2526,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "5f010abdf7d48eb13d1dfd1e0a7f6a2884743cfca260ac0cc588e2818c53dea3",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1181,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "78347ba206059e434a5f53ffc25d1c82367dbe12f77093137c960539354531f8",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2529,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "032fa88372c46521c03cfa3f648e9ce18a49ad6eb1c7dc186277b6b588c37138",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2471,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "2b7b7fbe69c2a63012f54d20ade5ed83c689183ce6ff2d78aa63fa7535a9a855",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "aes-128-cbc",
+     "provenance": "inferred"
+    },
+    "enc_key_len": {
+     "value": 128,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 83,
+    "coverage": 0.2471,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "22f65db528435e5d455e65a767a5aea61ee1a3611616b7e912bedc4fbee54726",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": null,
+    "coverage": 0.0,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "73962190c78191feefd9400cc7aa6cde182df4f2dacadd3318dc47e30730345d",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.0736,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "1ecab4414fc7cbfbc8eb5d6201aa6007cbd01515411a9edfb8eb80ab307e3298",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.0727,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "76af68ad92483f0d29b30097b35c7fa695f6d421a88482690ff9d8d42bb6857c",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.0708,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "1b4cfdc0bc776c40af637eb28a4c58051417880e07ac5880ef29e1d9d11354f2",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "aead",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.0731,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "5addcc676532131d43b38afb22066e293c9d2a123689171fe794a54d7be1b68a",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "unknown",
+     "provenance": "abstained"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.1171,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "7f790f8ff89af6de486d32a76d99faa70a9c29555d06678234bf43adfd2ce6ec",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.0963,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "fe1869a97d2741db04e991726bf85b38b08b6f91e4dbae29000b438ebfd1e4fa",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.0963,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "9dd95d540fdfb8e11093c9c794db541d603b504ec2673c85b34031eafc19c42d",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.0949,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "f11225b0a96e1d6e6909fa23049e80f14fa39d5e0722810e7700266fc06a9c0d",
+   "protocol_session": false,
+   "predictions": {
+    "ike_version": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "mode": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": 256,
+     "provenance": "inferred"
+    },
+    "auth_alg": {
+     "value": "hmac-sha256",
+     "provenance": "inferred"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    },
+    "traffic_type": {
+     "value": "whatsapp",
+     "provenance": "inferred"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 87,
+    "coverage": 0.0931,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "cc6f7a8309c7c55243010cdbb87576ddecf7bfcfbc71eee2e6cf718bda178485",
+   "protocol_session": true,
+   "predictions": {
+    "ike_version": {
+     "value": "ikev2",
+     "provenance": "observed"
+    },
+    "mode": {
+     "value": "transport",
+     "provenance": "inferred"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": true,
+     "provenance": "observed"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 100,
+    "coverage": 0.1667,
+    "risk_band": null
+   },
+   "error": null
+  },
+  {
+   "sha256": "bb11f9efb043c951123dc0b6ac252d3871f5eccf09c48f98c1dc116cf488f67f",
+   "protocol_session": true,
+   "predictions": {
+    "ike_version": {
+     "value": "ikev1",
+     "provenance": "observed"
+    },
+    "mode": {
+     "value": "tunnel",
+     "provenance": "inferred"
+    },
+    "enc_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "enc_key_len": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "auth_alg": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "dh_group": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "pfs": {
+     "value": "unknown",
+     "provenance": "abstained"
+    },
+    "ip_version": {
+     "value": 4,
+     "provenance": "observed"
+    },
+    "nat_t": {
+     "value": false,
+     "provenance": "observed"
+    }
+   },
+   "assessment": {
+    "score_status": "WITHHELD",
+    "posture_score": 68,
+    "coverage": 0.2014,
+    "risk_band": null
+   },
+   "error": null
+  }
+ ]
+}

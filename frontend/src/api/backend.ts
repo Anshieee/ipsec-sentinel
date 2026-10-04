@@ -300,6 +300,7 @@ function paramFor<T>(value: T, f: BackendField, note?: string): Param<T> {
     confidence: f.confidence,
     status: toStatus(f),
     source: f.source,
+    detail: (f.detail ?? null) as Record<string, unknown> | null,
     ...(decided === 'size-overhead-model'
       ? { method: 'Size-overhead model' }
       : decided === 'ah-next-header'

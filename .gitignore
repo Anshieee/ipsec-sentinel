@@ -26,6 +26,7 @@ data/
 .agents/
 .mcp.json
 engine/models/*.joblib
+engine/models/feature_ranges.json
 reports/out/
 dataset/*.tar.gz
 testbed/configs/**/ipsec.secrets

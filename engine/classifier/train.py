@@ -105,6 +105,25 @@ def main() -> int:
         print(f"  {field}: {len(le.classes_)} classes"
               f"{' (esp-only view)' if field in ESP_VIEW_FIELDS else ''}")
     (mdir / "classes.json").write_text(json.dumps(classes, indent=1))
+    # OOD range gate inputs (v1.2.7): percentiles over the validated
+    # envelope — synthetic train rows plus our own real captures when
+    # present (same features, no labels, never external data). Models
+    # (weights) still train on synthetic only. Without data/real the
+    # envelope is synthetic-only and the gate is stricter (noted).
+    from model import ood_ranges as _ood_ranges  # noqa: E402
+    import csv as _csv
+    env_rows = list(rows)
+    real_rows = [r for r in _csv.DictReader(
+        (ROOT / "data" / "manifest.csv").open()) if r["source"] == "real"]
+    if real_rows:
+        real_feats = features_all(real_rows, mdir / CACHE_NAME)
+        feats.update(real_feats)
+        env_rows = list(rows) + real_rows
+        print(f"envelope rows: {len(env_rows)} (synthetic + real)")
+    else:
+        print("envelope rows: synthetic only (no data/real; gate stricter)")
+    (mdir / "feature_ranges.json").write_text(json.dumps(
+        _ood_ranges([feats[r["file"]] for r in env_rows]), indent=1))
     (mdir / "meta.json").write_text(json.dumps({
         "seed": 7, "n_estimators": 300, "train_rows": len(rows),
         "feature_keys": keys,

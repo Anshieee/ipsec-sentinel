@@ -28,7 +28,8 @@ from extract import extract  # noqa: E402
 from parse import parse_fields  # noqa: E402
 from model import (build_vectorizer, train_field, esp_only_keys,  # noqa: E402
                    MAIN_MODEL_FIELDS, ABLATION_EXTRA_FIELDS,
-                   UNKNOWN_THRESHOLD)
+                   UNKNOWN_THRESHOLD, ood_violations, ood_ranges,
+                   OOD_MARGIN, OOD_MIN_VIOLATIONS)
 
 SCORED = ["ipsec_proto", "ike_version", "mode", "enc_alg", "enc_key_len",
           "auth_alg", "dh_group", "pfs", "ip_version", "traffic_type",
@@ -75,11 +76,14 @@ def _fold_predict(vec, classes, clfs, field, feats):
             "source": "model", "confidence": conf}
 
 
-def predict_row(feats, parsed, clfs, vec, vec_esp, classes, esp_only=False):
+def predict_row(feats, parsed, clfs, vec, vec_esp, classes, esp_only=False,
+                ranges=None):
     """Flat field predictions mirroring predict.analyze (fold models).
 
     parsed is the new SA split; child crypto uses the ESP-only view.
     ike_enc_alg / ike_dh_group score the IKE SA parse (not the child).
+    Mirrors the plain/none invariant and the OOD gate (ranges = fold
+    training percentiles, or production ranges).
     """
     ike_sa, child_sa = parsed["ike_sa"], parsed["child_sa"]
     out = {}
@@ -97,6 +101,10 @@ def predict_row(feats, parsed, clfs, vec, vec_esp, classes, esp_only=False):
             out["mode"] = {"value": "unknown"}
     else:
         out["mode"] = {"value": child_sa["mode"]["value"]}
+    # invariant: detected IPsec is never plain/none
+    detected = child_sa.get("proto", {}).get("value") in ("esp", "ah")
+    if detected and out["mode"]["value"] == "none":
+        out["mode"] = {"value": "unknown"}
     esp_feats = {k: v for k, v in feats.items()
                  if k in esp_only_keys(list(feats.keys()))}
     for field in ESP_VIEW_FIELDS:
@@ -129,6 +137,30 @@ def predict_row(feats, parsed, clfs, vec, vec_esp, classes, esp_only=False):
                                             "traffic_type", feats)
     else:
         out["traffic_type"] = {"value": "unknown"}
+    if ranges is not None:
+        from predict import apply_ood_gate as _gate  # noqa: E402
+        bad = ood_violations(feats, ranges)
+        floor = UNKNOWN_THRESHOLD + OOD_MARGIN
+        tripped = len(bad) >= OOD_MIN_VIOLATIONS
+        # only model fills abstain here: parsed/defined values stay
+        parsed_keys = {k for k, v in child_sa.items()
+                       if v is not None and k != "proto"}
+        pairs = []
+        for f in ("mode", "enc_alg", "enc_key_len", "auth_alg", "pfs",
+                  "traffic_type"):
+            if f in parsed_keys:
+                continue
+            v = out.get(f, {})
+            if not isinstance(v, dict) or v.get("value", "unknown") == \
+                    "unknown":
+                continue  # abstained or model-unknown already
+            pairs.append((f, {"value": v["value"], "status": "INFERRED",
+                             "source": "model",
+                             "confidence": v.get("confidence", 1.0)}))
+        _gate([g for _, g in pairs], tripped, bad, floor)
+        for f, g in pairs:
+            if g["value"] == "unknown":
+                out[f] = {"value": "unknown"}
     return out
 
 
@@ -258,13 +290,14 @@ def run_cv(rows, feats, labels, esp_only=False):
                 clfs[field] = train_field(Xtr, y)
 
         def predict_fn(fe, _file, _vec=vec, _vesp=vec_esp, _clfs=clfs,
-                       _classes=classes, _esp=esp_only):
+                       _classes=classes, _esp=esp_only,
+                       _ranges=ood_ranges(tr_full)):
             if _esp:
                 keep = esp_only_keys(list(fe.keys()))
                 fe = {k: v for k, v in fe.items() if k in keep}
             parsed = parse_fields(fe)
             return predict_row(fe, parsed, _clfs, _vec, _vesp, _classes,
-                               esp_only=_esp)
+                               esp_only=_esp, ranges=_ranges)
         fold_scored = score_rows(te, feats, labels, predict_fn)
         for f in SCORED:
             agg[f]["y_true"].extend(fold_scored[f]["y_true"])
@@ -278,12 +311,14 @@ def run_synth2real(synth_rows, real_rows, feats, labels, models_dir: Path):
     vec = joblib.load(models_dir / "vectorizer.joblib")
     vec_esp = joblib.load(models_dir / "vectorizer_esp.joblib")
     classes = json.loads((models_dir / "classes.json").read_text())
+    ranges = json.loads((models_dir / "feature_ranges.json").read_text())
     clfs = {f: joblib.load(models_dir / f"{f}.joblib")
             for f in ("traffic_type", "mode", "enc_alg", "enc_key_len",
                       "auth_alg", "dh_group", "pfs")}
 
     def predict_fn(fe, _file):
-        return predict_row(fe, parse_fields(fe), clfs, vec, vec_esp, classes)
+        return predict_row(fe, parse_fields(fe), clfs, vec, vec_esp,
+                           classes, ranges=ranges)
     return score_rows(real_rows, feats, labels, predict_fn)
 
 
@@ -320,8 +355,9 @@ def run_real_holdout(synth_rows, real_rows, feats, labels):
         else:
             clfs[field] = train_field(Xtr, y)
 
-    def predict_fn(fe, _file):
-        return predict_row(fe, parse_fields(fe), clfs, vec, vec_esp, classes)
+    def predict_fn(fe, _file, _ranges=ood_ranges(tr_dicts)):
+        return predict_row(fe, parse_fields(fe), clfs, vec, vec_esp,
+                           classes, ranges=_ranges)
     scored = score_rows(test_rows, feats, labels, predict_fn)
     info = {"n_train": len(train_rows), "n_test": len(test_rows),
             "test_runs": sorted({real_run_of(r) for r in test_rows}),
@@ -400,6 +436,12 @@ def main() -> int:
          f"runs {hold_info['test_runs']}, traffic {hold_info['test_traffic']})",
          table_md(metrics["real_holdout"])),
         ("Reading the numbers (v1.2 boundary)",
+         "- Robustness (v1.2.7): detected IPsec is never plain/none (a "
+         "model vote for plain on IPsec becomes NOT_OBSERVED), and "
+         "INFERRED votes abstain when the capture trips >= 5 training "
+         "range checks with confidence below 0.6 (OOD gate, calibrated "
+         "for <= 2% false-abstain on held-out folds + real captures). "
+         "Unknowns count as errors below, honestly.\n"
          "- ike_version / ike_enc_alg / ike_dh_group: the IKE SA parse, "
          "still ~100% deterministic (proposal + KE travel in the clear). "
          "These score the IKE SA only — they never fill child fields.\n"

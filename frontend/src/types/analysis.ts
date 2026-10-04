@@ -21,6 +21,8 @@ export interface Param<T> {
   /** Explicit method label when the source alone is ambiguous
    * (e.g. size-overhead inference vs generic model). */
   method?: string
+  /** Backend evidence detail (reason/resolve_by for unknowns). */
+  detail?: Record<string, unknown> | null
   note?: string
 }
 

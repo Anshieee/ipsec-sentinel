@@ -184,9 +184,24 @@ function ParamTableRow({ row, related, unobserved }: { row: ParamRow; related: F
       {open ? (
         <tr key={`${row.key}-evidence`} className="border-t border-border/60">
           <td colSpan={6} className="bg-bg-card/40 px-3 py-2">
-            <p className="text-[12px] text-text-secondary">
-              {row.param.note ?? 'No recorded feature evidence for this parameter.'}
-            </p>
+            {typeof row.param.detail === 'object' && row.param.detail !== null &&
+            (typeof (row.param.detail as Record<string, unknown>).reason === 'string' ||
+              typeof (row.param.detail as Record<string, unknown>).resolve_by === 'string') ? (
+              <div className="space-y-1 text-[12px]">
+                {typeof (row.param.detail as Record<string, unknown>).reason === 'string' ? (
+                  <p className="text-text-primary">{String((row.param.detail as Record<string, unknown>).reason)}</p>
+                ) : null}
+                {typeof (row.param.detail as Record<string, unknown>).resolve_by === 'string' ? (
+                  <p className="text-text-secondary">
+                    To resolve: {String((row.param.detail as Record<string, unknown>).resolve_by)}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <p className="text-[12px] text-text-secondary">
+                {row.param.note ?? 'No recorded feature evidence for this parameter.'}
+              </p>
+            )}
           </td>
         </tr>
       ) : null}

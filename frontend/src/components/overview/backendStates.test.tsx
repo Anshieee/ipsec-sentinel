@@ -3,7 +3,7 @@
  * LIKELY and the risk_band floor. Crafted BackendAnalyzeResponse
  * literals (no API needed) through the real mapper.
  */
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { mapAnalyzeResponse, type BackendAnalyzeResponse } from '@/api/backend'
@@ -276,5 +276,42 @@ describe('Inferences status mapping', () => {
     const table = screen.getByTestId('inference-table')
     expect(table.textContent).toMatch(/PFS group[\s\S]*not provided by the analysis API/)
     expect(table.textContent).not.toMatch(/Enabled/)
+  })
+})
+
+describe('OOD reason rendering', () => {
+  beforeEach(() => {
+    useSentinel.getState().clear()
+  })
+
+  it('expands an UNKNOWN-with-reason row to show reason and resolve text', async () => {
+    const { InferenceTable } = await import('@/components/inferences/InferenceTable')
+    const { getFixture } = await import('@/api/fixtures')
+    const analysis = getFixture('A')
+    const protocol = {
+      ...analysis.protocol,
+      mode: {
+        value: 'tunnel' as const,
+        provenance: 'inferred' as const,
+        confidence: 0.55,
+        status: 'UNKNOWN' as const,
+        source: 'model' as const,
+        detail: {
+          reason: 'capture outside the training distribution: n_packets=5000 outside [18,2975]',
+          resolve_by: 'recapture within the training envelope',
+        },
+      },
+    }
+    useSentinel.getState().setAnalysis({ ...analysis, protocol })
+    render(
+      <MemoryRouter>
+        <InferenceTable analysis={{ ...analysis, protocol }} />
+      </MemoryRouter>,
+    )
+    const table = screen.getByTestId('inference-table')
+    const expanders = within(table).getAllByRole('button', { expanded: false })
+    fireEvent.click(expanders[2])
+    expect(table.textContent).toMatch(/capture outside the training distribution/)
+    expect(table.textContent).toMatch(/To resolve: recapture within the training envelope/)
   })
 })

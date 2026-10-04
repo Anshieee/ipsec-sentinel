@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "engine" / "classifier"))
 from extract import extract  # noqa: E402
 from parse import parse_fields, NOT_OBSERVED, NOT_APPLICABLE, UNKNOWN  # noqa: E402
 from model import UNKNOWN_THRESHOLD, esp_only_keys  # noqa: E402
+from model import ood_violations, OOD_MARGIN, OOD_MIN_VIOLATIONS  # noqa: E402
 
 SCORED = ["ipsec_proto", "ike_version", "mode", "enc_alg", "enc_key_len",
           "auth_alg", "dh_group", "pfs", "ip_version", "traffic_type",
@@ -31,7 +32,7 @@ SCORED = ["ipsec_proto", "ike_version", "mode", "enc_alg", "enc_key_len",
 CHILD_ESP_VIEW = ("enc_alg", "enc_key_len", "auth_alg")
 
 REQUIRED_MODELS = ("vectorizer.joblib", "vectorizer_esp.joblib",
-                   "classes.json")
+                   "classes.json", "feature_ranges.json")
 
 
 def _load_models(models_dir: Path):
@@ -44,13 +45,14 @@ def _load_models(models_dir: Path):
     vec = joblib.load(models_dir / "vectorizer.joblib")
     vec_esp = joblib.load(models_dir / "vectorizer_esp.joblib")
     classes = json.loads((models_dir / "classes.json").read_text())
+    ranges = json.loads((models_dir / "feature_ranges.json").read_text())
     clfs = {}
     for f in ("traffic_type", "mode", "enc_alg", "enc_key_len", "auth_alg",
               "dh_group", "pfs"):
         p = models_dir / f"{f}.joblib"
         if p.exists():
             clfs[f] = joblib.load(p)
-    return vec, vec_esp, classes, clfs
+    return vec, vec_esp, classes, clfs, ranges
 
 
 def _model_predict(vec, classes, clfs, field, feats, status_ok="INFERRED"):
@@ -71,9 +73,28 @@ def _esp_view(feats: dict) -> dict:
     return {k: v for k, v in feats.items() if k in keep}
 
 
+def apply_ood_gate(targets: list, tripped: bool, bad: list[str],
+                   floor: float) -> None:
+    """Abstain INFERRED votes that are BOTH out-of-distribution and
+    below-confidence-floor, explicitly (UNKNOWN + reason). Mutates."""
+    for t in targets:
+        if t is None or t.get("status") != "INFERRED":
+            continue
+        if tripped and t.get("confidence", 1.0) < floor:
+            t.update({
+                "value": "unknown", "status": UNKNOWN,
+                "confidence": t.get("confidence", 0.0),
+                "evidence": {
+                    "reason": "capture outside the training distribution: "
+                              + "; ".join(bad[:4]),
+                    "resolve_by": "recapture within the training envelope "
+                                  "(short captures of the covered traffic "
+                                  "mixes) or score from ground-truth labels"}})
+
+
 def analyze(pcap_path: str | Path, models_dir: str | Path):
     mdir = Path(models_dir)
-    vec, vec_esp, classes, clfs = _load_models(mdir)
+    vec, vec_esp, classes, clfs, ranges = _load_models(mdir)
     try:
         feats = extract(str(pcap_path))
     except Exception as e:
@@ -118,6 +139,20 @@ def analyze(pcap_path: str | Path, models_dir: str | Path):
         ev = dict(child_sa["mode"].get("evidence") or {})
         ev.setdefault("decided_by", "no-ipsec")
         child_sa["mode"]["evidence"] = ev
+    # Invariant (v1.2.7): detected IPsec can never be plain/none. If the
+    # model votes plain/none on a detected-IPsec capture, the vote is
+    # discarded for an explicit unknown (plain lives only with
+    # ipsec_detected == false, set above by the parser).
+    if detected and child_sa.get("mode") is not None and \
+            child_sa["mode"].get("value") == "none" and \
+            child_sa["mode"].get("status") == "INFERRED":
+        child_sa["mode"] = {
+            "value": "unknown", "status": NOT_OBSERVED,
+            "source": "none", "confidence": 0.0,
+            "evidence": {"reason": "model voted plain/none on an "
+                                   "IPsec-positive capture; discarded",
+                         "resolve_by": "capture longer/more varied ESP "
+                                       "traffic for the size-overhead model"}}
 
     # traffic_type is always inferred (payload encrypted).
     if can_infer:
@@ -169,6 +204,20 @@ def analyze(pcap_path: str | Path, models_dir: str | Path):
         child_sa["auth_alg"] = {"value": "unknown", "status": NOT_OBSERVED,
                                 "source": "none", "confidence": 0.0,
                                 "evidence": None}
+    # Out-of-distribution gate (v1.2.7): an INFERRED vote abstains iff
+    # it trips at least OOD_MIN_VIOLATIONS training-range checks AND its
+    # confidence is below UNKNOWN_THRESHOLD + OOD_MARGIN. Either signal
+    # alone is not enough (tails overlap the training distribution, and
+    # low confidence alone is calibrated risk). Abstention is explicit
+    # (UNKNOWN + reason); confidence is never lowered quietly. Controls
+    # downstream read UNKNOWN (never PASS/FAIL).
+    ood_bad = ood_violations(feats, ranges)
+    gate_floor = UNKNOWN_THRESHOLD + OOD_MARGIN
+    ood_tripped = len(ood_bad) >= OOD_MIN_VIOLATIONS
+    ood_targets = [child_sa.get(k) for k in
+                   ("mode", "enc_alg", "enc_key_len", "auth_alg", "pfs")]
+    ood_targets.append(out.get("traffic_type"))
+    apply_ood_gate(ood_targets, ood_tripped, ood_bad, gate_floor)
 
     # ---- flat backward-compatible fields, derived from the objects ----
     def _flat(obj, model_inferred_ok=True):
