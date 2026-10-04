@@ -86,3 +86,14 @@
     `ike-version` together with the `weak-ike-dh` finding (critical when
     OBSERVED, e.g. v21's DH2 live). A weak IKE group therefore always
     surfaces — just not as the child PFS group.
+19. **How does it do on someone else's data?**
+    Head-to-head on 180 captures from naman9271/ipsec-pcap-lab
+    (`c0cf256`, real strongSwan, `docs/head-to-head.md`): parsed fields
+    transfer at 1.000, auth at 0.910, encryption at 0.322 accuracy
+    (0.690 when it answers — compare our own synth→real 0.7121 on the
+    same unknown-as-error metric). Mode (0.011) and traffic type (0.000;
+    15 confident `whatsapp` errors) do NOT transfer: their captures have
+    no IKE packets (capture filter), 45 s real traffic mixes, and
+    SHA384/DH15 suites outside our schema. Reported as weak, no
+    cherry-picking; unmappable fields excluded with counts. Their repo
+    has no license, so only our script and aggregates ship here.

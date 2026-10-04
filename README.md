@@ -93,3 +93,19 @@ only; 66 real captures (v1,v3,v5,v7,v12,v18) are the only
 out-of-distribution evidence. Lifetimes/replay/ESN are never observed in
 short captures; PFS needs a rekey on the wire. See
 `docs/model-evaluation.md` and `docs/dataset-datasheet.md`.
+
+## How does it do on someone else's data?
+
+`docs/head-to-head.md`: our frozen pipeline on 180 captures from
+[naman9271/ipsec-pcap-lab](https://github.com/naman9271/ipsec-pcap-lab)
+(`c0cf256`, real strongSwan, no handshakes in the labeled captures).
+Parsed fields transfer at 1.000 (ip_version, nat_t, IKE on the 5
+handshake sessions); auth at 0.910; encryption at 0.322 accuracy
+(0.690 when it answers — our own synth→real is 0.7121 on the same
+metric); mode and traffic classification do not transfer (0.011 and
+0.000 — the tunnel-size signal and the six synthetic traffic profiles
+do not survive a different generator). Reproduce:
+`git clone https://github.com/naman9271/ipsec-pcap-lab ~/.tmp-work/ipsec-pcap-lab`
+(check out `c0cf256`), then `.venv/bin/python scripts/eval_external.py`.
+Their repo carries no license, so no third-party pcaps or labels ship
+in ours — only our script and aggregate results.
