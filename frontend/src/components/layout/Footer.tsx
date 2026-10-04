@@ -6,7 +6,7 @@ export function Footer() {
   const dataSource = useSentinel((s) => s.settings.dataSource)
   const live = dataSource === 'live'
   return (
-    <footer className="flex h-8 shrink-0 items-center justify-between border-t border-line bg-raised px-4 text-[11px] text-muted">
+    <footer className="flex h-8 shrink-0 items-center justify-between border-t border-border bg-bg-card px-4 text-[11px] text-text-secondary">
       <span>
         {live
           ? 'Live backend. Simulated surfaces (capture stream, model registry) are badged SIMULATED.'

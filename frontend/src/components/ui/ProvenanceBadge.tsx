@@ -29,8 +29,8 @@ export function ProvenanceBadge({ provenance, className, iconOnly }: ProvenanceB
       title={tooltip}
       className={cn(
         CHIP_CLASS,
-        provenance === 'observed' && 'border-solid border-highlight/70 bg-highlight/10 text-highlight',
-        provenance === 'inferred' && 'border-dashed border-violet/70 bg-violet/10 text-violet',
+        provenance === 'observed' && 'border-solid border-blue/70 bg-blue/10 text-blue',
+        provenance === 'inferred' && 'border-dashed border-purple/70 bg-purple/10 text-purple',
         className,
       )}
     >

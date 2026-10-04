@@ -1,4 +1,34 @@
-# Theme reference — FreeLLMAPI visual tokens (read-only extraction)
+# Theme reference — palette (v1.2.4 source of truth) + reference extraction
+
+## v1.2.4 palette (single token set; overrides v1.2.2 values where they differ)
+
+Diffs vs the v1.2.2 tokens: page #0a0a0a→#080808, cards #101012→#101010,
+nested #17171a→#161616, hairlines #26262b→#292929 (+#1e1e1e subtle,
+#333333 strong), ink #f0f2f5→#f5f5f5, muted #a7aeb8→secondary #a0a0a0
+(+#737373 muted large/icons/deco only, +#8a8a8a muted-small, +#525252
+disabled), accent #5a9bf8→blue #3888ec, safe #34c88f→green #189f70
+(+green-bright #20cc60 for success text), warn #f0a63a→amber #f8a008,
+danger #f2665e→red #ff6467, violet #a78bfa→purple #ad59fc, orange kept
+(#f08020), highlight/cyan folded into blue, danger-solid removed,
+white-accent #fafafa added (single light primary action), track #63636e
+retained. Radii kept (card 10px/control 6px ≈ .5rem scale). Chart
+greys from the reference deliberately NOT adopted (series must stay
+distinguishable: blue/green/purple/orange/amber/red + neutral grey).
+
+Backgrounds: --bg #080808 (page), --bg-elevated #101010 (cards/panels),
+--bg-card #161616 (nested/raised), --bg-hover #1a1a1a, --bg-input #101010.
+Borders: --border #292929, --border-subtle #1e1e1e, --border-strong #333333.
+Text: --text-primary #f5f5f5, --text-secondary #a0a0a0, --text-muted #737373,
+--text-muted-small #8a8a8a, --text-disabled #525252.
+Accents: --white-accent #fafafa, --blue #3888ec, --green #189f70,
+--green-bright #20cc60, --purple #ad59fc, --orange #f08020,
+--amber #f8a008, --red #ff6467. Chart grid #252525.
+Buttons: single primary = light (#fafafa bg, #080808 text ≈ 15.6:1);
+secondary/ghost/danger = neutral bordered. Focus ring blue #3888ec.
+Badges: tinted bg 8-12% alpha, 1px border 30-40% alpha, bright/accent text.
+Cards: bg-elevated + 1px --border, no box-shadow/glow. Slider track #63636e.
+
+## Reference extraction (FreeLLMAPI, read-only)
 
 Read date: 2026-10-04. Source: `http://localhost:3001/` (local
 FreeLLMAPI container, `ghcr.io/tashfeenahmed/freellmapi:latest`),
@@ -53,6 +83,21 @@ rungs exact; chromatic rounded).
 - Gauge: green/orange/red bands kept bright (not dimmed).
 
 ## Contrast table (computed, small text ≥ 4.5:1, UI ≥ 3:1)
+
+| pair | ratio | verdict |
+|---|---|---|
+| primary on page/card/nested | 18.4 / 17.5 / 16.6 | ✓ |
+| secondary on page/card/nested | 7.7 / 7.3 / 6.9 | ✓ |
+| muted-small on page/card/nested | 5.8 / 5.5 / 5.2 | ✓ (small muted text) |
+| muted #737373 on page/card/nested | 4.2 / 4.0 / 3.8 | large/icons/decoration only |
+| disabled #525252 | ~2.4 | disabled controls only |
+| success #20cc60 / purple / blue / red / amber / orange on tinted badge bg | 8.1 / 4.5 / 4.7 / 5.9 / 7.8 / 6.3 | ✓ (purple exactly 4.5) |
+| gauge: green-bright / amber / red on card | 8.9 / 9.1 / 6.6 | ✓ |
+| light primary button #080808 on #fafafa | 15.6 | ✓ |
+| slider track #63636e vs card | 3.21 | ✓ (meaningful border) |
+| input/segmented borders (track) vs surface | 3.21 | ✓ |
+| card hairline #292929 vs card | 1.31 | decorative edge only |
+| white on blue #3888ec | ~3.6 | never used as filled-button text |
 
 | pair | ratio |
 |---|---|

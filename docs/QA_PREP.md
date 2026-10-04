@@ -76,3 +76,13 @@
     label-oracle v19 is CONFIRMED/critical. Only OBSERVED FAILs are
     CONFIRMED. Every control carries `source` (observed/inferred/label/
     none) and `confidence` so the UI can badge inference honestly.
+18. **Why is dh-strength UNKNOWN while ike-version FAILs for a weak DH group?**
+    They score different objects — rule ids are unchanged. `dh-strength`
+    scores the negotiated CHILD/PFS DH group, which travels inside the
+    encrypted CREATE_CHILD_SA (or quick mode) and is never visible in a
+    captured handshake; without that evidence the control is honestly
+    UNKNOWN (it lowers coverage, never posture). The IKE SA's own DH
+    group *is* read in the clear from IKE_SA_INIT, so it is scored under
+    `ike-version` together with the `weak-ike-dh` finding (critical when
+    OBSERVED, e.g. v21's DH2 live). A weak IKE group therefore always
+    surfaces — just not as the child PFS group.

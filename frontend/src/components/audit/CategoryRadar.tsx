@@ -41,7 +41,7 @@ export function CategoryRadar({ scores }: { scores: Record<ThreatCategory, numbe
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        <figcaption className="mt-1 text-[11px] text-muted">Higher is safer.</figcaption>
+        <figcaption className="mt-1 text-[11px] text-text-secondary">Higher is safer.</figcaption>
         <table className="sr-only">
           <caption>Safety score per threat category</caption>
           <thead>

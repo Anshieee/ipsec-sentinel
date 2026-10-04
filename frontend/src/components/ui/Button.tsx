@@ -15,14 +15,16 @@ export type ButtonSize = 'sm' | 'md'
  * every state outranks the direction of the hover step.
  */
 export const BUTTON_VARIANT_CLASS: Record<ButtonVariant, string> = {
+  // The single primary action is the light button: #fafafa bg, #080808
+  // text (15.6:1), dimmer on hover. Blue is never a filled button.
   primary:
-    'bg-accent-solid text-white border border-transparent hover:bg-accent hover:text-ink-inverse active:bg-accent-solid/80 active:text-white',
+    'bg-white-accent text-bg border border-transparent hover:bg-white-accent/85 active:bg-white-accent/75',
   secondary:
-    'bg-raised text-ink border border-line-strong hover:bg-line/40 active:bg-base/50',
+    'bg-bg-card text-text-primary border border-border-strong hover:bg-border/40 active:bg-bg/50',
   ghost:
-    'bg-transparent text-muted border border-transparent hover:bg-raised hover:text-ink active:bg-line/40',
+    'bg-transparent text-text-secondary border border-transparent hover:bg-bg-card hover:text-text-primary active:bg-border/40',
   danger:
-    'bg-danger-solid text-white border border-transparent hover:bg-danger hover:text-ink-inverse active:bg-danger-solid/80 active:text-white',
+    'bg-bg-card text-red border border-strong hover:bg-bg-hover active:bg-bg',
 }
 
 const SIZE_CLASS: Record<ButtonSize, string> = {

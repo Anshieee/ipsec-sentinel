@@ -8,37 +8,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: 'rgb(var(--color-base-rgb) / <alpha-value>)',
-        /* Glass rungs: the channel is the tint, --glass-* carries the opacity. */
-        surface: 'rgb(var(--color-surface-rgb) / calc(<alpha-value> * var(--glass-surface)))',
-        raised: 'rgb(var(--color-raised-rgb) / calc(<alpha-value> * var(--glass-raised)))',
-        line: 'rgb(var(--color-line-rgb) / calc(<alpha-value> * var(--glass-line)))',
-        'line-strong': 'rgb(var(--color-line-strong-rgb) / calc(<alpha-value> * var(--glass-line-strong)))',
+        bg: 'rgb(var(--bg-rgb) / <alpha-value>)',
+        'bg-elevated': 'rgb(var(--bg-elevated-rgb) / <alpha-value>)',
+        'bg-card': 'rgb(var(--bg-card-rgb) / <alpha-value>)',
+        'bg-hover': 'rgb(var(--bg-hover-rgb) / <alpha-value>)',
+        'bg-input': 'rgb(var(--bg-input-rgb) / <alpha-value>)',
+        border: 'rgb(var(--border-rgb) / <alpha-value>)',
+        'border-subtle': 'rgb(var(--border-subtle-rgb) / <alpha-value>)',
+        'border-strong': 'rgb(var(--border-strong-rgb) / <alpha-value>)',
         /* Range-slider track: neutral grey at >= 3:1 against card surface. */
         track: 'rgb(var(--color-track-rgb) / <alpha-value>)',
-        ink: 'rgb(var(--color-ink-rgb) / <alpha-value>)',
-        muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
-        /* Label colour for a light fill (the hover step of a filled button).
-           Separate from `base` because `text-base` is the 14/20 font-size role. */
-        'ink-inverse': 'rgb(var(--color-base-rgb) / <alpha-value>)',
-        accent: 'rgb(var(--color-accent-rgb) / <alpha-value>)',
-        'accent-solid': 'rgb(var(--color-accent-solid-rgb) / <alpha-value>)',
-        highlight: 'rgb(var(--color-highlight-rgb) / <alpha-value>)',
-        safe: 'rgb(var(--color-safe-rgb) / <alpha-value>)',
-        warn: 'rgb(var(--color-warn-rgb) / <alpha-value>)',
-        danger: 'rgb(var(--color-danger-rgb) / <alpha-value>)',
-        'danger-solid': 'rgb(var(--color-danger-solid-rgb) / <alpha-value>)',
-        orange: 'rgb(var(--color-orange-rgb) / <alpha-value>)',
-        violet: 'rgb(var(--color-violet-rgb) / <alpha-value>)',
+        'text-primary': 'rgb(var(--text-primary-rgb) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--text-secondary-rgb) / <alpha-value>)',
+        /* #737373: large text, icons and decoration only (never small text). */
+        'text-muted': 'rgb(var(--text-muted-rgb) / <alpha-value>)',
+        /* #8a8a8a: small muted text (>= 4.5:1 on cards). */
+        'text-muted-small': 'rgb(var(--text-muted-small-rgb) / <alpha-value>)',
+        'text-disabled': 'rgb(var(--text-disabled-rgb) / <alpha-value>)',
+        'white-accent': 'rgb(var(--white-accent-rgb) / <alpha-value>)',
+        blue: 'rgb(var(--blue-rgb) / <alpha-value>)',
+        green: 'rgb(var(--green-rgb) / <alpha-value>)',
+        'green-bright': 'rgb(var(--green-bright-rgb) / <alpha-value>)',
+        purple: 'rgb(var(--purple-rgb) / <alpha-value>)',
+        orange: 'rgb(var(--orange-rgb) / <alpha-value>)',
+        amber: 'rgb(var(--amber-rgb) / <alpha-value>)',
+        red: 'rgb(var(--red-rgb) / <alpha-value>)',
         /* Okabe-Ito derived, re-tuned for dark; every entry >= 6.7:1 on base. */
         chart: {
-          1: '#5A9BF8',
-          2: '#41C7E8',
-          3: '#3FC98F',
-          4: '#EBB13C',
-          5: '#B79DF3',
-          6: '#EE8260',
-          7: '#93A3B4',
+          1: '#3888ec',
+          2: '#189f70',
+          3: '#ad59fc',
+          4: '#f08020',
+          5: '#f8a008',
+          6: '#ff6467',
+          7: '#8a8a8a',
         },
       },
       fontFamily: {
@@ -68,9 +71,10 @@ export default {
         cell: '4px',
       },
       boxShadow: {
-        card: '0 0 0 1px var(--color-line), inset 0 1px 0 0 rgb(255 255 255 / 0.05)',
-        focus: '0 0 0 2px var(--color-base), 0 0 0 4px var(--color-accent)',
-        overlay: 'var(--shadow-overlay), 0 0 0 1px var(--color-line), inset 0 1px 0 0 rgb(255 255 255 / 0.06)',
+        /* Cards carry their edge as a real 1px border (see Card); no glow. */
+        card: 'none',
+        focus: '0 0 0 2px var(--bg), 0 0 0 4px var(--blue)',
+        overlay: 'var(--shadow-overlay), 0 0 0 1px var(--border)',
       },
       spacing: {
         header: '56px',

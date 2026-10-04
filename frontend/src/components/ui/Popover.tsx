@@ -87,7 +87,7 @@ export function Popover({
           aria-label={label}
           tabIndex={-1}
           className={cn(
-            'absolute top-full z-dropdown mt-1 min-w-[220px] rounded-card border border-line bg-surface p-2 shadow-overlay',
+            'absolute top-full z-dropdown mt-1 min-w-[220px] rounded-card border border-border bg-bg-elevated p-2 shadow-overlay',
             align === 'end' ? 'right-0' : 'left-0',
           )}
         >

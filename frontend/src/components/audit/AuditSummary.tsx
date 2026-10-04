@@ -55,11 +55,11 @@ export function AuditSummary() {
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {noIpsec ? (
-          <p className="text-sm text-ink" data-testid="audit-no-ipsec">
+          <p className="text-sm text-text-primary" data-testid="audit-no-ipsec">
             No IPsec detected in this capture — nothing to score.
           </p>
         ) : withheld ? (
-          <p className="text-sm text-ink" data-testid="audit-withheld">
+          <p className="text-sm text-text-primary" data-testid="audit-withheld">
             Score withheld: insufficient evidence (coverage {fmtPct(derived.coverage ?? 0)}). Confirmed findings
             below still apply; each unknown lists the measurement that would resolve it.
           </p>
@@ -69,33 +69,33 @@ export function AuditSummary() {
         <div>
           <dl className="grid grid-cols-2 gap-3">
             {SEVERITIES.map((severity) => (
-              <div key={severity} className="rounded-control border border-line bg-raised/50 p-2">
-                <dt className="flex items-center gap-1.5 text-[11px] text-muted">
+              <div key={severity} className="rounded-control border border-border bg-bg-card/50 p-2">
+                <dt className="flex items-center gap-1.5 text-[11px] text-text-secondary">
                   <SeverityBadge severity={severity} />
                 </dt>
-                <dd className="tnum mt-1 text-lg font-semibold text-ink">
+                <dd className="tnum mt-1 text-lg font-semibold text-text-primary">
                   {fmtInt(derived.severityCounts[severity])}
                 </dd>
               </div>
             ))}
           </dl>
           {derived.backendHeadline ? (
-            <p className="mt-3 text-[12px] leading-5 text-muted" data-testid="score-derivation">
+            <p className="mt-3 text-[12px] leading-5 text-text-secondary" data-testid="score-derivation">
               Score derivation:{' '}
-              <span className="text-ink">
+              <span className="text-text-primary">
                 backend posture {backend?.postureScore ?? 'withheld'}/100 at coverage{' '}
                 {fmtPct(derived.coverage ?? 0)} (rule {backend?.ruleVersion ?? 'n/a'})
               </span>
             </p>
           ) : (
-            <p className="mt-3 text-[12px] leading-5 text-muted" data-testid="score-derivation">
-              Score derivation: <span className="text-ink">{scoreDerivation()}</span>
+            <p className="mt-3 text-[12px] leading-5 text-text-secondary" data-testid="score-derivation">
+              Score derivation: <span className="text-text-primary">{scoreDerivation()}</span>
             </p>
           )}
           {backend && derived.scoreStatus === 'PUBLISHED' ? (
-            <p className="mt-1 text-[12px] leading-5 text-muted" data-testid="backend-assessment">
+            <p className="mt-1 text-[12px] leading-5 text-text-secondary" data-testid="backend-assessment">
               Backend assessment:{' '}
-              <span className="tnum text-ink">
+              <span className="tnum text-text-primary">
                 Posture {backend.postureScore}/100 ·{' '}
                 {bandSentence(backend.riskScore, backend.riskBand, derived.findings) ?? 'Score withheld'}
                 {' · '}Coverage {fmtPct(backend.coverage)}

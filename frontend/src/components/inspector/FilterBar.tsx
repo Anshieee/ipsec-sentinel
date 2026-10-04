@@ -62,8 +62,8 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
                 className={cn(
                   CHIP_ACTION_CLASS,
                   selected
-                    ? 'border-accent/50 bg-accent/15 text-accent'
-                    : 'border-line-strong bg-raised text-muted hover:text-ink active:bg-line/40',
+                    ? 'border-blue/50 bg-blue/15 text-blue'
+                    : 'border-border-strong bg-bg-card text-text-secondary hover:text-text-primary active:bg-border/40',
                 )}
               >
                 {protocol}
@@ -73,7 +73,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         </div>
 
         <div className="relative min-w-[200px] flex-1">
-          <Search size={16} className="pointer-events-none absolute left-2.5 text-muted" aria-hidden="true" />
+          <Search size={16} className="pointer-events-none absolute left-2.5 text-text-secondary" aria-hidden="true" />
           <input
             type="search"
             value={draft}
@@ -85,7 +85,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           />
         </div>
 
-        <label className="flex items-center gap-2 text-2xs text-muted">
+        <label className="flex items-center gap-2 text-2xs text-text-secondary">
           Direction
           <select
             value={filters.direction}

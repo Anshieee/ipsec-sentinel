@@ -64,7 +64,7 @@ export function ConfidenceBreakdown({ analysis }: { analysis: AnalysisResult }) 
       <figure className="m-0">
         <div className="w-full" style={{ height }} aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={points} layout="vertical" margin={{ top: 4, right: 12, bottom: 4, left: 4 }}>
+            <BarChart data={points} layout="vertical" margin={{ top: 4, right: 44, bottom: 4, left: 4 }}>
               <XAxis
                 type="number"
                 domain={[0, 1]}
@@ -100,7 +100,7 @@ export function ConfidenceBreakdown({ analysis }: { analysis: AnalysisResult }) 
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <figcaption className="mt-1 text-[11px] text-muted">
+        <figcaption className="mt-1 text-[11px] text-text-secondary">
           Bands: at least 85 % strong, 70–85 % moderate, below 70 % weak.
           {omitted.length > 0 ? ` Not observed (omitted): ${omitted.join(', ')}.` : ''}
         </figcaption>

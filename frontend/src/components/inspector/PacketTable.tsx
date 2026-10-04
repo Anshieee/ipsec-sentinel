@@ -88,13 +88,13 @@ export function PacketTable({ rows, sampledTotal, captureTotal, selectedNo, onSe
 
   return (
     <Card flush data-testid="packet-table">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
         <CardHeader
           title="Packets"
           description={`Showing ${fmtInt(start)} to ${fmtInt(end)} of ${fmtInt(sorted.length)} sampled packets (of ${fmtInt(captureTotal)} total)`}
           className="mb-0"
         />
-        <div className="flex items-center gap-2 text-2xs text-muted">
+        <div className="flex items-center gap-2 text-2xs text-text-secondary">
           <label className="flex items-center gap-1.5">
             Rows
             <select
@@ -125,8 +125,8 @@ export function PacketTable({ rows, sampledTotal, captureTotal, selectedNo, onSe
           <caption className="sr-only">
             Sampled packets, {sampledTotal} rows before filtering
           </caption>
-          <thead className="sticky top-0 z-10 bg-raised">
-            <tr className="text-left text-muted">
+          <thead className="sticky top-0 z-10 bg-bg-card">
+            <tr className="text-left text-text-secondary">
               <th scope="col" className="px-3 py-2 font-medium">
                 <button type="button" onClick={() => toggleSort('no')} className="inline-flex items-center gap-1">
                   No. {sortIcon('no')}
@@ -153,7 +153,7 @@ export function PacketTable({ rows, sampledTotal, captureTotal, selectedNo, onSe
           <tbody ref={bodyRef} onKeyDown={onKeyDown}>
             {pageRows.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-3 py-6 text-center text-muted">
+                <td colSpan={9} className="px-3 py-6 text-center text-text-secondary">
                   No packets match the current filters.
                 </td>
               </tr>
@@ -164,28 +164,28 @@ export function PacketTable({ rows, sampledTotal, captureTotal, selectedNo, onSe
                   <tr
                     key={packet.no}
                     data-row
-                    className={cn('border-t border-line/60', selected ? 'bg-accent/10' : 'hover:bg-raised/50')}
+                    className={cn('border-t border-border/60', selected ? 'bg-blue/10' : 'hover:bg-bg-card/50')}
                   >
                     <td className={cn('px-3', rowHeight)}>
                       <button
                         type="button"
-                        className="row-select tnum flex w-full items-center text-left text-ink"
+                        className="row-select tnum flex w-full items-center text-left text-text-primary"
                         aria-pressed={selected}
                         onClick={() => onSelect(packet)}
                       >
                         {fmtInt(packet.no)}
                       </button>
                     </td>
-                    <td className="tnum px-3 text-muted">{packet.timeSec.toFixed(6)}</td>
-                    <td className="px-3 font-mono text-muted">{packet.src}</td>
-                    <td className="px-3 font-mono text-muted">{packet.dst}</td>
+                    <td className="tnum px-3 text-text-secondary">{packet.timeSec.toFixed(6)}</td>
+                    <td className="px-3 font-mono text-text-secondary">{packet.src}</td>
+                    <td className="px-3 font-mono text-text-secondary">{packet.dst}</td>
                     <td className="px-3">
                       <Badge tone={PROTO_TONE[packet.proto]}>{packet.proto}</Badge>
                     </td>
-                    <td className="px-3 font-mono text-muted">{packet.spi ?? '—'}</td>
-                    <td className="tnum px-3 text-muted">{packet.seq ?? '—'}</td>
-                    <td className="tnum px-3 text-ink">{fmtInt(packet.length)}</td>
-                    <td className="max-w-[280px] truncate px-3 text-muted" title={packet.info}>
+                    <td className="px-3 font-mono text-text-secondary">{packet.spi ?? '—'}</td>
+                    <td className="tnum px-3 text-text-secondary">{packet.seq ?? '—'}</td>
+                    <td className="tnum px-3 text-text-primary">{fmtInt(packet.length)}</td>
+                    <td className="max-w-[280px] truncate px-3 text-text-secondary" title={packet.info}>
                       {packet.info}
                     </td>
                   </tr>
@@ -196,8 +196,8 @@ export function PacketTable({ rows, sampledTotal, captureTotal, selectedNo, onSe
         </table>
       </div>
 
-      <div className="flex items-center justify-between gap-2 border-t border-line px-4 py-2">
-        <p className="text-[11px] text-muted" data-testid="pagination-status">
+      <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-2">
+        <p className="text-[11px] text-text-secondary" data-testid="pagination-status">
           Showing {fmtInt(start)} to {fmtInt(end)} of {fmtInt(sorted.length)} sampled packets (of {fmtInt(captureTotal)}{' '}
           total)
         </p>

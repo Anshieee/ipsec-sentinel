@@ -18,6 +18,9 @@ export interface Param<T> {
   status?: FieldStatus
   /** Evidence origin; drives the Method column (parsed/model/measured). */
   source?: 'parsed' | 'model' | 'measured' | 'none'
+  /** Explicit method label when the source alone is ambiguous
+   * (e.g. size-overhead inference vs generic model). */
+  method?: string
   note?: string
 }
 

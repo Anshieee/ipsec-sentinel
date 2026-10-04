@@ -30,16 +30,16 @@ export function SettingsPage() {
             ]}
           />
           {dataSource === 'live' ? (
-            <p className="mt-2 text-[12px] leading-5 text-muted">
+            <p className="mt-2 text-[12px] leading-5 text-text-secondary">
               Live mode: uploads go to the real API. Simulated surfaces (live capture stream, model registry) carry a SIMULATED badge.
             </p>
           ) : null}
         </Card>
         <Card>
           <CardHeader title="About" description="Build and contract information." />
-          <p className="text-[13px] text-muted">IPsec-AI Sentinel v{APP_VERSION}</p>
+          <p className="text-[13px] text-text-secondary">IPsec-AI Sentinel v{APP_VERSION}</p>
           {ruleVersion ? (
-            <p className="mt-1 text-[13px] text-muted">Backend assessment rule {ruleVersion} (current analysis).</p>
+            <p className="mt-1 text-[13px] text-text-secondary">Backend assessment rule {ruleVersion} (current analysis).</p>
           ) : null}
         </Card>
       </div>

@@ -23,7 +23,7 @@ describe('UI primitives smoke', () => {
     )
     const badge = screen.getByTestId('badge')
     expect(badge).toHaveTextContent('Critical')
-    expect(badge.className).toContain('border-danger/40')
+    expect(badge.className).toContain('border-red/40')
   })
 
   it('renders a Tabs tablist and supports arrow-key navigation', async () => {

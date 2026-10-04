@@ -26,7 +26,7 @@ export function Header() {
   const narrow = !useMediaQuery('(min-width: 1024px)', true)
 
   return (
-    <header className="sticky top-0 z-40 flex h-header items-center gap-2 border-b border-line bg-raised px-3">
+    <header className="sticky top-0 z-40 flex h-header items-center gap-2 border-b border-border bg-bg-card px-3">
       <IconButton
         label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         onClick={toggleSidebar}
@@ -37,12 +37,12 @@ export function Header() {
       </IconButton>
 
       <div className="flex shrink-0 items-center gap-2">
-        <span className="flex size-7 items-center justify-center rounded-control bg-accent/15 text-accent">
+        <span className="flex size-7 items-center justify-center rounded-control bg-blue/15 text-blue">
           <ShieldCheck size={16} aria-hidden="true" />
         </span>
         <span className="leading-tight">
-          <span className="block text-sm font-semibold text-ink">IPsec-AI Sentinel</span>
-          <span className="hidden text-2xs text-muted sm:block">Workbench</span>
+          <span className="block text-sm font-semibold text-text-primary">IPsec-AI Sentinel</span>
+          <span className="hidden text-2xs text-text-secondary sm:block">Workbench</span>
         </span>
       </div>
 

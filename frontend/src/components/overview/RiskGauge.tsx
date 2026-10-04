@@ -6,9 +6,9 @@ import { TONE_TEXT } from '@/lib/severity'
 import type { RiskBand } from '@/lib/severity'
 
 const BAND_STROKE: Record<RiskBand, string> = {
-  low: 'stroke-safe',
-  moderate: 'stroke-warn',
-  high: 'stroke-danger',
+  low: 'stroke-green',
+  moderate: 'stroke-amber',
+  high: 'stroke-red',
 }
 
 const BAND_ICON: Record<RiskBand, typeof ShieldCheck> = {
@@ -53,7 +53,7 @@ export function RiskGauge({ score, band, delta }: RiskGaugeProps) {
             stroke="currentColor"
             strokeWidth={14}
             strokeLinecap="round"
-            className="text-raised"
+            className="text-text-muted"
           />
           <motion.path
             d="M 20 100 A 80 80 0 0 1 180 100"
@@ -71,12 +71,12 @@ export function RiskGauge({ score, band, delta }: RiskGaugeProps) {
             x="100"
             y="86"
             textAnchor="middle"
-            className="fill-ink tnum"
+            className="fill-text-primary tnum"
             style={{ fontSize: 28, fontWeight: 600 }}
           >
             {clamped}
           </text>
-          <text x="100" y="106" textAnchor="middle" className="fill-muted" style={{ fontSize: 12 }}>
+          <text x="100" y="106" textAnchor="middle" className="fill-text-secondary" style={{ fontSize: 12 }}>
             / 100
           </text>
         </svg>
@@ -87,7 +87,7 @@ export function RiskGauge({ score, band, delta }: RiskGaugeProps) {
       </p>
       {typeof delta === 'number' && delta !== 0 ? (
         <p
-          className={cn('mt-1 flex items-center gap-1 text-[11px]', delta > 0 ? 'text-danger' : 'text-safe')}
+          className={cn('mt-1 flex items-center gap-1 text-[11px]', delta > 0 ? 'text-red' : 'text-green')}
           data-testid="risk-delta"
         >
           {delta > 0 ? <ArrowUpRight size={12} aria-hidden="true" /> : <ArrowDownRight size={12} aria-hidden="true" />}

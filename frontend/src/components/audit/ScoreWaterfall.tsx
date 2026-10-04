@@ -80,7 +80,7 @@ export function ScoreWaterfall({
       <figure className="m-0">
         <div className="h-64 w-full" aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={bars} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <BarChart data={bars} margin={{ top: 20, right: 12, bottom: 4, left: 0 }}>
               <XAxis
                 dataKey="name"
                 tick={{ fontSize: 11, fill: CHART_AXIS }}
@@ -91,7 +91,12 @@ export function ScoreWaterfall({
                 textAnchor="end"
                 height={54}
               />
-              <YAxis tick={{ fontSize: 11, fill: CHART_AXIS }} axisLine={{ stroke: CHART_GRID }} tickLine={{ stroke: CHART_GRID }} />
+              <YAxis
+                tick={{ fontSize: 11, fill: CHART_AXIS }}
+                axisLine={{ stroke: CHART_GRID }}
+                tickLine={{ stroke: CHART_GRID }}
+                domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.25)]}
+              />
               <ChartTooltip contentStyle={CHART_TOOLTIP} />
               <Bar dataKey="weight" isAnimationActive={false} radius={[3, 3, 0, 0]}>
                 {bars.map((bar) => (
@@ -101,12 +106,17 @@ export function ScoreWaterfall({
                     fillOpacity={bar.total ? 0.7 : 1}
                   />
                 ))}
-                <LabelList dataKey="weight" position="top" style={{ fontSize: 11, fill: CHART_AXIS }} />
+                <LabelList
+                  dataKey="weight"
+                  position="top"
+                  formatter={(value: number | string) => Number(value).toFixed(1)}
+                  style={{ fontSize: 11, fill: CHART_AXIS }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <figcaption className="mt-1 text-[11px] text-muted">
+        <figcaption className="mt-1 text-[11px] text-text-secondary">
           {total === null ? (
             <>Score withheld: insufficient evidence — bars show per-control points lost, no total.</>
           ) : backend ? (

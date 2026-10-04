@@ -43,7 +43,7 @@ export function CompliancePage() {
               <table className="w-full border-collapse text-xs">
                 <caption className="sr-only">Backend assessment controls with results and evidence</caption>
                 <thead>
-                  <tr className="bg-raised text-left text-muted">
+                  <tr className="bg-bg-card text-left text-text-secondary">
                     <th scope="col" className="px-3 py-2 font-medium">Rule</th>
                     <th scope="col" className="px-3 py-2 font-medium">Version</th>
                     <th scope="col" className="px-3 py-2 font-medium">Result</th>
@@ -54,18 +54,18 @@ export function CompliancePage() {
                 </thead>
                 <tbody>
                   {controls.map((control) => (
-                    <tr key={control.id} className="border-t border-line/60 align-top">
-                      <td className="px-3 py-2 font-mono text-ink">{control.id}</td>
-                      <td className="tnum px-3 py-2 text-muted">{control.ruleVersion}</td>
+                    <tr key={control.id} className="border-t border-border/60 align-top">
+                      <td className="px-3 py-2 font-mono text-text-primary">{control.id}</td>
+                      <td className="tnum px-3 py-2 text-text-secondary">{control.ruleVersion}</td>
                       <td className="px-3 py-2">
                         <Badge tone={STATUS_TONE[control.status]}>{control.status}</Badge>
                       </td>
-                      <td className="px-3 py-2 text-muted">
+                      <td className="px-3 py-2 text-text-secondary">
                         {control.source}
                         {control.source === 'inferred' ? ` (${Math.round(control.confidence * 100)}%)` : ''}
                       </td>
-                      <td className="px-3 py-2 text-ink">{control.explanation}</td>
-                      <td className="px-3 py-2 text-muted">{control.resolveBy ?? '—'}</td>
+                      <td className="px-3 py-2 text-text-primary">{control.explanation}</td>
+                      <td className="px-3 py-2 text-text-secondary">{control.resolveBy ?? '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -74,8 +74,8 @@ export function CompliancePage() {
           </Card>
         ) : (
           <Card>
-            <p className="text-sm font-semibold text-ink">Detected key exchange</p>
-            <p className="mt-1 text-[13px] text-muted">{dhLabel(analysis.protocol.ike.dhGroup.value)}</p>
+            <p className="text-sm font-semibold text-text-primary">Detected key exchange</p>
+            <p className="mt-1 text-[13px] text-text-secondary">{dhLabel(analysis.protocol.ike.dhGroup.value)}</p>
           </Card>
         )
       ) : null}

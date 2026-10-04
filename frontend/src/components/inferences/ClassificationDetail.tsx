@@ -25,10 +25,10 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
         description="Probability per class with the uncertainty threshold applied to the top-1 prediction"
       />
 
-      <label className="mb-3 flex flex-col gap-1.5 text-[13px] text-ink" htmlFor="uncertain-threshold">
+      <label className="mb-3 flex flex-col gap-1.5 text-[13px] text-text-primary" htmlFor="uncertain-threshold">
         <span className="flex items-center justify-between gap-2">
           <span>Uncertainty threshold</span>
-          <span className="tnum text-muted">{fmtPct(threshold, 0)}</span>
+          <span className="tnum text-text-secondary">{fmtPct(threshold, 0)}</span>
         </span>
         <input
           id="uncertain-threshold"
@@ -40,9 +40,9 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
           data-testid="threshold-slider"
           aria-valuetext={`${fmtPct(threshold, 0)} threshold`}
           onChange={(event) => setSetting('uncertainThreshold', Number(event.target.value))}
-          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-track accent-accent-solid"
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-track accent-blue"
         />
-        <span className="text-[11px] text-muted">
+        <span className="text-[11px] text-text-secondary">
           The classification is marked uncertain when the top-1 probability falls below this value.
         </span>
       </label>
@@ -50,7 +50,7 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
       <div
         role="status"
         data-testid="threshold-state"
-        className={derived.uncertain ? 'mb-3 text-warn' : 'mb-3 text-safe'}
+        className={derived.uncertain ? 'mb-3 text-amber' : 'mb-3 text-green'}
       >
         {derived.uncertain
           ? 'Uncertain classification — treat the traffic type as unknown.'
@@ -60,7 +60,7 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
       <table className="w-full border-collapse text-xs">
         <caption className="sr-only">Class probabilities</caption>
         <thead>
-          <tr className="bg-raised text-left text-muted">
+          <tr className="bg-bg-card text-left text-text-secondary">
             <th scope="col" className="px-3 py-2 font-medium">Class</th>
             <th scope="col" className="px-3 py-2 font-medium">Probability</th>
             <th scope="col" className="px-3 py-2 font-medium">Distribution</th>
@@ -68,8 +68,8 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
         </thead>
         <tbody>
           {sorted.map((entry, index) => (
-            <tr key={entry.label} className="border-t border-line/60">
-              <td className="px-3 py-2 text-ink">
+            <tr key={entry.label} className="border-t border-border/60">
+              <td className="px-3 py-2 text-text-primary">
                 {entry.label}
                 {index === 0 ? (
                   <Badge tone={derived.uncertain ? 'warn' : 'info'} className="ml-1.5">
@@ -77,7 +77,7 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
                   </Badge>
                 ) : null}
               </td>
-              <td className="tnum px-3 py-2 text-ink">{fmtPct(entry.probability)}</td>
+              <td className="tnum px-3 py-2 text-text-primary">{fmtPct(entry.probability)}</td>
               <td className="px-3 py-2">
                 <ConfidenceBar value={entry.probability} ariaLabel={`${entry.label} probability`} showValue={false} />
               </td>
@@ -87,10 +87,10 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
       </table>
 
       {top ? (
-        <p className="mt-2 text-[12px] text-muted">
-          Top-1: <span className="text-ink">{top.label}</span> at{' '}
-          <span className="tnum text-ink">{fmtPct(top.probability)}</span>, threshold{' '}
-          <span className="tnum text-ink">{fmtPct(threshold)}</span>.
+        <p className="mt-2 text-[12px] text-text-secondary">
+          Top-1: <span className="text-text-primary">{top.label}</span> at{' '}
+          <span className="tnum text-text-primary">{fmtPct(top.probability)}</span>, threshold{' '}
+          <span className="tnum text-text-primary">{fmtPct(threshold)}</span>.
         </p>
       ) : null}
     </Card>

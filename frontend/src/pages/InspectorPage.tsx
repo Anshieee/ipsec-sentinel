@@ -56,9 +56,9 @@ export function InspectorPage() {
             elapsedSec={live.elapsedSec}
           />
           {noPacketDetail ? (
-            <p className="rounded-control border border-line bg-raised/50 p-4 text-[13px] text-muted" data-testid="no-packet-detail">
+            <p className="rounded-control border border-border bg-bg-card/50 p-4 text-[13px] text-text-secondary" data-testid="no-packet-detail">
               Packet-level detail is not returned by the analysis API; use{' '}
-              <code className="font-mono text-ink">ipsec-analyze analyze --json</code> for evidence.
+              <code className="font-mono text-text-primary">ipsec-analyze analyze --json</code> for evidence.
             </p>
           ) : (
             <>

@@ -12,6 +12,7 @@ import type { AnalysisResult, FieldStatus, Finding, Param } from '@/types/analys
 /** Method text derives from the evidence source — never hard-coded per row. */
 function methodFor(param: Param<unknown>, provided: boolean): string {
   if (!provided) return 'Not provided by the analysis API'
+  if (param.method) return param.method
   if (param.source === 'parsed') return 'Direct parse'
   if (param.source === 'model') return 'Model classifier'
   if (param.source === 'measured') return 'Measured'
@@ -106,7 +107,7 @@ export function InferenceTable({ analysis }: { analysis: AnalysisResult }) {
         <table className="w-full border-collapse text-xs">
           <caption className="sr-only">Inferred and observed protocol parameters with confidence</caption>
           <thead>
-            <tr className="bg-raised text-left text-muted">
+            <tr className="bg-bg-card text-left text-text-secondary">
               <th scope="col" className="px-3 py-2 font-medium">Parameter</th>
               <th scope="col" className="px-3 py-2 font-medium">Value</th>
               <th scope="col" className="px-3 py-2 font-medium">Provenance</th>
@@ -132,9 +133,9 @@ function ParamTableRow({ row, related, unobserved }: { row: ParamRow; related: F
   const [open, setOpen] = useState(false)
   return (
     <>
-      <tr key={row.key} className="border-t border-line/60 align-top">
-        <td className="px-3 py-2 text-ink">{row.label}</td>
-        <td className="px-3 py-2 text-ink">
+      <tr key={row.key} className="border-t border-border/60 align-top">
+        <td className="px-3 py-2 text-text-primary">{row.label}</td>
+        <td className="px-3 py-2 text-text-primary">
           <span className="break-all" title={row.param.note ?? undefined}>{row.display}</span>
           {related.length > 0 ? (
             <Link
@@ -156,19 +157,19 @@ function ParamTableRow({ row, related, unobserved }: { row: ParamRow; related: F
         </td>
         <td className="px-3 py-2">
           {unobserved ? (
-            <span className="text-muted" title="No confidence: nothing was observed.">—</span>
+            <span className="text-text-secondary" title="No confidence: nothing was observed.">—</span>
           ) : (
             <ConfidenceBar value={row.param.confidence} ariaLabel={`${row.label} confidence`} />
           )}
         </td>
-        <td className="px-3 py-2 text-muted">{methodFor(row.param, row.provided)}</td>
+        <td className="px-3 py-2 text-text-secondary">{methodFor(row.param, row.provided)}</td>
         <td className="px-3 py-2">
           <button
             type="button"
             aria-expanded={open}
             data-testid={`expand-${row.key}`}
             onClick={() => setOpen(!open)}
-            className="inline-flex items-center gap-1 rounded-control px-1.5 py-1 text-[11px] text-accent hover:bg-raised"
+            className="inline-flex items-center gap-1 rounded-control px-1.5 py-1 text-[11px] text-blue hover:bg-bg-card"
           >
             {open ? <ChevronDown size={12} aria-hidden="true" /> : <ChevronRight size={12} aria-hidden="true" />}
             {open ? 'Hide' : 'Show'}
@@ -177,9 +178,9 @@ function ParamTableRow({ row, related, unobserved }: { row: ParamRow; related: F
         </td>
       </tr>
       {open ? (
-        <tr key={`${row.key}-evidence`} className="border-t border-line/60">
-          <td colSpan={6} className="bg-raised/40 px-3 py-2">
-            <p className="text-[12px] text-muted">
+        <tr key={`${row.key}-evidence`} className="border-t border-border/60">
+          <td colSpan={6} className="bg-bg-card/40 px-3 py-2">
+            <p className="text-[12px] text-text-secondary">
               {row.param.note ?? 'No recorded feature evidence for this parameter.'}
             </p>
           </td>

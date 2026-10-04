@@ -27,8 +27,8 @@ export function Toggle({
     <div className={cn('flex items-start justify-between gap-3', className)}>
       {showLabel ? (
         <div className="min-w-0">
-          <span className="text-sm font-medium text-ink">{label}</span>
-          {description ? <p className="mt-0.5 text-xs leading-4 text-muted">{description}</p> : null}
+          <span className="text-sm font-medium text-text-primary">{label}</span>
+          {description ? <p className="mt-0.5 text-xs leading-4 text-text-secondary">{description}</p> : null}
         </div>
       ) : null}
       <button
@@ -42,7 +42,7 @@ export function Toggle({
         className={cn(
           'relative inline-flex h-6 w-9 shrink-0 items-center rounded-full border transition-colors',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          checked ? 'border-accent bg-accent-solid' : 'border-line-strong bg-raised',
+          checked ? 'border-blue bg-blue' : 'border-track bg-bg-card',
         )}
       >
         <span

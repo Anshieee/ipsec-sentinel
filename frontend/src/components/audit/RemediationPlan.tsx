@@ -73,7 +73,7 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
     return (
       <Card data-testid="remediation-plan">
         <CardHeader title="Remediation plan" description="No findings to remediate." />
-        <p className="text-[13px] text-safe">No findings. This configuration meets the baseline policy.</p>
+        <p className="text-[13px] text-green">No findings. This configuration meets the baseline policy.</p>
       </Card>
     )
   }
@@ -95,7 +95,7 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
       />
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[12px] text-muted">
+        <div className="flex items-center justify-between text-[12px] text-text-secondary">
           <span data-testid="remediation-progress">
             {fmtInt(completed)} of {fmtInt(total)} completed
           </span>
@@ -107,10 +107,10 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
           aria-valuemax={total}
           aria-valuenow={completed}
           aria-label="Remediation progress"
-          className="h-2 w-full overflow-hidden rounded-full bg-line"
+          className="h-2 w-full overflow-hidden rounded-full bg-border"
         >
           <div
-            className="h-full rounded-full bg-accent-solid transition-[width] duration-slow ease-out"
+            className="h-full rounded-full bg-blue transition-[width] duration-slow ease-out"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -122,7 +122,7 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
           if (items.length === 0) return null
           return (
             <li key={group}>
-              <p className="text-2xs font-semibold uppercase tracking-wide text-muted" data-testid={`remediation-group-${group}`}>
+              <p className="text-2xs font-semibold uppercase tracking-wide text-text-secondary" data-testid={`remediation-group-${group}`}>
                 {group}
               </p>
               <ul className="mt-2 space-y-2">
@@ -133,7 +133,7 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
                       <label
                         className={cn(
                           'flex cursor-pointer items-start gap-2.5 rounded-control border p-2.5',
-                          done ? 'border-safe/40 bg-safe/10' : 'border-line bg-raised/40 hover:bg-raised',
+                          done ? 'border-green/40 bg-green/10' : 'border-border bg-bg-card/40 hover:bg-bg-card',
                         )}
                       >
                         <input
@@ -141,20 +141,20 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
                           checked={done}
                           data-testid={`remediation-check-${finding.ruleId}`}
                           onChange={() => toggle(finding.id)}
-                          className="mt-0.5 h-4 w-4 shrink-0 accent-accent-solid"
+                          className="mt-0.5 h-4 w-4 shrink-0 accent-blue"
                         />
                         {done ? (
-                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-safe" aria-hidden="true" />
+                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-green" aria-hidden="true" />
                         ) : (
-                          <Circle size={16} className="mt-0.5 shrink-0 text-muted" aria-hidden="true" />
+                          <Circle size={16} className="mt-0.5 shrink-0 text-text-secondary" aria-hidden="true" />
                         )}
                         <span className="min-w-0 flex-1">
                           <span className="flex flex-wrap items-center gap-2">
                             <SeverityBadge severity={finding.severity} />
-                            <span className="font-mono text-[11px] text-muted">{finding.ruleId}</span>
-                            <span className="text-[13px] font-medium text-ink">{finding.title}</span>
+                            <span className="font-mono text-[11px] text-text-secondary">{finding.ruleId}</span>
+                            <span className="text-[13px] font-medium text-text-primary">{finding.title}</span>
                           </span>
-                          <span className={cn('mt-1 block text-[13px] leading-5', done ? 'text-muted line-through' : 'text-ink')}>
+                          <span className={cn('mt-1 block text-[13px] leading-5', done ? 'text-text-secondary line-through' : 'text-text-primary')}>
                             {finding.recommendation}
                           </span>
                         </span>
@@ -168,10 +168,10 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
         })}
       </ol>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
-        <p className="text-[13px] text-muted">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+        <p className="text-[13px] text-text-secondary">
           Current risk score:{' '}
-          <span className="tnum font-semibold text-ink">
+          <span className="tnum font-semibold text-text-primary">
             {currentScore === null ? 'withheld (insufficient evidence)' : fmtInt(currentScore)}
           </span>
           {backend ? (
@@ -180,7 +180,7 @@ export function RemediationPlan({ findings, currentScore, backend }: Remediation
             <>
               {' · '}
               <span data-testid="projected-score">
-                Projected risk score: <span className="tnum font-semibold text-ink">{fmtInt(projected)}</span>
+                Projected risk score: <span className="tnum font-semibold text-text-primary">{fmtInt(projected)}</span>
               </span>
             </>
           )}

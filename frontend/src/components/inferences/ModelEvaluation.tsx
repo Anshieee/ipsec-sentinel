@@ -45,14 +45,14 @@ export function ModelEvaluation() {
             role="grid"
             aria-label="Confusion matrix heatmap"
           >
-            <div className="p-1 text-2xs text-muted" />
+            <div className="p-1 text-2xs text-text-secondary" />
             {TRAFFIC_LABELS.map((label) => (
-              <div key={label} className="p-1 text-center text-2xs text-muted" title={label}>
+              <div key={label} className="p-1 text-center text-2xs text-text-secondary" title={label}>
                 {label}
               </div>
             ))}
             {matrix.rows.map((row, rowIndex) => [
-              <div key={`row-${TRAFFIC_LABELS[rowIndex]}`} className="p-1 text-2xs text-muted" title={TRAFFIC_LABELS[rowIndex]}>
+              <div key={`row-${TRAFFIC_LABELS[rowIndex]}`} className="p-1 text-2xs text-text-secondary" title={TRAFFIC_LABELS[rowIndex]}>
                 {TRAFFIC_LABELS[rowIndex]}
               </div>,
               ...row.map((value, colIndex) => (
@@ -69,7 +69,7 @@ export function ModelEvaluation() {
             ])}
           </div>
         </div>
-        <p className="mt-2 text-[11px] text-muted">
+        <p className="mt-2 text-[11px] text-text-secondary">
           Diagonal values are per-class recall; each row sums to 1.
         </p>
       </Card>
@@ -120,7 +120,7 @@ export function ModelEvaluation() {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <figcaption className="mt-1 text-[11px] text-muted">
+          <figcaption className="mt-1 text-[11px] text-text-secondary">
             Calibration: Expected Calibration Error {EXPECTED_CALIBRATION_ERROR.toFixed(3)}
           </figcaption>
           <table className="sr-only">
@@ -178,7 +178,7 @@ function LiveModelEvaluation() {
         <table className="w-full border-collapse text-xs">
           <caption className="sr-only">Measured classifier accuracy per field</caption>
           <thead>
-            <tr className="bg-raised text-left text-muted">
+            <tr className="bg-bg-card text-left text-text-secondary">
               <th scope="col" className="px-3 py-2 font-medium">Field</th>
               <th scope="col" className="px-3 py-2 font-medium">Accuracy</th>
               <th scope="col" className="px-3 py-2 font-medium">Unknown rate</th>
@@ -187,30 +187,30 @@ function LiveModelEvaluation() {
           <tbody>
             {rows.map((row) =>
               row.field === 'dh_group' ? (
-                <tr key={row.field} className="border-t border-line/60">
-                  <td className="px-3 py-2 font-mono text-ink">{row.field}</td>
-                  <td className="tnum px-3 py-2 text-muted" colSpan={2}>
+                <tr key={row.field} className="border-t border-border/60">
+                  <td className="px-3 py-2 font-mono text-text-primary">{row.field}</td>
+                  <td className="tnum px-3 py-2 text-text-secondary" colSpan={2}>
                     not predicted (read from the handshake)
                   </td>
                 </tr>
               ) : (
-                <tr key={row.field} className="border-t border-line/60">
-                  <td className="px-3 py-2 font-mono text-ink">{row.field}</td>
-                  <td className="tnum px-3 py-2 text-ink">{fmtPct(row.accuracy, 1)}</td>
-                  <td className="tnum px-3 py-2 text-muted">{fmtPct(row.unknownRate, 1)}</td>
+                <tr key={row.field} className="border-t border-border/60">
+                  <td className="px-3 py-2 font-mono text-text-primary">{row.field}</td>
+                  <td className="tnum px-3 py-2 text-text-primary">{fmtPct(row.accuracy, 1)}</td>
+                  <td className="tnum px-3 py-2 text-text-secondary">{fmtPct(row.unknownRate, 1)}</td>
                 </tr>
               ),
             )}
           </tbody>
         </table>
-        <p className="mt-2 text-[11px] text-muted" data-testid="eval-provenance">
+        <p className="mt-2 text-[11px] text-text-secondary" data-testid="eval-provenance">
           Measured by grouped 5-fold CV over {n} synthetic pcaps (variant-run groups, unknown counts as error).
           Source: the backend evaluation output — full tables in docs/model-evaluation.md.
         </p>
       </Card>
       <Card data-testid="eval-reliability-unavailable">
         <CardHeader title="Reliability diagram" description="Not measured" />
-        <p className="text-[13px] text-muted">
+        <p className="text-[13px] text-text-secondary">
           No calibration data is measured for the live models (confidences are rank-ordered, not calibrated).
           See docs/model-evaluation.md for what the evaluation does and does not prove.
         </p>

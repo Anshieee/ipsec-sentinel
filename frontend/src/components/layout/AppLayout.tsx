@@ -64,10 +64,10 @@ export function AppLayout() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col bg-base">
+    <div className="flex min-h-screen flex-col bg-bg">
       <a
         href="#main-content"
-        className="sr-only z-50 rounded-control bg-accent-solid px-3 py-2 text-white focus:not-sr-only focus:absolute focus:left-3 focus:top-3"
+        className="sr-only z-50 rounded-control bg-blue px-3 py-2 text-white focus:not-sr-only focus:absolute focus:left-3 focus:top-3"
       >
         Skip to main content
       </a>
@@ -76,7 +76,7 @@ export function AppLayout() {
       <div className="flex flex-1">
         <Sidebar />
         <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 px-6 py-6">
-          <div className="mb-4 rounded-card border border-line bg-raised px-4 py-3 text-[13px] text-muted md:hidden">
+          <div className="mb-4 rounded-card border border-border bg-bg-card px-4 py-3 text-[13px] text-text-secondary md:hidden">
             This workbench is optimised for tablet and desktop widths.
           </div>
           <Outlet />

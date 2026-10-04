@@ -55,7 +55,7 @@ export function Tooltip({ content, children, className, focusable = false, side 
           id={id}
           role="tooltip"
           className={cn(
-            'pointer-events-none absolute left-1/2 z-tooltip w-max max-w-[260px] -translate-x-1/2 rounded-control border border-line-strong bg-raised px-2 py-1 text-center text-2xs leading-4 text-ink shadow-overlay',
+            'pointer-events-none absolute left-1/2 z-tooltip w-max max-w-[260px] -translate-x-1/2 rounded-control border border-border-strong bg-bg-card px-2 py-1 text-center text-2xs leading-4 text-text-primary shadow-overlay',
             SIDE_CLASS[side],
           )}
         >

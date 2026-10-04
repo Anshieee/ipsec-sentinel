@@ -84,7 +84,7 @@ export function Drawer({ open, onClose, title, description, children, footer, te
       {open ? (
         <div className="fixed inset-0 z-drawer flex justify-end">
           <motion.div
-            className="absolute inset-0 bg-base/70 backdrop-blur-md"
+            className="absolute inset-0 bg-bg/70 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -101,7 +101,7 @@ export function Drawer({ open, onClose, title, description, children, footer, te
             tabIndex={-1}
             onKeyDown={handlePanelKeyDown}
             className={cn(
-              'relative flex h-full w-full max-w-[min(560px,calc(100vw-24px))] flex-col border-l border-line bg-surface shadow-overlay',
+              'relative flex h-full w-full max-w-[min(560px,calc(100vw-24px))] flex-col border-l border-border bg-bg-elevated shadow-overlay',
               className,
             )}
             initial={{ x: reduceMotion ? 0 : '100%' }}
@@ -109,17 +109,17 @@ export function Drawer({ open, onClose, title, description, children, footer, te
             exit={{ x: reduceMotion ? 0 : '100%' }}
             transition={{ duration: reduceMotion ? 0 : 0.2, ease: 'easeOut' }}
           >
-            <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
+            <header className="flex items-start justify-between gap-3 border-b border-border px-4 py-3">
               <div className="min-w-0">
-                <h2 className="truncate text-base font-semibold text-ink">{title}</h2>
-                {description ? <p className="mt-0.5 text-xs text-muted">{description}</p> : null}
+                <h2 className="truncate text-base font-semibold text-text-primary">{title}</h2>
+                {description ? <p className="mt-0.5 text-xs text-text-secondary">{description}</p> : null}
               </div>
               <IconButton label="Close drawer" onClick={onClose} size="sm">
                 <X size={16} aria-hidden="true" />
               </IconButton>
             </header>
             <div className="scroll-thin flex-1 overflow-y-auto px-4 py-4">{children}</div>
-            {footer ? <footer className="flex items-center justify-end gap-2 border-t border-line px-4 py-3">{footer}</footer> : null}
+            {footer ? <footer className="flex items-center justify-end gap-2 border-t border-border px-4 py-3">{footer}</footer> : null}
           </motion.div>
         </div>
       ) : null}

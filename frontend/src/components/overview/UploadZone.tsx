@@ -87,14 +87,14 @@ export function UploadZone() {
         onDrop={onDrop}
         className={cn(
           'flex cursor-pointer flex-col items-center justify-center rounded-card border-2 border-dashed px-4 py-6 text-center transition-colors',
-          dragOver ? 'border-accent bg-accent/10' : 'border-line hover:border-accent/60',
+          dragOver ? 'border-blue bg-blue/10' : 'border-border hover:border-blue/60',
         )}
       >
-        <Upload size={20} className="text-muted" aria-hidden="true" />
-        <p className="mt-2 text-[13px] text-ink">
+        <Upload size={20} className="text-text-secondary" aria-hidden="true" />
+        <p className="mt-2 text-[13px] text-text-primary">
           Drag and drop a .pcap or .pcapng trace, or click to browse
         </p>
-        <p id="upload-zone-constraints" className="mt-1 text-[11px] text-muted">
+        <p id="upload-zone-constraints" className="mt-1 text-[11px] text-text-secondary">
           Maximum 200 MB. Processed locally in demo mode.
         </p>
       </div>
@@ -103,7 +103,7 @@ export function UploadZone() {
         <div
           role="alert"
           data-testid="upload-error"
-          className="mt-3 rounded-control border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger"
+          className="mt-3 rounded-control border border-red/40 bg-red/10 px-3 py-2 text-xs text-red"
         >
           <p className="font-medium">Upload failed</p>
           <p className="mt-0.5 text-[12px]">{upload.error}</p>
@@ -113,8 +113,8 @@ export function UploadZone() {
       {processing ? (
         <div className="mt-3 space-y-2" data-testid="upload-progress">
           <div className="flex items-center justify-between gap-2 text-xs">
-            <span className="text-ink">{STAGE_LABEL[upload.status]}</span>
-            <span className="tnum text-muted">{Math.round(upload.progress)}%</span>
+            <span className="text-text-primary">{STAGE_LABEL[upload.status]}</span>
+            <span className="tnum text-text-secondary">{Math.round(upload.progress)}%</span>
           </div>
           <div
             role="progressbar"
@@ -122,14 +122,14 @@ export function UploadZone() {
             aria-valuemax={100}
             aria-valuenow={Math.round(upload.progress)}
             aria-label="Upload progress"
-            className="h-2 overflow-hidden rounded-full bg-raised"
+            className="h-2 overflow-hidden rounded-full bg-bg-card"
           >
             <div
-              className="h-full rounded-full bg-accent-solid transition-[width]"
+              className="h-full rounded-full bg-blue transition-[width]"
               style={{ width: `${upload.progress}%` }}
             />
           </div>
-          <div className="flex items-center justify-between gap-2 text-[11px] text-muted">
+          <div className="flex items-center justify-between gap-2 text-[11px] text-text-secondary">
             <span className="truncate">
               {upload.fileName} {upload.fileSize ? `· ${fmtBytes(upload.fileSize)}` : ''}
             </span>
@@ -142,15 +142,15 @@ export function UploadZone() {
       ) : null}
 
       {summary ? (
-        <div className="mt-3 rounded-control border border-safe/40 bg-safe/10 p-3" data-testid="upload-complete">
-          <p className="flex items-center gap-1.5 text-xs font-medium text-safe">
+        <div className="mt-3 rounded-control border border-green/40 bg-green/10 p-3" data-testid="upload-complete">
+          <p className="flex items-center gap-1.5 text-xs font-medium text-green">
             <CheckCircle2 size={14} aria-hidden="true" />
             Analysis complete
           </p>
           <table className="mt-2 w-full text-xs">
             <caption className="sr-only">Instant stream summary</caption>
             <thead>
-              <tr className="text-left text-muted">
+              <tr className="text-left text-text-secondary">
                 <th className="py-1 font-medium">Packets</th>
                 <th className="py-1 font-medium">IKE</th>
                 <th className="py-1 font-medium">ESP</th>
@@ -159,7 +159,7 @@ export function UploadZone() {
               </tr>
             </thead>
             <tbody>
-              <tr className="tnum text-ink">
+              <tr className="tnum text-text-primary">
                 <td className="py-1">{fmtInt(summary.packets)}</td>
                 <td className="py-1">{fmtInt(summary.ike)}</td>
                 <td className="py-1">{fmtInt(summary.esp)}</td>

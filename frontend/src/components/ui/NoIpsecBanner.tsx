@@ -13,13 +13,13 @@ export function NoIpsecBanner() {
   return (
     <div
       data-testid="no-ipsec-banner"
-      className="flex items-start gap-3 rounded-control border border-line bg-raised/50 p-4"
+      className="flex items-start gap-3 rounded-control border border-border bg-bg-card/50 p-4"
       role="status"
     >
-      <ShieldX size={20} className="mt-0.5 shrink-0 text-muted" aria-hidden="true" />
+      <ShieldX size={20} className="mt-0.5 shrink-0 text-text-secondary" aria-hidden="true" />
       <div>
-        <p className="text-sm font-semibold text-ink">No IPsec detected in this capture</p>
-        <p className="mt-1 text-[13px] leading-5 text-muted">
+        <p className="text-sm font-semibold text-text-primary">No IPsec detected in this capture</p>
+        <p className="mt-1 text-[13px] leading-5 text-text-secondary">
           This capture contains no IKE, ESP or AH traffic, so there is nothing IPsec to score and no
           cryptographic parameters to report. Packet counts below describe the raw capture.
         </p>

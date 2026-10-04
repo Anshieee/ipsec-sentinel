@@ -82,7 +82,7 @@ export function SearchBox({ inputRef }: { inputRef?: MutableRefObject<HTMLInputE
   return (
     <div ref={containerRef} className="relative min-w-0 flex-1 max-w-md">
       <div className="relative flex items-center">
-        <Search size={16} className="pointer-events-none absolute left-2.5 text-muted" aria-hidden="true" />
+        <Search size={16} className="pointer-events-none absolute left-2.5 text-text-secondary" aria-hidden="true" />
         <input
           ref={(node) => {
             localRef.current = node
@@ -116,18 +116,18 @@ export function SearchBox({ inputRef }: { inputRef?: MutableRefObject<HTMLInputE
           role="listbox"
           aria-label="Search results"
           data-testid="search-results"
-          className="absolute left-0 right-0 top-full z-50 mt-1 max-h-80 overflow-y-auto rounded-card border border-line bg-surface p-1 shadow-card"
+          className="absolute left-0 right-0 top-full z-50 mt-1 max-h-80 overflow-y-auto rounded-card border border-border bg-bg-elevated p-1 shadow-overlay"
         >
           {noAnalysis ? (
-            <p className="px-2 py-3 text-xs text-muted">No analysis loaded</p>
+            <p className="px-2 py-3 text-xs text-text-secondary">No analysis loaded</p>
           ) : noMatches ? (
-            <p className="px-2 py-3 text-xs text-muted">No matches for “{searchQuery.trim()}”.</p>
+            <p className="px-2 py-3 text-xs text-text-secondary">No matches for “{searchQuery.trim()}”.</p>
           ) : results.total === 0 ? (
-            <p className="px-2 py-3 text-xs text-muted">Type to search the current analysis.</p>
+            <p className="px-2 py-3 text-xs text-text-secondary">Type to search the current analysis.</p>
           ) : (
             results.groups.map((entry) => (
               <div key={entry.group} className="mb-1 last:mb-0">
-                <p className="px-2 py-1 text-2xs font-semibold uppercase tracking-wide text-muted">
+                <p className="px-2 py-1 text-2xs font-semibold uppercase tracking-wide text-text-secondary">
                   {SEARCH_GROUP_LABEL[entry.group]}
                 </p>
                 {entry.hits.map((hit) => {
@@ -144,11 +144,11 @@ export function SearchBox({ inputRef }: { inputRef?: MutableRefObject<HTMLInputE
                       onClick={() => go(hit)}
                       className={cn(
                         'flex w-full items-center justify-between gap-2 rounded-control px-2 py-1.5 text-left',
-                        active ? 'bg-raised text-ink' : 'text-muted hover:bg-raised/60 hover:text-ink',
+                        active ? 'bg-bg-card text-text-primary' : 'text-text-secondary hover:bg-bg-card/60 hover:text-text-primary',
                       )}
                     >
                       <span className="min-w-0 truncate text-xs">{hit.title}</span>
-                      {hit.subtitle ? <span className="shrink-0 font-mono text-2xs text-muted">{hit.subtitle}</span> : null}
+                      {hit.subtitle ? <span className="shrink-0 font-mono text-2xs text-text-secondary">{hit.subtitle}</span> : null}
                     </button>
                   )
                 })}

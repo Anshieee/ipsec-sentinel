@@ -1,83 +1,70 @@
 import { Card } from '@/components/ui/Card'
 import { StatusChip } from '@/components/ui/StatusChip'
-import { Badge } from '@/components/ui/Badge'
-import { useSentinel } from '@/store/useSentinel'
-import { fmtPct } from '@/lib/format'
-import type { AnalysisResult, Param } from '@/types/analysis'
+import type { AnalysisResult, ControlStatus, Param } from '@/types/analysis'
 
-/** `3600` → `1 h`; falls back to seconds below one hour. */
-export function fmtLifetime(seconds: number | null): string {
-  if (seconds === null) return 'Unknown'
-  if (seconds % 3600 === 0) return `${seconds / 3600} h`
-  if (seconds % 60 === 0) return `${seconds / 60} min`
-  return `${seconds} s`
+const UNOBSERVED = ['UNKNOWN', 'NOT_OBSERVED', 'NOT_APPLICABLE']
+const isUnobservedParam = (param: Param<unknown>): boolean =>
+  (param.status !== undefined && UNOBSERVED.includes(param.status)) || param.value === 'unknown'
+
+/** Chip state from a backend control status (backend-mapped results). */
+function chipForControl(status: ControlStatus | undefined): 'enabled' | 'disabled' | 'neutral' | 'unknown' {
+  if (status === 'PASS') return 'enabled'
+  if (status === 'FAIL' || status === 'LIKELY') return 'disabled'
+  return 'neutral'
 }
 
-const POLICY_MAX_SECONDS = 28_800
-
-function unknownParam(param: Param<unknown>, minConfidence: number): boolean {
-  return param.provenance === 'inferred' && param.confidence < minConfidence
+function controlOf(analysis: AnalysisResult, id: string): { status: ControlStatus } | null {
+  const found = (analysis.controls ?? []).find((c) => c.id === id)
+  return found ? { status: found.status } : null
 }
 
-/** Status chips row (spec 10.1 B.3). */
+/** Status chips row: every chip driven by backend control/field status.
+ * UNKNOWN or NOT_OBSERVED render a neutral "not observed" chip (no red x,
+ * no green check, no policy text). NAT-T "Not detected" is informational
+ * (neutral), never a failure. */
 export function StatusChipsRow({ analysis }: { analysis: AnalysisResult }) {
-  const minRuleConfidence = useSentinel((s) => s.settings.minRuleConfidence)
+  const backend = analysis.posture !== undefined
   const p = analysis.protocol
 
-  const replayUnknown = unknownParam(p.child.replayProtection, minRuleConfidence)
-  const childLifetimeUnknown = unknownParam(p.child.lifetimeSec, minRuleConfidence)
-  const ikeLifetimeUnknown = unknownParam(p.ike.lifetimeSec, minRuleConfidence)
-  const natUnknown = unknownParam(p.natTraversal, minRuleConfidence)
+  const replayCtl = backend ? controlOf(analysis, 'replay') : null
+  const lifetimeCtl = backend ? controlOf(analysis, 'lifetime') : null
 
-  const childLifetime = p.child.lifetimeSec.value
-  const exceeds = childLifetime !== null && childLifetime > POLICY_MAX_SECONDS
+  const replayUnobserved = replayCtl ? replayCtl.status === 'UNKNOWN' || replayCtl.status === 'NOT_APPLICABLE' : isUnobservedParam(p.child.replayProtection)
+  const lifetimeUnobserved = lifetimeCtl
+    ? lifetimeCtl.status === 'UNKNOWN' || lifetimeCtl.status === 'NOT_APPLICABLE'
+    : isUnobservedParam(p.child.lifetimeSec)
+  const ikeLifetimeUnobserved = isUnobservedParam(p.ike.lifetimeSec)
+  const natDetected = !isUnobservedParam(p.natTraversal) && p.natTraversal.value === true
+
+  const replayChip = replayCtl ? chipForControl(replayCtl.status) : p.child.replayProtection.value ? 'enabled' : 'disabled'
+  const lifetimeChip = lifetimeCtl ? chipForControl(lifetimeCtl.status) : 'unknown'
 
   return (
     <Card data-testid="status-chips">
       <div className="flex flex-wrap items-center gap-2">
-        {replayUnknown ? (
-          <StatusChip status="unknown" label="Replay protection" />
+        {replayUnobserved ? (
+          <StatusChip status="neutral" label="Replay protection" sub="not observed" />
         ) : (
           <StatusChip
-            status={p.child.replayProtection.value ? 'enabled' : 'disabled'}
+            status={replayChip === 'neutral' ? 'neutral' : replayChip}
             label="Replay protection"
-            sub={p.child.replayProtection.value ? (p.child.esn.value ? 'ESN on' : 'ESN off') : undefined}
+            sub={replayChip === 'enabled' ? 'On' : replayChip === 'disabled' ? 'Off' : 'not observed'}
           />
         )}
 
-        {ikeLifetimeUnknown ? (
-          <StatusChip status="unknown" label="IKE lifetime" />
+        {ikeLifetimeUnobserved ? (
+          <StatusChip status="neutral" label="IKE lifetime" sub="not observed" />
         ) : (
-          <StatusChip status="enabled" label="IKE lifetime" sub={fmtLifetime(p.ike.lifetimeSec.value)} />
+          <StatusChip status="enabled" label="IKE lifetime" />
         )}
 
-        {childLifetimeUnknown ? (
-          <StatusChip status="unknown" label="CHILD lifetime" />
+        {lifetimeUnobserved ? (
+          <StatusChip status="neutral" label="CHILD lifetime" sub="not observed" />
         ) : (
-          <StatusChip
-            status={exceeds ? 'disabled' : 'enabled'}
-            label="CHILD lifetime"
-            sub={fmtLifetime(childLifetime)}
-          >
-            <Badge tone={exceeds ? 'danger' : 'safe'}>
-              {exceeds ? 'Exceeds policy (max 8 h)' : 'Within policy'}
-            </Badge>
-          </StatusChip>
+          <StatusChip status={lifetimeChip === 'neutral' ? 'neutral' : lifetimeChip} label="CHILD lifetime" />
         )}
 
-        {natUnknown ? (
-          <StatusChip status="unknown" label="NAT-T" />
-        ) : (
-          <StatusChip
-            status={p.natTraversal.value ? 'enabled' : 'disabled'}
-            label="NAT-T"
-            sub={p.natTraversal.value ? 'Detected' : 'Not detected'}
-          />
-        )}
-
-        <span className="text-[11px] text-muted">
-          Threshold {fmtPct(minRuleConfidence)}
-        </span>
+        <StatusChip status="neutral" label="NAT-T" sub={natDetected ? 'Detected' : 'Not detected'} />
       </div>
     </Card>
   )

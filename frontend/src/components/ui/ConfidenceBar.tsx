@@ -27,14 +27,14 @@ export function ConfidenceBar({ value, className, tone = 'auto', showValue = tru
         aria-valuemax={100}
         aria-valuenow={Math.round(clamped * 100)}
         aria-label={ariaLabel ?? `Confidence ${fmtPct(clamped)}`}
-        className="h-1.5 flex-1 overflow-hidden rounded-full bg-raised"
+        className="h-1.5 flex-1 overflow-hidden rounded-full bg-bg-card"
       >
         <div
           className={cn('h-full rounded-full transition-[width]', TONE_BG[resolved])}
           style={{ width: `${clamped * 100}%` }}
         />
       </div>
-      {showValue ? <span className="tnum w-11 text-right text-2xs font-semibold text-muted">{fmtPct(clamped)}</span> : null}
+      {showValue ? <span className="tnum w-11 text-right text-2xs font-semibold text-text-secondary">{fmtPct(clamped)}</span> : null}
     </div>
   )
 }

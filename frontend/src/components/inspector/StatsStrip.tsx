@@ -49,8 +49,8 @@ export function StatsStrip({ analysis, counters, elapsedSec }: StatsStripProps) 
       <dl className="grid grid-cols-3 gap-4 sm:grid-cols-6">
         {stats.map((stat) => (
           <div key={stat.label}>
-            <dt className="text-[11px] text-muted">{stat.label}</dt>
-            <dd className="tnum text-lg font-semibold leading-6 text-ink">{stat.value}</dd>
+            <dt className="text-[11px] text-text-secondary">{stat.label}</dt>
+            <dd className="tnum text-lg font-semibold leading-6 text-text-primary">{stat.value}</dd>
           </div>
         ))}
       </dl>

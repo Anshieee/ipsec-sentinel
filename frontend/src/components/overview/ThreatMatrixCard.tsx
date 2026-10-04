@@ -50,7 +50,7 @@ export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: Threa
           ) : null
         }
       />
-      <p className="mb-2 text-[11px] text-muted" data-testid="matrix-note">
+      <p className="mb-2 text-[11px] text-text-secondary" data-testid="matrix-note">
         Counts confirmed and likely findings only
         {backend ? '; unknown controls are listed under Compliance.' : '.'}
       </p>
@@ -61,19 +61,19 @@ export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: Threa
           </caption>
           <thead>
             <tr>
-              <th scope="col" className="border border-line bg-raised px-2 py-1.5 text-left text-muted">
+              <th scope="col" className="border border-border bg-bg-card px-2 py-1.5 text-left text-text-secondary">
                 Severity
               </th>
               {THREAT_CATEGORIES.map((category) => (
                 <th
                   key={category}
                   scope="col"
-                  className="border border-line bg-raised px-2 py-1.5 text-center font-medium text-ink"
+                  className="border border-border bg-bg-card px-2 py-1.5 text-center font-medium text-text-primary"
                 >
                   {category}
                 </th>
               ))}
-              <th scope="col" className="border border-line bg-raised px-2 py-1.5 text-center text-muted">
+              <th scope="col" className="border border-border bg-bg-card px-2 py-1.5 text-center text-text-secondary">
                 Total
               </th>
             </tr>
@@ -81,14 +81,14 @@ export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: Threa
           <tbody>
             {SEVERITIES.map((severity) => (
               <tr key={severity}>
-                <th scope="row" className="border border-line px-2 py-1.5 text-left font-medium text-ink">
+                <th scope="row" className="border border-border px-2 py-1.5 text-left font-medium text-text-primary">
                   {SEVERITY_LABEL[severity]}
                 </th>
                 {THREAT_CATEGORIES.map((category) => {
                   const count = matrix[severity][category]
                   const active = selection?.severity === severity && selection?.category === category
                   return (
-                    <td key={category} className="border border-line p-0 text-center">
+                    <td key={category} className="border border-border p-0 text-center">
                       <button
                         type="button"
                         aria-pressed={active}
@@ -98,9 +98,9 @@ export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: Threa
                         onClick={() => onSelect(active ? null : { severity, category })}
                         style={cellStyle(severity, count)}
                         className={cn(
-                          'h-9 w-full px-2 text-center text-ink',
-                          count === 0 ? 'cursor-default text-muted' : 'cursor-pointer hover:ring-1 hover:ring-accent',
-                          active ? 'ring-2 ring-accent' : '',
+                          'h-9 w-full px-2 text-center text-text-primary',
+                          count === 0 ? 'cursor-default text-text-secondary' : 'cursor-pointer hover:ring-1 hover:ring-blue',
+                          active ? 'ring-2 ring-blue' : '',
                         )}
                       >
                         {count}
@@ -108,7 +108,7 @@ export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: Threa
                     </td>
                   )
                 })}
-                <td className="tnum border border-line bg-raised/50 px-2 py-1.5 text-center text-ink">
+                <td className="tnum border border-border bg-bg-card/50 px-2 py-1.5 text-center text-text-primary">
                   {matrixRowTotal(matrix, severity)}
                 </td>
               </tr>
@@ -116,15 +116,15 @@ export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: Threa
           </tbody>
           <tfoot>
             <tr>
-              <th scope="row" className="border border-line bg-raised/50 px-2 py-1.5 text-left text-muted">
+              <th scope="row" className="border border-border bg-bg-card/50 px-2 py-1.5 text-left text-text-secondary">
                 Total
               </th>
               {THREAT_CATEGORIES.map((category) => (
-                <td key={category} className="tnum border border-line bg-raised/50 px-2 py-1.5 text-center text-ink">
+                <td key={category} className="tnum border border-border bg-bg-card/50 px-2 py-1.5 text-center text-text-primary">
                   {matrixColumnTotal(matrix, category)}
                 </td>
               ))}
-              <td className="tnum border border-line bg-raised/50 px-2 py-1.5 text-center font-semibold text-ink">
+              <td className="tnum border border-border bg-bg-card/50 px-2 py-1.5 text-center font-semibold text-text-primary">
                 {total}
               </td>
             </tr>

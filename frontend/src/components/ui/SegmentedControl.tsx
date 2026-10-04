@@ -63,7 +63,7 @@ export function SegmentedControl<T extends string>({
       onKeyDown={onKeyDown}
       data-testid={testId}
       className={cn(
-        'inline-flex items-center gap-0.5 rounded-control border border-line-strong bg-base/50 p-0.5',
+        'inline-flex items-center gap-0.5 rounded-control border border-track bg-bg/50 p-0.5',
         className,
       )}
     >
@@ -85,8 +85,8 @@ export function SegmentedControl<T extends string>({
               'inline-flex items-center gap-1.5 rounded-[5px] font-medium transition-colors',
               compact ? 'h-6 px-2 text-2xs' : 'h-7 px-2.5 text-xs',
               selected
-                ? 'bg-raised text-ink shadow-card'
-                : 'text-muted hover:bg-raised/60 hover:text-ink active:bg-line/40',
+                ? 'border border-border bg-bg-card text-text-primary'
+                : 'text-text-secondary hover:bg-bg-card/60 hover:text-text-primary active:bg-border/40',
             )}
           >
             {option.icon}

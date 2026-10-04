@@ -290,12 +290,19 @@ export function handshakeFromEvidence(
 }
 
 function paramFor<T>(value: T, f: BackendField, note?: string): Param<T> {
+  const detail = f.detail as { decided_by?: string } | null | undefined
+  const decided = detail?.decided_by
   return {
     value,
     provenance: toProvenance(f.source),
     confidence: f.confidence,
     status: toStatus(f),
     source: f.source,
+    ...(decided === 'size-overhead-model'
+      ? { method: 'Size-overhead model' }
+      : decided === 'ah-next-header'
+        ? { method: 'AH next-header parse' }
+        : {}),
     ...(note ? { note } : {}),
   }
 }

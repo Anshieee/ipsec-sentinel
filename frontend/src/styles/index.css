@@ -11,68 +11,69 @@
  */
 :root {
   /*
-   * Material (v1.2.2): true near-black solids. Page #0a0a0a, card
-   * surface #101012, raised/hover #17171a, hairline borders #26262b,
-   * stronger control edges #3a3a42. Backdrop blur is retained but has
-   * no visible effect over opaque rungs (kept for /50 alpha uses).
+   * Material (v1.2.4): single token set from the reference palette
+   * (docs/theme-reference.md). Depth comes from luminance steps, not
+   * shadows: page #080808, cards #101010, nested #161616, hairlines
+   * #292929. Box-shadows and glow are removed from cards below.
    */
-  --color-base: #0a0a0a;
-  --color-surface: #101012;
-  --color-raised: #17171a;
+  --bg: #080808;
+  --bg-elevated: #101010;
+  --bg-card: #161616;
+  --bg-hover: #1a1a1a;
+  --bg-input: #101010;
 
-  /* Hairline = structural divider. Control edge = interactive border. */
-  --color-line: #26262b;
-  --color-line-strong: #3a3a42;
-  /* Range-slider track: #63636e is 3.20:1 against card surface. */
+  /* Borders: hairline dividers, subtle row edges, strong control edges. */
+  --border: #292929;
+  --border-subtle: #1e1e1e;
+  --border-strong: #333333;
+  /* Range-slider track: #63636e is >= 3:1 against card surfaces. */
   --color-track: #63636e;
   --color-track-rgb: 99 99 110;
 
-  /* Text */
-  --color-ink: #f0f2f5;
-  --color-muted: #a7aeb8;
+  /* Text: primary body/headings, secondary text, muted for large text,
+   * icons and decoration only, muted-small for small muted text,
+   * disabled for disabled controls only. */
+  --text-primary: #f5f5f5;
+  --text-secondary: #a0a0a0;
+  --text-muted: #737373;
+  --text-muted-small: #8a8a8a;
+  --text-disabled: #525252;
 
-  /* Accent: one primary action, the focus ring, links, primary chart series. */
-  --color-accent: #5a9bf8;
-  --color-accent-solid: #2563eb;
-
-  /* Status: reserved for meaning, never decoration. */
-  --color-highlight: #22c3d6;
-  --color-safe: #34c88f;
-  --color-warn: #f0a63a;
-  --color-orange: #f4763a;
-  --color-danger: #f2665e;
-  --color-danger-solid: #c4453c;
-  --color-violet: #a78bfa;
+  /* Accents: light primary action, blue links/focus/primary series,
+   * semantic hues below keep distinct meanings (see B4). */
+  --white-accent: #fafafa;
+  --blue: #3888ec;
+  --green: #189f70;
+  --green-bright: #20cc60;
+  --purple: #ad59fc;
+  --orange: #f08020;
+  --amber: #f8a008;
+  --red: #ff6467;
 
   /*
    * Same tokens as RGB channels so Tailwind can apply alpha modifiers.
-   * Channels are the solid rung values; rung strength is 1.0 so `/50`
-   * scales relative to the solid, never toward transparency-against-base.
    */
-  --color-base-rgb: 10 10 10;
-  --color-surface-rgb: 16 16 18;
-  --color-raised-rgb: 23 23 26;
-  --color-line-rgb: 38 38 43;
-  --color-line-strong-rgb: 58 58 66;
-  --color-ink-rgb: 240 242 245;
-  --color-muted-rgb: 167 174 184;
-  --color-accent-rgb: 90 155 248;
-  --color-accent-solid-rgb: 37 99 235;
-  --color-highlight-rgb: 34 195 214;
-  --color-safe-rgb: 52 200 143;
-  --color-warn-rgb: 240 166 58;
-  --color-orange-rgb: 244 118 58;
-  --color-danger-rgb: 242 102 94;
-  --color-danger-solid-rgb: 196 69 60;
-  --color-violet-rgb: 167 139 250;
-
-  /* Material opacities: rungs are solid, so strength is 1.0 (alpha
-   * modifiers like `/50` scale relative to the solid rung). */
-  --glass-surface: 1;
-  --glass-raised: 1;
-  --glass-line: 1;
-  --glass-line-strong: 1;
-  --glass-blur: blur(22px) saturate(140%);
+  --bg-rgb: 8 8 8;
+  --bg-elevated-rgb: 16 16 16;
+  --bg-card-rgb: 22 22 22;
+  --bg-hover-rgb: 26 26 26;
+  --bg-input-rgb: 16 16 16;
+  --border-rgb: 41 41 41;
+  --border-subtle-rgb: 30 30 30;
+  --border-strong-rgb: 51 51 51;
+  --text-primary-rgb: 245 245 245;
+  --text-secondary-rgb: 160 160 160;
+  --text-muted-rgb: 115 115 115;
+  --text-muted-small-rgb: 138 138 138;
+  --text-disabled-rgb: 82 82 82;
+  --white-accent-rgb: 250 250 250;
+  --blue-rgb: 56 136 236;
+  --green-rgb: 24 159 112;
+  --green-bright-rgb: 32 204 96;
+  --purple-rgb: 173 89 252;
+  --orange-rgb: 240 128 32;
+  --amber-rgb: 248 160 8;
+  --red-rgb: 255 100 103;
 
   /* Motion — explain change, then get out of the way. */
   --dur-instant: 100ms;
@@ -96,7 +97,7 @@
   }
 
   body {
-    @apply bg-base font-sans text-sm leading-5 text-ink antialiased;
+    @apply bg-bg font-sans text-sm leading-5 text-text-primary antialiased;
     /* Tabular figures everywhere: analysts compare numbers down columns. */
     font-variant-numeric: tabular-nums;
     overflow-x: hidden;
@@ -116,23 +117,23 @@
   }
 
   * {
-    @apply border-line;
+    @apply border-border;
   }
 
   /* Focus ring: 2px separation + 4px accent, drawn outside the control. */
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--color-base), 0 0 0 4px var(--color-accent);
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--blue);
     border-radius: 4px;
   }
 
   ::selection {
-    background: rgb(var(--color-accent-rgb) / 0.35);
+    background: rgb(var(--blue-rgb) / 0.35);
   }
 
   /* Scrollbars read as part of the instrument, not a browser artefact. */
   * {
-    scrollbar-color: var(--color-line-strong) transparent;
+    scrollbar-color: var(--border-strong) transparent;
     scrollbar-width: thin;
   }
 
@@ -142,14 +143,14 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-line);
+    background: var(--border);
     border: 2px solid transparent;
     background-clip: content-box;
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-line-strong);
+    background: var(--border-strong);
     background-clip: content-box;
   }
 
@@ -165,7 +166,7 @@
 
   /* Overline / column label: letter-spaced, never used for sentences. */
   .overline {
-    @apply text-2xs font-semibold uppercase tracking-[0.08em] text-muted;
+    @apply text-2xs font-semibold uppercase tracking-[0.08em] text-text-secondary;
   }
 
   /* Machine data: SPIs, hex, IPs, cipher identifiers, log lines. */
@@ -175,12 +176,12 @@
   }
 
   .card {
-    @apply rounded-card bg-surface p-[var(--card-pad)] shadow-card;
+    @apply rounded-card border border-border bg-bg-elevated p-[var(--card-pad)];
   }
 
   .scroll-thin {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-line-strong) transparent;
+    scrollbar-color: var(--border-strong) transparent;
   }
 
   .scroll-thin::-webkit-scrollbar {
@@ -189,7 +190,7 @@
   }
 
   .scroll-thin::-webkit-scrollbar-thumb {
-    background: var(--color-line);
+    background: var(--border);
     border-radius: 999px;
   }
 

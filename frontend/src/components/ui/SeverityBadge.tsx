@@ -6,10 +6,10 @@ import { TONE_CLASS } from './Badge'
 import { CHIP_CLASS, CHIP_ICON } from './Chip'
 
 const ICON_CLASS: Record<Severity, string> = {
-  critical: 'text-danger',
+  critical: 'text-red',
   high: 'text-orange',
-  medium: 'text-warn',
-  low: 'text-accent',
+  medium: 'text-amber',
+  low: 'text-blue',
 }
 
 export function SeverityIcon({ severity, className }: { severity: Severity; className?: string }) {

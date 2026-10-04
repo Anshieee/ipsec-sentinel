@@ -17,27 +17,27 @@ export function FlowFeaturesCard({ analysis }: { analysis: AnalysisResult }) {
   return (
     <Card data-testid="flow-features">
       <CardHeader title="Flow features" description="Statistics computed over the sampled flow" />
-      <dl className="divide-y divide-line/60">
+      <dl className="divide-y divide-border/60">
         {DEFINITIONS.map((entry) => {
           const value = stats[entry.key]
           return (
             <div key={entry.key} className="py-2 first:pt-0 last:pb-0">
               <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-[13px] text-ink">{entry.label}</dt>
-                <dd className="tnum text-[13px] font-semibold text-ink">
+                <dt className="text-[13px] text-text-primary">{entry.label}</dt>
+                <dd className="tnum text-[13px] font-semibold text-text-primary">
                   {value === null || value === undefined ? (
-                    <span className="font-normal text-muted" title="The analysis API does not report this statistic.">
+                    <span className="font-normal text-text-secondary" title="The analysis API does not report this statistic.">
                       not provided by the analysis API
                     </span>
                   ) : (
                     <>
                       {fmtNum(value, 2)}
-                      {entry.unit ? <span className="ml-0.5 text-[11px] font-normal text-muted">{entry.unit}</span> : null}
+                      {entry.unit ? <span className="ml-0.5 text-[11px] font-normal text-text-secondary">{entry.unit}</span> : null}
                     </>
                   )}
                 </dd>
               </div>
-              <p className="mt-0.5 text-[11px] leading-4 text-muted">{entry.definition}</p>
+              <p className="mt-0.5 text-[11px] leading-4 text-text-secondary">{entry.definition}</p>
             </div>
           )
         })}

@@ -16,14 +16,14 @@ export interface EmptyStateProps {
 export function EmptyState({ title, body, icon: Icon = Inbox, actions, className, testId }: EmptyStateProps) {
   return (
     <div
-      className={cn('flex flex-col items-center justify-center rounded-card bg-surface p-8 text-center shadow-card', className)}
+      className={cn('flex flex-col items-center justify-center rounded-card border border-border bg-bg-elevated p-8 text-center', className)}
       data-testid={testId}
     >
-      <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-raised text-muted">
+      <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-bg-card text-text-secondary">
         <Icon size={20} aria-hidden="true" />
       </span>
-      <h2 className="text-sm font-semibold text-ink">{title}</h2>
-      <p className="mt-1 max-w-md text-sm leading-5 text-muted">{body}</p>
+      <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
+      <p className="mt-1 max-w-md text-sm leading-5 text-text-secondary">{body}</p>
       {actions ? <div className="mt-4 flex flex-wrap items-center justify-center gap-2">{actions}</div> : null}
     </div>
   )
@@ -41,14 +41,14 @@ export function ErrorState({ message, onRetry, retryLabel = 'Retry', className, 
   return (
     <div
       role="alert"
-      className={cn('flex flex-col items-center justify-center rounded-card bg-surface p-8 text-center shadow-card', className)}
+      className={cn('flex flex-col items-center justify-center rounded-card border border-border bg-bg-elevated p-8 text-center', className)}
       data-testid={testId}
     >
-      <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-danger/15 text-danger">
+      <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-red/15 text-red">
         <RotateCcw size={20} aria-hidden="true" />
       </span>
-      <h2 className="text-sm font-semibold text-ink">Something went wrong</h2>
-      <p className="mt-1 max-w-md font-mono text-xs leading-5 text-muted">{message}</p>
+      <h2 className="text-sm font-semibold text-text-primary">Something went wrong</h2>
+      <p className="mt-1 max-w-md font-mono text-xs leading-5 text-text-secondary">{message}</p>
       {onRetry ? (
         <div className="mt-4">
           <Button variant="secondary" onClick={onRetry}>

@@ -32,10 +32,10 @@ export function HelpDialog() {
       description="Shortcuts are ignored while focus is inside a text field."
       testId="help-dialog"
     >
-      <ul className="divide-y divide-line">
+      <ul className="divide-y divide-border">
         {SHORTCUTS.map((row) => (
           <li key={row.description} className="flex items-center justify-between gap-3 py-2.5">
-            <span className="text-[13px] text-ink">{row.description}</span>
+            <span className="text-[13px] text-text-primary">{row.description}</span>
             <span className="flex shrink-0 items-center gap-1">
               {row.keys.map((key) => (
                 <Kbd key={key}>{key}</Kbd>
@@ -44,7 +44,7 @@ export function HelpDialog() {
           </li>
         ))}
       </ul>
-      <p className="mt-4 text-xs leading-5 text-muted">
+      <p className="mt-4 text-xs leading-5 text-text-secondary">
         Every shortcut has an equivalent pointer control in the header, sidebar and page toolbars.
       </p>
     </Drawer>

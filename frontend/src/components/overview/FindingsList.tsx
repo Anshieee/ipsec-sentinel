@@ -66,7 +66,7 @@ export function FindingsList({ findings, selection }: FindingsListProps) {
     return (
       <Card data-testid="findings-list">
         <CardHeader title="Findings & recommendations" />
-        <p className="flex items-center gap-2 text-[13px] text-safe">
+        <p className="flex items-center gap-2 text-[13px] text-green">
           <ShieldCheck size={16} aria-hidden="true" />
           No findings. This configuration meets the baseline policy.
         </p>
@@ -86,7 +86,7 @@ export function FindingsList({ findings, selection }: FindingsListProps) {
       />
       <div ref={containerRef} className="space-y-3">
         {filtered.length === 0 ? (
-          <p className="text-[13px] text-muted">No findings match the current filter.</p>
+          <p className="text-[13px] text-text-secondary">No findings match the current filter.</p>
         ) : (
           filtered.map((finding) => {
             const highlighted = highlightId === finding.id
@@ -96,30 +96,30 @@ export function FindingsList({ findings, selection }: FindingsListProps) {
                 data-row-id={finding.id}
                 className={cn(
                   'rounded-card border p-3',
-                  highlighted ? 'border-accent ring-2 ring-accent' : 'border-line',
+                  highlighted ? 'border-blue ring-2 ring-blue' : 'border-border',
                 )}
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <SeverityBadge severity={finding.severity} />
-                  <h3 className="text-[13px] font-semibold text-ink">{finding.title}</h3>
+                  <h3 className="text-[13px] font-semibold text-text-primary">{finding.title}</h3>
                   <Badge>{finding.category}</Badge>
                   <Badge tone="cyan">{finding.stride}</Badge>
-                  <span className="ml-auto font-mono text-[11px] text-muted">{finding.ruleId}</span>
+                  <span className="ml-auto font-mono text-[11px] text-text-secondary">{finding.ruleId}</span>
                 </div>
 
-                <p className="mt-2 rounded-control bg-raised/60 p-2 font-mono text-[11px] leading-4 text-muted">
+                <p className="mt-2 rounded-control bg-bg-card/60 p-2 font-mono text-[11px] leading-4 text-text-secondary">
                   {finding.evidence}
                 </p>
 
-                <p className="mt-2 text-[11px] text-muted">Reference: {finding.reference}</p>
+                <p className="mt-2 text-[11px] text-text-secondary">Reference: {finding.reference}</p>
 
-                <div className="mt-2 rounded-control border border-line bg-raised/40 p-2">
-                  <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                <div className="mt-2 rounded-control border border-border bg-bg-card/40 p-2">
+                  <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
                     <KeyRound size={12} aria-hidden="true" />
                     Recommendation
                   </p>
                   <div className="mt-1 flex items-start justify-between gap-2">
-                    <p className="text-[13px] leading-5 text-ink">{finding.recommendation}</p>
+                    <p className="text-[13px] leading-5 text-text-primary">{finding.recommendation}</p>
                     <Button
                       variant="ghost"
                       size="sm"

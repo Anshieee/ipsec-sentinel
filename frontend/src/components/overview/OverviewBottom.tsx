@@ -17,7 +17,7 @@ export function OverviewBottom() {
     <div className="grid grid-cols-12 gap-4">
       <div className="col-span-12">
         {noIpsec ? (
-          <p className="rounded-control border border-line bg-raised/50 p-4 text-[13px] text-muted" data-testid="matrix-not-applicable">
+          <p className="rounded-control border border-border bg-bg-card/50 p-4 text-[13px] text-text-secondary" data-testid="matrix-not-applicable">
             Threat matrix: not applicable — no IPsec detected in this capture.
           </p>
         ) : (

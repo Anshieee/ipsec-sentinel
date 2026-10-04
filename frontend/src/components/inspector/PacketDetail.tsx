@@ -46,7 +46,7 @@ export function PacketDetail({ packet }: { packet: PacketRow | null }) {
     return (
       <Card data-testid="packet-detail">
         <CardHeader title="Packet detail" description="Select a row to decode the header." />
-        <p className="text-[13px] text-muted">No packet selected.</p>
+        <p className="text-[13px] text-text-secondary">No packet selected.</p>
       </Card>
     )
   }
@@ -78,7 +78,7 @@ export function PacketDetail({ packet }: { packet: PacketRow | null }) {
       />
 
       {encrypted ? (
-        <p className="mb-2 rounded-control border border-line bg-raised px-2.5 py-1.5 text-[12px] text-muted">
+        <p className="mb-2 rounded-control border border-border bg-bg-card px-2.5 py-1.5 text-[12px] text-text-secondary">
           Payload is encrypted. Only the header is observable.
         </p>
       ) : null}
@@ -86,12 +86,12 @@ export function PacketDetail({ packet }: { packet: PacketRow | null }) {
       <dl className="grid grid-cols-[minmax(0,auto)_1fr] gap-x-3 gap-y-1 text-xs">
         {fields.map((field) => (
           <div key={field.label} className="contents">
-            <dt className="text-muted">{field.label}</dt>
-            <dd className="break-all font-mono text-ink">{field.value}</dd>
+            <dt className="text-text-secondary">{field.label}</dt>
+            <dd className="break-all font-mono text-text-primary">{field.value}</dd>
           </div>
         ))}
         <div className="contents">
-          <dt className="text-muted">Protocol</dt>
+          <dt className="text-text-secondary">Protocol</dt>
           <dd>
             <Badge tone="cyan">{packet.proto}</Badge>
           </dd>
@@ -99,11 +99,11 @@ export function PacketDetail({ packet }: { packet: PacketRow | null }) {
       </dl>
 
       <div className="mt-3">
-        <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+        <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
           <Lock size={11} aria-hidden="true" />
           Hex dump (first 64 bytes)
         </p>
-        <div className="overflow-x-auto rounded-control border border-line bg-raised/60 p-2">
+        <div className="overflow-x-auto rounded-control border border-border bg-bg-card/60 p-2">
           <table className="w-full font-mono text-[11px]">
             <caption className="sr-only">Hex dump of packet {packet.no}</caption>
             <thead className="sr-only">
@@ -116,9 +116,9 @@ export function PacketDetail({ packet }: { packet: PacketRow | null }) {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.offset}>
-                  <td className="pr-3 text-muted">{row.offset}</td>
-                  <td className="pr-3 whitespace-pre text-ink">{row.hex}</td>
-                  <td className="text-highlight">{row.ascii}</td>
+                  <td className="pr-3 text-text-secondary">{row.offset}</td>
+                  <td className="pr-3 whitespace-pre text-text-primary">{row.hex}</td>
+                  <td className="text-blue">{row.ascii}</td>
                 </tr>
               ))}
             </tbody>

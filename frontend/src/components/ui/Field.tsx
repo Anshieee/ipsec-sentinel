@@ -10,8 +10,8 @@ export type FieldSize = 'sm' | 'md'
  */
 export const fieldClasses = (size: FieldSize = 'md', className?: string): string =>
   cn(
-    'rounded-control border border-line-strong bg-base/50 text-xs text-ink placeholder:text-muted',
-    'focus:border-accent disabled:cursor-not-allowed disabled:opacity-60',
+    'rounded-control border border-track bg-bg/50 text-xs text-text-primary placeholder:text-text-secondary',
+    'focus:border-blue disabled:cursor-not-allowed disabled:opacity-60',
     size === 'sm' ? 'h-7 px-2' : 'h-9 px-3',
     className,
   )

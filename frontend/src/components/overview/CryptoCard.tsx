@@ -47,8 +47,8 @@ function CryptoRow({ label, value, param, rules }: RowProps) {
   return (
     <div className="flex items-start justify-between gap-3 py-2" title={title}>
       <div className="min-w-0">
-        <p className="text-[12px] text-muted">{label}</p>
-        <p className="break-words text-[13px] text-ink">{displayValue(value, param)}</p>
+        <p className="text-[12px] text-text-secondary">{label}</p>
+        <p className="break-words text-[13px] text-text-primary">{displayValue(value, param)}</p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
         {rules.map((finding) => (
@@ -66,7 +66,7 @@ function CryptoRow({ label, value, param, rules }: RowProps) {
         {finding_verdict_badge(rules)}
         <ProvenanceBadge provenance={param.provenance} iconOnly />
         {param.provenance === 'inferred' ? (
-          <span className="tnum text-2xs text-muted">{fmtPct(param.confidence)}</span>
+          <span className="tnum text-2xs text-text-secondary">{fmtPct(param.confidence)}</span>
         ) : null}
       </div>
     </div>
@@ -80,7 +80,7 @@ function finding_verdict_badge(rules: Finding[]): ReactNode {
   const conf = rules.map((r) => r.confidence ?? null).find((c) => c !== null)
   return (
     <span
-      className="inline-flex items-center rounded-full border border-dashed border-violet/70 bg-violet/10 px-2 py-0.5 text-2xs text-violet"
+      className="inline-flex items-center rounded-full border border-dashed border-purple/70 bg-purple/10 px-2 py-0.5 text-2xs text-purple"
       title={`Inferred evidence${conf !== null && conf !== undefined ? ` (confidence ${fmtPct(conf)})` : ''} — likely, not confirmed.`}
     >
       LIKELY{conf !== null && conf !== undefined ? ` ${fmtPct(conf)}` : ''}
@@ -120,10 +120,10 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
       />
 
       <section aria-label={ikev2 ? 'IKE SA' : 'Phase 1 (ISAKMP SA)'}>
-        <h3 className="border-b border-line pb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+        <h3 className="border-b border-border pb-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">
           {ikev2 ? 'IKE SA' : 'Phase 1 (ISAKMP SA)'}
         </h3>
-        <div className="divide-y divide-line/60">
+        <div className="divide-y divide-border/60">
           <CryptoRow
             label="Encryption"
             value={p.ike.encryption.value}
@@ -160,10 +160,10 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
       </section>
 
       <section aria-label={ikev2 ? 'CHILD SA' : 'Phase 2 (Quick Mode SA)'} className="mt-4">
-        <h3 className="border-b border-line pb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+        <h3 className="border-b border-border pb-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">
           {ikev2 ? 'CHILD SA' : 'Phase 2 (Quick Mode SA)'}
         </h3>
-        <div className="divide-y divide-line/60">
+        <div className="divide-y divide-border/60">
           <CryptoRow
             label="Encryption"
             value={p.child.encryption.value}
@@ -178,8 +178,8 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
           />
           <div className="flex items-center justify-between gap-3 py-2" title={p.child.pfs.note ?? undefined}>
             <div>
-              <p className="text-[12px] text-muted">PFS</p>
-              <p className="text-[13px] text-ink">{pfsLabel}</p>
+              <p className="text-[12px] text-text-secondary">PFS</p>
+              <p className="text-[13px] text-text-primary">{pfsLabel}</p>
             </div>
             <div className="flex items-center gap-1.5">
               {findRules(findings, ROW_RULES.pfs ?? []).map((finding) => (
@@ -190,7 +190,7 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
               ))}
               {pfsUnobserved ? (
                 <span
-                  className="inline-flex items-center rounded-full border border-dashed border-line-strong px-2 py-0.5 text-2xs text-muted"
+                  className="inline-flex items-center rounded-full border border-dashed border-border-strong px-2 py-0.5 text-2xs text-text-secondary"
                   title={p.child.pfs.note ?? 'Not observed in this capture.'}
                 >
                   not observed
@@ -202,7 +202,7 @@ export function CryptoCard({ analysis }: { analysis: AnalysisResult }) {
               )}
             </div>
           </div>
-          <div className="py-2 text-[12px] text-muted">
+          <div className="py-2 text-[12px] text-text-secondary">
             {analysis.posture
               ? 'Unknown fields list the measurement that would resolve them (see Audit).'
               : `Rows below the rule confidence threshold of ${fmtPct(minRuleConfidence)} are marked unknown by the rule engine.`}

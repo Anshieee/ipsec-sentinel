@@ -3,18 +3,20 @@ import type { ReactNode } from 'react'
 import { cn } from './cn'
 import { CHIP_CLASS, CHIP_ICON } from './Chip'
 
-export type StatusKind = 'enabled' | 'disabled' | 'unknown'
+export type StatusKind = 'enabled' | 'disabled' | 'unknown' | 'neutral'
 
 const KIND_CLASS: Record<StatusKind, string> = {
-  enabled: 'border-safe/40 bg-safe/15 text-safe',
-  disabled: 'border-danger/40 bg-danger/15 text-danger',
-  unknown: 'border-line bg-raised text-muted',
+  enabled: 'border-green/40 bg-green/15 text-green',
+  disabled: 'border-red/40 bg-red/15 text-red',
+  unknown: 'border-border bg-bg-card text-text-secondary',
+  neutral: 'border-border bg-bg-card text-text-secondary',
 }
 
 const KIND_LABEL: Record<StatusKind, string> = {
   enabled: 'Enabled',
   disabled: 'Disabled',
   unknown: 'Unknown',
+  neutral: 'Not observed',
 }
 
 export interface StatusChipProps {
@@ -26,7 +28,7 @@ export interface StatusChipProps {
   children?: ReactNode
 }
 
-/** Icon + label for Enabled / Disabled / Unknown states. */
+/** Icon + label for Enabled / Disabled / Unknown states (neutral renders no icon). */
 export function StatusChip({ status, label, sub, className, children }: StatusChipProps) {
   const text = label ?? KIND_LABEL[status]
   return (
@@ -41,11 +43,11 @@ export function StatusChip({ status, label, sub, className, children }: StatusCh
         <CheckCircle2 size={CHIP_ICON} aria-hidden="true" />
       ) : status === 'disabled' ? (
         <CircleX size={CHIP_ICON} aria-hidden="true" />
-      ) : (
+      ) : status === 'unknown' ? (
         <CircleHelp size={CHIP_ICON} aria-hidden="true" />
-      )}
+      ) : null}
       <span>{text}</span>
-      {sub ? <span className="font-medium text-muted">{sub}</span> : null}
+      {sub ? <span className="font-medium text-text-secondary">{sub}</span> : null}
       {children}
     </span>
   )

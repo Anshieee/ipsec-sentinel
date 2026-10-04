@@ -44,7 +44,7 @@ export function LiveTicker() {
         actions={<Badge tone="cyan">Capturing</Badge>}
       />
       {liveMode ? (
-        <p className="px-4 pt-1 text-[11px] text-muted" title="The live capture stream is simulated; upload a pcap for real analysis.">
+        <p className="px-4 pt-1 text-[11px] text-text-secondary" title="The live capture stream is simulated; upload a pcap for real analysis.">
           SIMULATED stream — upload a trace for real analysis.
         </p>
       ) : null}
@@ -81,10 +81,10 @@ export function LiveTicker() {
       <ul className="mt-2 space-y-1" aria-live="off">
         {last8.map((packet) => (
           <li key={`${packet.no}-${packet.timeSec}`} className="flex items-center gap-2 text-[11px]">
-            <span className="tnum w-12 text-muted">{packet.timeSec.toFixed(3)}</span>
+            <span className="tnum w-12 text-text-secondary">{packet.timeSec.toFixed(3)}</span>
             <Badge tone={PROTO_TONE[packet.proto]}>{packet.proto}</Badge>
-            <span className="tnum text-muted">{fmtInt(packet.length)} B</span>
-            <span className="truncate text-ink">{packet.info}</span>
+            <span className="tnum text-text-secondary">{fmtInt(packet.length)} B</span>
+            <span className="truncate text-text-primary">{packet.info}</span>
           </li>
         ))}
       </ul>

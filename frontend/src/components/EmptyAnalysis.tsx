@@ -61,7 +61,7 @@ export function EmptyAnalysis({ className }: EmptyAnalysisProps) {
                 key={id}
                 type="button"
                 role="menuitem"
-                className="rounded-control px-2 py-1.5 text-left text-xs text-ink hover:bg-raised"
+                className="rounded-control px-2 py-1.5 text-left text-xs text-text-primary hover:bg-bg-card"
                 onClick={() => loadFixture(id)}
               >
                 {FIXTURE_LABEL[id]}

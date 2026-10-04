@@ -20,49 +20,49 @@ export const SEVERITY_TONE: Record<Severity, Tone> = {
 }
 
 export const TONE_TEXT: Record<Tone, string> = {
-  neutral: 'text-muted',
-  safe: 'text-safe',
-  warn: 'text-warn',
+  neutral: 'text-text-secondary',
+  safe: 'text-green',
+  warn: 'text-amber',
   orange: 'text-orange',
-  danger: 'text-danger',
-  info: 'text-accent',
-  cyan: 'text-highlight',
+  danger: 'text-red',
+  info: 'text-blue',
+  cyan: 'text-blue',
 }
 
 export const TONE_BG: Record<Tone, string> = {
-  neutral: 'bg-muted',
-  safe: 'bg-safe',
-  warn: 'bg-warn',
+  neutral: 'bg-text-secondary',
+  safe: 'bg-green',
+  warn: 'bg-amber',
   orange: 'bg-orange',
-  danger: 'bg-danger',
-  info: 'bg-accent',
-  cyan: 'bg-highlight',
+  danger: 'bg-red',
+  info: 'bg-blue',
+  cyan: 'bg-blue',
 }
 
 export const TONE_BORDER: Record<Tone, string> = {
-  neutral: 'border-muted',
-  safe: 'border-safe',
-  warn: 'border-warn',
+  neutral: 'border-text-secondary',
+  safe: 'border-green',
+  warn: 'border-amber',
   orange: 'border-orange',
-  danger: 'border-danger',
-  info: 'border-accent',
-  cyan: 'border-highlight',
+  danger: 'border-red',
+  info: 'border-blue',
+  cyan: 'border-blue',
 }
 
 /**
  * The same tones as literal values, for SVG and canvas consumers (Recharts
- * takes `fill`/`stroke` strings, not Tailwind classes). Each value is the token
- * its `TONE_TEXT`/`TONE_BG`/`TONE_BORDER` entry names, so a tone never splits
- * into two hues between the DOM and a chart.
+ * takes `fill`/`stroke` strings, not Tailwind classes). Values follow the
+ * palette (docs/theme-reference.md): severity critical/high/medium/low,
+ * neutral grey for muted marks.
  */
 export const TONE_HEX: Record<Tone, string> = {
-  neutral: '#9DB0BE', // muted
-  safe: '#34C88F',
-  warn: '#F0A63A',
-  orange: '#F4763A',
-  danger: '#F2665E',
-  info: '#5A9BF8', // accent
-  cyan: '#22C3D6', // highlight
+  neutral: '#8a8a8a', // text-text-secondary-small
+  safe: '#189f70', // green
+  warn: '#f8a008', // amber
+  orange: '#f08020', // orange
+  danger: '#ff6467', // red
+  info: '#3888ec', // blue
+  cyan: '#3888ec', // folded into blue (spec keeps one blue)
 }
 
 /** Severity order used for sorting: critical first. */

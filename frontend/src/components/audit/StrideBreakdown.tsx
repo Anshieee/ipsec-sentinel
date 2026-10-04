@@ -29,24 +29,24 @@ export function StrideBreakdown({ findings }: StrideBreakdownProps) {
               data-testid={`stride-item-${tag}`.replace(/\s+/g, '-').toLowerCase()}
               className={cn(
                 'rounded-card border p-3',
-                mapped.length > 0 ? 'border-line bg-raised/50' : 'border-line/60 bg-transparent',
+                mapped.length > 0 ? 'border-border bg-bg-card/50' : 'border-border/60 bg-transparent',
               )}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[13px] font-semibold text-ink">{tag}</span>
+                <span className="text-[13px] font-semibold text-text-primary">{tag}</span>
                 <Badge tone={mapped.length > 0 ? 'warn' : 'safe'}>
                   {fmtInt(mapped.length)} finding{mapped.length === 1 ? '' : 's'}
                 </Badge>
               </div>
               {mapped.length === 0 ? (
-                <p className="mt-2 text-[12px] text-safe">No findings mapped to this category.</p>
+                <p className="mt-2 text-[12px] text-green">No findings mapped to this category.</p>
               ) : (
                 <ul className="mt-2 space-y-1.5">
                   {mapped.map((finding) => (
                     <li key={finding.id} className="flex items-center gap-2">
                       <SeverityBadge severity={finding.severity} />
-                      <span className="font-mono text-[11px] text-muted">{finding.ruleId}</span>
-                      <span className="truncate text-[12px] text-ink" title={finding.title}>
+                      <span className="font-mono text-[11px] text-text-secondary">{finding.ruleId}</span>
+                      <span className="truncate text-[12px] text-text-primary" title={finding.title}>
                         {finding.title}
                       </span>
                     </li>

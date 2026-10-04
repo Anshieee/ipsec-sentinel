@@ -11,7 +11,7 @@ export function NotFoundPage() {
         actions={
           <Link
             to="/"
-            className="inline-flex h-9 items-center justify-center rounded-control bg-accent-solid px-3 text-[13px] font-medium text-white transition-colors hover:bg-accent hover:text-ink-inverse active:bg-accent-solid/80 active:text-white"
+            className="inline-flex h-9 items-center justify-center rounded-control bg-blue px-3 text-[13px] font-medium text-white transition-colors hover:bg-blue hover:text-bg active:bg-blue/80 active:text-white"
           >
             Back to the dashboard
           </Link>

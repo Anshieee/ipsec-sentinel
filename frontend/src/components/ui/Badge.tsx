@@ -4,15 +4,16 @@ import { CHIP_CLASS } from './Chip'
 import type { Tone } from '@/lib/severity'
 import { TONE_BG, TONE_TEXT } from '@/lib/severity'
 
-/** Tone → border/background/text triple. Shared by `Badge` and `SeverityBadge`. */
+/** Tone → border/background/text triple (B3 badge spec: tinted bg 8-12%,
+ * 1px border 30-40%, bright/accent text). Shared by `Badge` and `SeverityBadge`. */
 export const TONE_CLASS: Record<Tone, string> = {
-  neutral: 'border-line bg-raised text-ink',
-  safe: 'border-safe/40 bg-safe/15 text-safe',
-  warn: 'border-warn/40 bg-warn/15 text-warn',
-  orange: 'border-orange/40 bg-orange/15 text-orange',
-  danger: 'border-danger/40 bg-danger/15 text-danger',
-  info: 'border-accent/40 bg-accent/15 text-accent',
-  cyan: 'border-highlight/40 bg-highlight/15 text-highlight',
+  neutral: 'border-border bg-bg-card text-text-primary',
+  safe: 'border-green/40 bg-green/10 text-green-bright',
+  warn: 'border-amber/40 bg-amber/10 text-amber',
+  orange: 'border-orange/40 bg-orange/10 text-orange',
+  danger: 'border-red/40 bg-red/10 text-red',
+  info: 'border-blue/40 bg-blue/10 text-blue',
+  cyan: 'border-blue/40 bg-blue/10 text-blue',
 }
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {

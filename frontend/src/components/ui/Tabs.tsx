@@ -54,7 +54,7 @@ export function Tabs({ items, value, onChange, ariaLabel, idPrefix, className }:
   }
 
   return (
-    <div role="tablist" aria-label={ariaLabel} onKeyDown={handleKeyDown} className={cn('flex items-center gap-1 border-b border-line', className)}>
+    <div role="tablist" aria-label={ariaLabel} onKeyDown={handleKeyDown} className={cn('flex items-center gap-1 border-b border-border', className)}>
       {items.map((item) => {
         const selected = item.id === value
         const Icon = item.icon
@@ -75,8 +75,8 @@ export function Tabs({ items, value, onChange, ariaLabel, idPrefix, className }:
               'inline-flex items-center gap-1.5 px-3 py-2 text-sm transition-colors',
               'border-b-2 -mb-px focus-visible:rounded-t-control',
               selected
-                ? 'border-accent font-semibold text-ink'
-                : 'border-transparent font-medium text-muted hover:text-ink',
+                ? 'border-blue font-semibold text-text-primary'
+                : 'border-transparent font-medium text-text-secondary hover:text-text-primary',
             )}
           >
             {Icon ? <Icon size={16} aria-hidden="true" /> : null}

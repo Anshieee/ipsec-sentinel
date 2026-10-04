@@ -114,9 +114,9 @@ export function ClassChart({ classes }: { classes: { label: TrafficLabel; probab
           </ResponsiveContainer>
         </div>
 
-        <figcaption className="mt-1 text-[13px] text-muted">
-          Top-1: <span className="font-medium text-ink">{top.label}</span> at{' '}
-          <span className="tnum text-ink">{fmtPct(top.probability)}</span> confidence.
+        <figcaption className="mt-1 text-[13px] text-text-secondary">
+          Top-1: <span className="font-medium text-text-primary">{top.label}</span> at{' '}
+          <span className="tnum text-text-primary">{fmtPct(top.probability)}</span> confidence.
         </figcaption>
 
         <table className="sr-only">
@@ -142,20 +142,20 @@ export function ClassChart({ classes }: { classes: { label: TrafficLabel; probab
         <div
           role="status"
           data-testid="uncertain-banner"
-          className="mt-3 rounded-control border border-warn/40 bg-warn/10 px-3 py-2"
+          className="mt-3 rounded-control border border-amber/40 bg-amber/10 px-3 py-2"
         >
-          <p className="flex items-center gap-1.5 text-xs font-semibold text-warn">
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-amber">
             <TriangleAlert size={14} aria-hidden="true" />
             Uncertain classification
           </p>
-          <p className="mt-0.5 text-[12px] leading-4 text-muted">
+          <p className="mt-0.5 text-[12px] leading-4 text-text-secondary">
             Uncertain classification. The top prediction is below the confidence threshold; treat the traffic type as
             unknown.
           </p>
           <ul className="mt-1.5 flex flex-wrap gap-2 text-[11px]">
             {sorted.slice(0, 3).map((entry) => (
-              <li key={entry.label} className="rounded-full border border-line bg-raised px-2 py-0.5 text-ink">
-                {entry.label} <span className="tnum text-muted">{fmtPct(entry.probability)}</span>
+              <li key={entry.label} className="rounded-full border border-border bg-bg-card px-2 py-0.5 text-text-primary">
+                {entry.label} <span className="tnum text-text-secondary">{fmtPct(entry.probability)}</span>
               </li>
             ))}
           </ul>

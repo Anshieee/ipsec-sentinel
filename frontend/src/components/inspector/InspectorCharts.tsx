@@ -54,7 +54,7 @@ export function InspectorCharts({ analysis }: { analysis: AnalysisResult }) {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <figcaption className="mt-1 text-[11px] text-muted">
+          <figcaption className="mt-1 text-[11px] text-text-secondary">
             Packets per 10-second bucket for IKE, ESP and other protocols.
           </figcaption>
           <table className="sr-only">
@@ -95,7 +95,7 @@ export function InspectorCharts({ analysis }: { analysis: AnalysisResult }) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <figcaption className="mt-1 text-[11px] text-muted">
+          <figcaption className="mt-1 text-[11px] text-text-secondary">
             ESP length distribution. Overhead and padding patterns support cipher inference.
           </figcaption>
           <table className="sr-only">

@@ -12,11 +12,11 @@ function isRekey(step: HandshakeStep): boolean {
 }
 
 function StepIcon({ step }: { step: HandshakeStep }) {
-  if (isRekey(step)) return <Repeat size={14} className="text-highlight" aria-hidden="true" />
-  if (step.encrypted) return <Lock size={14} className="text-safe" aria-hidden="true" />
+  if (isRekey(step)) return <Repeat size={14} className="text-blue" aria-hidden="true" />
+  if (step.encrypted) return <Lock size={14} className="text-green" aria-hidden="true" />
   if (step.step.includes('SA_INIT') || step.step.includes('Identity'))
-    return <KeyRound size={14} className="text-accent" aria-hidden="true" />
-  return <ShieldCheck size={14} className="text-muted" aria-hidden="true" />
+    return <KeyRound size={14} className="text-blue" aria-hidden="true" />
+  return <ShieldCheck size={14} className="text-text-secondary" aria-hidden="true" />
 }
 
 /** Handshake timeline stepper (spec 10.1 C.2). */
@@ -41,13 +41,13 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
         description={steps.length === 0 ? undefined : steps.length === 1 ? '1 observed step' : `${steps.length} observed steps`}
       />
       {steps.length === 0 ? (
-        <p className="px-1 py-2 text-[12px] text-muted">
+        <p className="px-1 py-2 text-[12px] text-text-secondary">
           No handshake steps reported for this capture — upload a capture containing the IKE handshake to see
           them.
         </p>
       ) : (
       <ol className="relative space-y-1">
-        <span className="absolute bottom-2 left-[15px] top-2 w-px bg-line" aria-hidden="true" />
+        <span className="absolute bottom-2 left-[15px] top-2 w-px bg-border" aria-hidden="true" />
         {steps.map((step, index) => {
           const open = expanded === step.id
           const rekey = isRekey(step)
@@ -77,25 +77,25 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
                 }}
                 onClick={() => setExpanded(open ? null : step.id)}
                 className={cn(
-                  'flex w-full items-start gap-3 rounded-control px-2 py-2 text-left hover:bg-raised/60',
-                  open ? 'bg-raised' : '',
+                  'flex w-full items-start gap-3 rounded-control px-2 py-2 text-left hover:bg-bg-card/60',
+                  open ? 'bg-bg-card' : '',
                 )}
               >
                 <span
                   className={cn(
-                    'relative z-10 flex size-[30px] shrink-0 items-center justify-center rounded-full border bg-surface',
-                    rekey ? 'border-highlight/50' : 'border-line',
+                    'relative z-10 flex size-[30px] shrink-0 items-center justify-center rounded-full border bg-bg-elevated',
+                    rekey ? 'border-blue/50' : 'border-border',
                   )}
                 >
                   <StepIcon step={step} />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-2">
-                    <span className="text-[13px] font-medium text-ink">{step.step}</span>
+                    <span className="text-[13px] font-medium text-text-primary">{step.step}</span>
                     {rekey ? <Badge tone="cyan">Rekey</Badge> : null}
                     {step.encrypted ? <Badge tone="safe">Encrypted</Badge> : null}
                   </span>
-                  <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-muted">
+                  <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-text-secondary">
                     {step.details.packet ? (
                       <span className="tnum">packet {step.details.packet}</span>
                     ) : (
@@ -113,11 +113,11 @@ export function HandshakeTimeline({ steps }: { steps: HandshakeStep[] }) {
               </button>
 
               {open ? (
-                <dl className="mb-2 ml-10 grid grid-cols-[minmax(0,auto)_1fr] gap-x-3 gap-y-1 rounded-control border border-line bg-raised/50 p-2 text-xs">
+                <dl className="mb-2 ml-10 grid grid-cols-[minmax(0,auto)_1fr] gap-x-3 gap-y-1 rounded-control border border-border bg-bg-card/50 p-2 text-xs">
                   {Object.entries(step.details).map(([key, value]) => (
                     <div key={key} className="contents">
-                      <dt className="text-muted">{key}</dt>
-                      <dd className="break-all text-ink">{value}</dd>
+                      <dt className="text-text-secondary">{key}</dt>
+                      <dd className="break-all text-text-primary">{value}</dd>
                     </div>
                   ))}
                 </dl>

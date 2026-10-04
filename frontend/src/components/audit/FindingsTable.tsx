@@ -142,7 +142,7 @@ export function FindingsTable({ findings, selection = null }: FindingsTableProps
 
   return (
     <Card flush data-testid="findings-table">
-      <div className="space-y-3 border-b border-line px-4 py-3">
+      <div className="space-y-3 border-b border-border px-4 py-3">
         <CardHeader
           title="Findings"
           description={`${visible.length} of ${findings.length} findings shown`}
@@ -163,8 +163,8 @@ export function FindingsTable({ findings, selection = null }: FindingsTableProps
                   className={cn(
                     CHIP_ACTION_CLASS,
                     selected
-                      ? 'border-accent/50 bg-accent/15 text-accent'
-                      : 'border-line-strong bg-raised text-muted hover:text-ink active:bg-line/40',
+                      ? 'border-blue/50 bg-blue/15 text-blue'
+                      : 'border-border-strong bg-bg-card text-text-secondary hover:text-text-primary active:bg-border/40',
                   )}
                 >
                   {SEVERITY_LABEL[severity]}
@@ -186,8 +186,8 @@ export function FindingsTable({ findings, selection = null }: FindingsTableProps
                   className={cn(
                     CHIP_ACTION_CLASS,
                     selected
-                      ? 'border-highlight/50 bg-highlight/15 text-highlight'
-                      : 'border-line-strong bg-raised text-muted hover:text-ink active:bg-line/40',
+                      ? 'border-blue/50 bg-blue/15 text-blue'
+                      : 'border-border-strong bg-bg-card text-text-secondary hover:text-text-primary active:bg-border/40',
                   )}
                 >
                   {stride}
@@ -223,8 +223,8 @@ export function FindingsTable({ findings, selection = null }: FindingsTableProps
       <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Findings table scroll area">
         <table className="w-full border-collapse text-xs">
           <caption className="sr-only">Rule findings with severity, category and STRIDE tag</caption>
-          <thead className="bg-raised">
-            <tr className="text-left text-muted">
+          <thead className="bg-bg-card">
+            <tr className="text-left text-text-secondary">
               <th scope="col" className="px-3 py-2 font-medium">
                 <button type="button" onClick={() => toggleSort('severity')} className="inline-flex items-center gap-1">
                   Severity {sortIcon('severity')}
@@ -259,7 +259,7 @@ export function FindingsTable({ findings, selection = null }: FindingsTableProps
           <tbody>
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-3 py-6 text-center text-muted">
+                <td colSpan={5} className="px-3 py-6 text-center text-text-secondary">
                   No findings match the current filters.
                 </td>
               </tr>
@@ -293,13 +293,13 @@ interface FindingRowProps {
 function FindingRow({ finding, expanded, onToggle }: FindingRowProps) {
   return (
     <>
-      <tr className={cn('border-t border-line/60', expanded ? 'bg-accent/10' : 'hover:bg-raised/50')}>
+      <tr className={cn('border-t border-border/60', expanded ? 'bg-blue/10' : 'hover:bg-bg-card/50')}>
         <td className="px-3 py-2">
           <span className="inline-flex items-center gap-1.5">
             <SeverityBadge severity={finding.severity} />
             {finding.verdict === 'LIKELY' ? (
               <span
-                className="inline-flex items-center rounded-full border border-dashed border-violet/70 bg-violet/10 px-1.5 py-px text-[10px] text-violet"
+                className="inline-flex items-center rounded-full border border-dashed border-purple/70 bg-purple/10 px-1.5 py-px text-[10px] text-purple"
                 title={`Inferred evidence${typeof finding.confidence === 'number' ? ` (confidence ${finding.confidence.toFixed(2)})` : ''} — likely, not confirmed.`}
               >
                 LIKELY
@@ -307,7 +307,7 @@ function FindingRow({ finding, expanded, onToggle }: FindingRowProps) {
             ) : null}
           </span>
         </td>
-        <td className="px-3 py-2 font-mono text-muted">{finding.ruleId}</td>
+        <td className="px-3 py-2 font-mono text-text-secondary">{finding.ruleId}</td>
         <td className="px-3 py-2">
           <button
             type="button"
@@ -315,7 +315,7 @@ function FindingRow({ finding, expanded, onToggle }: FindingRowProps) {
             aria-controls={`finding-panel-${finding.id}`}
             data-testid={`finding-toggle-${finding.ruleId}`}
             onClick={onToggle}
-            className="flex items-center gap-1.5 text-left text-ink hover:text-accent"
+            className="flex items-center gap-1.5 text-left text-text-primary hover:text-blue"
           >
             {expanded ? (
               <ChevronDown size={12} aria-hidden="true" />
@@ -330,21 +330,21 @@ function FindingRow({ finding, expanded, onToggle }: FindingRowProps) {
       </tr>
       {expanded ? (
         <tr id={`finding-panel-${finding.id}`} data-testid={`finding-panel-${finding.ruleId}`}>
-          <td colSpan={5} className="border-t border-line/60 bg-base/60 px-3 py-3">
+          <td colSpan={5} className="border-t border-border/60 bg-bg/60 px-3 py-3">
             <dl className="space-y-2">
               <div>
-                <dt className="text-2xs font-semibold uppercase tracking-wide text-muted">Evidence</dt>
-                <dd className="mt-0.5 rounded-control bg-raised/60 p-2 font-mono text-[11px] leading-4 text-muted">
+                <dt className="text-2xs font-semibold uppercase tracking-wide text-text-secondary">Evidence</dt>
+                <dd className="mt-0.5 rounded-control bg-bg-card/60 p-2 font-mono text-[11px] leading-4 text-text-secondary">
                   {finding.evidence}
                 </dd>
               </div>
               <div>
-                <dt className="text-2xs font-semibold uppercase tracking-wide text-muted">Reference</dt>
-                <dd className="mt-0.5 text-[12px] text-ink">{finding.reference}</dd>
+                <dt className="text-2xs font-semibold uppercase tracking-wide text-text-secondary">Reference</dt>
+                <dd className="mt-0.5 text-[12px] text-text-primary">{finding.reference}</dd>
               </div>
               <div>
-                <dt className="text-2xs font-semibold uppercase tracking-wide text-muted">Recommendation</dt>
-                <dd className="mt-0.5 text-[13px] leading-5 text-ink">{finding.recommendation}</dd>
+                <dt className="text-2xs font-semibold uppercase tracking-wide text-text-secondary">Recommendation</dt>
+                <dd className="mt-0.5 text-[13px] leading-5 text-text-primary">{finding.recommendation}</dd>
               </div>
             </dl>
           </td>

@@ -42,18 +42,18 @@ export function MonitorPill() {
   }
 
   return (
-    <div className="inline-flex items-center rounded-control border border-line bg-raised">
+    <div className="inline-flex items-center rounded-control border border-border bg-bg-card">
       <button
         type="button"
         onClick={toggle}
         data-testid="monitor-pill"
         aria-pressed={active}
-        className="inline-flex h-8 items-center gap-2 px-2.5 text-xs font-medium text-ink hover:bg-surface"
+        className="inline-flex h-8 items-center gap-2 px-2.5 text-xs font-medium text-text-primary hover:bg-bg-elevated"
       >
         <span
           className={cn(
             'inline-block size-2 rounded-full',
-            active ? 'bg-highlight' : 'bg-muted',
+            active ? 'bg-blue' : 'bg-text-secondary',
             active && !reducedMotion ? 'animate-pulse' : '',
           )}
           aria-hidden="true"
@@ -61,7 +61,7 @@ export function MonitorPill() {
         <Radio size={14} aria-hidden="true" />
         {active ? (
           <span data-testid="monitor-active">
-            Active Capture <span className="tnum text-muted">{elapsedClock(live.elapsedSec)}</span>
+            Active Capture <span className="tnum text-text-secondary">{elapsedClock(live.elapsedSec)}</span>
           </span>
         ) : (
           <span data-testid="monitor-idle">Live Monitoring: Idle</span>
@@ -81,7 +81,7 @@ export function MonitorPill() {
         trigger={
           <span
             className={cn(
-              'flex h-8 items-center border-l border-line px-2 text-muted hover:text-ink',
+              'flex h-8 items-center border-l border-border px-2 text-text-secondary hover:text-text-primary',
               capturing ? 'cursor-not-allowed opacity-50' : '',
             )}
             aria-disabled={capturing}
@@ -93,7 +93,7 @@ export function MonitorPill() {
         }
       >
         <div className="w-52 space-y-2 text-xs">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">Simulated source</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-text-secondary">Simulated source</p>
           <div role="radiogroup" aria-label="Simulated source" className="flex flex-col gap-1">
             {(['A', 'B', 'C'] as const).map((id) => (
               <button
@@ -105,14 +105,14 @@ export function MonitorPill() {
                 onClick={() => setLiveOptions({ sourceId: id })}
                 className={cn(
                   'rounded-control px-2 py-1.5 text-left',
-                  live.sourceId === id ? 'bg-surface text-ink' : 'text-muted hover:text-ink',
+                  live.sourceId === id ? 'bg-bg-elevated text-text-primary' : 'text-text-secondary hover:text-text-primary',
                 )}
               >
                 {SOURCE_LABEL[id]}
               </button>
             ))}
           </div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">Speed</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-text-secondary">Speed</p>
           <div role="radiogroup" aria-label="Capture speed" className="flex gap-1">
             {([1, 4] as const).map((speed) => (
               <button
@@ -124,14 +124,14 @@ export function MonitorPill() {
                 onClick={() => setLiveOptions({ speed })}
                 className={cn(
                   'rounded-control px-2 py-1',
-                  live.speed === speed ? 'bg-surface text-ink' : 'text-muted hover:text-ink',
+                  live.speed === speed ? 'bg-bg-elevated text-text-primary' : 'text-text-secondary hover:text-text-primary',
                 )}
               >
                 {speed}x
               </button>
             ))}
           </div>
-          <p className="pt-1 text-[11px] leading-4 text-muted">
+          <p className="pt-1 text-[11px] leading-4 text-text-secondary">
             Toggle with <Kbd>l</Kbd> while the source menu is closed.
           </p>
         </div>
