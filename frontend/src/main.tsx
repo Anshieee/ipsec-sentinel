@@ -1,9 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// Self-hosted, bundled fonts (approved font exception, see DESIGN_DECISIONS.md D2).
+// Self-hosted, bundled fonts (Geist + Geist Mono, OFL licence —
+// same families as the reference app; see docs/theme-reference.md).
 // Nothing is fetched from a CDN at runtime.
-import '@fontsource-variable/ibm-plex-sans'
-import '@fontsource-variable/jetbrains-mono'
+import '@fontsource/geist'
+import '@fontsource/geist-mono'
 import App from './App'
 import './styles/index.css'
 import './styles/print.css'

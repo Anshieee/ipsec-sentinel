@@ -16,6 +16,8 @@ export interface ThreatMatrixCardProps {
   matrix: ThreatMatrix
   selection: MatrixSelection | null
   onSelect: (selection: MatrixSelection | null) => void
+  /** Backend-mapped result: note points at the Compliance controls. */
+  backend?: boolean
 }
 
 /** Severity colour at 15 % opacity for a non-zero count; zero stays uncoloured. */
@@ -32,7 +34,7 @@ function cellStyle(severity: Severity, count: number): CSSProperties | undefined
 }
 
 /** Threat matrix with click-to-filter cells (spec 10.1 D.1). */
-export function ThreatMatrixCard({ matrix, selection, onSelect }: ThreatMatrixCardProps) {
+export function ThreatMatrixCard({ matrix, selection, onSelect, backend }: ThreatMatrixCardProps) {
   const total = matrixGrandTotal(matrix)
 
   return (
@@ -48,6 +50,10 @@ export function ThreatMatrixCard({ matrix, selection, onSelect }: ThreatMatrixCa
           ) : null
         }
       />
+      <p className="mb-2 text-[11px] text-muted" data-testid="matrix-note">
+        Counts confirmed and likely findings only
+        {backend ? '; unknown controls are listed under Compliance.' : '.'}
+      </p>
       <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Threat matrix table">
         <table className="w-full border-collapse text-xs">
           <caption className="sr-only">

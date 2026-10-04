@@ -16,12 +16,41 @@ interface WaterfallBar {
   total?: boolean
 }
 
-/** Score contribution waterfall: one bar per failing finding plus a total (spec 10.4 item 3). */
+export interface BackendControlLike {
+  id: string
+  weight: number
+  points: number
+  source: string
+  confidence: number
+}
+
+/** Per-control points lost, scaled so the bars sum exactly to the
+ * displayed total risk: lost_c = (w_c−p_c)·f_c, bar_c = lost_c·risk/Σlost.
+ * Evidence factor f: 1.0 observed/label, confidence when inferred. */
+export function waterfallBars(controls: BackendControlLike[], riskScore: number | null): WaterfallBar[] {
+  const factor = (c: BackendControlLike): number =>
+    c.source === 'inferred' ? Math.min(Math.max(c.confidence, 0), 1) : c.source === 'observed' || c.source === 'label' ? 1 : 0
+  const lost = controls
+    .map((c) => ({ id: c.id, lost: (c.weight - c.points) * factor(c) }))
+    .filter((e) => e.lost > 0)
+  const sumLost = lost.reduce((s, e) => s + e.lost, 0)
+  const entries = lost.map((e) => ({
+    name: e.id,
+    weight: sumLost > 0 && riskScore !== null ? (e.lost * riskScore) / sumLost : 0,
+    tone: 'neutral' as Tone,
+  }))
+  return riskScore === null
+    ? entries
+    : [...entries, { name: 'Total', weight: riskScore, tone: 'neutral' as Tone, total: true }]
+}
+
+/** Score contribution waterfall: per-control points lost plus a total. */
 export function ScoreWaterfall({
   findings,
   total,
   backend,
   ruleVersion,
+  controls,
 }: {
   findings: Finding[]
   /** Backend risk when PUBLISHED, null when WITHHELD (no total bar then). */
@@ -29,8 +58,11 @@ export function ScoreWaterfall({
   /** Backend-mapped result: totals come from the backend, never client weights. */
   backend?: boolean
   ruleVersion?: string | null
+  /** Backend controls: per-control lost-points bars summing to the total. */
+  controls?: BackendControlLike[]
 }) {
   const bars = useMemo<WaterfallBar[]>(() => {
+    if (backend && controls) return waterfallBars(controls, total ?? 0)
     const sorted = [...findings].sort((a, b) => WEIGHT[b.severity] - WEIGHT[a.severity])
     const entries = sorted.map((finding, index) => ({
       name: `${finding.ruleId} ${index + 1}`,
@@ -40,7 +72,7 @@ export function ScoreWaterfall({
     return total === null
       ? entries
       : [...entries, { name: 'Total', weight: total, tone: 'neutral' as Tone, total: true }]
-  }, [findings, total])
+  }, [findings, total, backend, controls])
 
   return (
     <Card data-testid="score-waterfall">
@@ -76,11 +108,11 @@ export function ScoreWaterfall({
         </div>
         <figcaption className="mt-1 text-[11px] text-muted">
           {total === null ? (
-            <>Score withheld: insufficient evidence — bars show finding severities only, no total.</>
+            <>Score withheld: insufficient evidence — bars show per-control points lost, no total.</>
           ) : backend ? (
             <>
-              Total risk {fmtInt(total)} (backend rule {ruleVersion ?? 'n/a'}). Per-finding bars show severity
-              weights for illustration only — the headline is the backend posture.
+              Total risk {fmtInt(total)} (backend rule {ruleVersion ?? 'n/a'}): per-control points lost from
+              backend weights, points and evidence factors — bars sum to the total.
             </>
           ) : (
             <>Total contribution {fmtInt(total)} points before the 100-point cap.</>

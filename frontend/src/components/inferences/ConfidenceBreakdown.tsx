@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis } from 'recharts'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { fmtPct } from '@/lib/format'
 import { confidenceTone, TONE_HEX } from '@/lib/severity'
@@ -90,6 +90,12 @@ export function ConfidenceBreakdown({ analysis }: { analysis: AnalysisResult }) 
                 {points.map((point) => (
                   <Cell key={point.name} fill={TONE_HEX[point.tone]} />
                 ))}
+                <LabelList
+                  dataKey="confidence"
+                  position="right"
+                  formatter={(value: number | string) => `${Math.round(Number(value) * 100)}%`}
+                  style={{ fontSize: 11, fill: CHART_AXIS }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>

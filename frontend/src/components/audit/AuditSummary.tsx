@@ -10,6 +10,25 @@ export function scoreDerivation(): string {
   return '25 x critical + 12 x high + 5 x medium + 2 x low, capped at 100'
 }
 
+/** Headline band sentence: numeric risk with the backend band, naming
+ * the raise when CONFIRMED findings floored it. Never prints a numeric
+ * band apart from the headline band. */
+export function bandSentence(risk: number | null, band: string | null, findings: { severity: string; verdict?: string }[]): string | null {
+  if (risk === null || band === null) return null
+  const raised =
+    (band === 'HIGH' && risk < 50) || (band === 'MODERATE' && risk < 25)
+      ? (() => {
+          const worst = findings
+            .filter((f) => (f.verdict ?? 'CONFIRMED') === 'CONFIRMED')
+            .map((f) => f.severity)
+          if (worst.includes('critical')) return 'raised by confirmed critical finding'
+          if (worst.includes('high')) return 'raised by confirmed high finding'
+          return 'raised by confirmed findings'
+        })()
+      : null
+  return raised ? `Risk ${risk} → ${band} (${raised})` : `Risk ${risk} → ${band}`
+}
+
 /** Audit header summary: backend headline (when mapped) or client rule-engine gauge, severity counts. */
 export function AuditSummary() {
   const derived = useDerived()
@@ -77,8 +96,9 @@ export function AuditSummary() {
             <p className="mt-1 text-[12px] leading-5 text-muted" data-testid="backend-assessment">
               Backend assessment:{' '}
               <span className="tnum text-ink">
-                Posture {backend.postureScore}/100 · Risk {backend.riskScore} ({backend.riskLevel}) · Coverage{' '}
-                {fmtPct(backend.coverage)}
+                Posture {backend.postureScore}/100 ·{' '}
+                {bandSentence(backend.riskScore, backend.riskBand, derived.findings) ?? 'Score withheld'}
+                {' · '}Coverage {fmtPct(backend.coverage)}
               </span>
             </p>
           ) : null}

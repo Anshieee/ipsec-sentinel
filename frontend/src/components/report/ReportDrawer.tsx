@@ -66,7 +66,7 @@ export function ReportDrawer({ open, onClose }: ReportDrawerProps) {
             <Download size={14} aria-hidden="true" />
             Download .md
           </Button>
-          <Button variant="primary" onClick={() => print(reportTab)} disabled={!markdown}>
+          <Button variant="secondary" onClick={() => print(reportTab)} disabled={!markdown}>
             <Printer size={14} aria-hidden="true" />
             Print / Save as PDF
           </Button>

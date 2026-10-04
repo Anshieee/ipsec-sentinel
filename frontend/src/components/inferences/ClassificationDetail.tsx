@@ -40,7 +40,7 @@ export function ClassificationDetail({ classes }: ClassificationDetailProps) {
           data-testid="threshold-slider"
           aria-valuetext={`${fmtPct(threshold, 0)} threshold`}
           onChange={(event) => setSetting('uncertainThreshold', Number(event.target.value))}
-          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-raised accent-accent-solid"
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-track accent-accent-solid"
         />
         <span className="text-[11px] text-muted">
           The classification is marked uncertain when the top-1 probability falls below this value.

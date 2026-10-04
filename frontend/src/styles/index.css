@@ -23,6 +23,9 @@
   /* Hairline = structural divider. Control edge = interactive border. */
   --color-line: #26262b;
   --color-line-strong: #3a3a42;
+  /* Range-slider track: #63636e is 3.20:1 against card surface. */
+  --color-track: #63636e;
+  --color-track-rgb: 99 99 110;
 
   /* Text */
   --color-ink: #f0f2f5;

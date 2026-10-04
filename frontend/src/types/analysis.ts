@@ -174,9 +174,10 @@ export interface AnalysisResult {
   packets: PacketRow[]
   flowStats: {
     meanLen: number
-    stdLen: number
-    meanIatMs: number
-    burstiness: number
+    /** Null when the backend does not provide the stat: render "not provided", never 0. */
+    stdLen: number | null
+    meanIatMs: number | null
+    burstiness: number | null
     upDownRatio: number
   }
   /** Packets per 10 s bucket. */

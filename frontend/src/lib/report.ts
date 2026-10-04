@@ -237,9 +237,9 @@ export function buildTechnicalReport(analysis: AnalysisResult): string {
       ['Flow feature', 'Value'],
       [
         ['Mean packet length', `${analysis.flowStats.meanLen} B`],
-        ['Std. deviation', `${analysis.flowStats.stdLen} B`],
-        ['Mean inter-arrival time', `${analysis.flowStats.meanIatMs} ms`],
-        ['Burstiness (CV)', String(analysis.flowStats.burstiness)],
+        ['Std. deviation', analysis.flowStats.stdLen === null ? 'not provided by the analysis API' : `${analysis.flowStats.stdLen} B`],
+        ['Mean inter-arrival time', analysis.flowStats.meanIatMs === null ? 'not provided by the analysis API' : `${analysis.flowStats.meanIatMs} ms`],
+        ['Burstiness (CV)', analysis.flowStats.burstiness === null ? 'not provided by the analysis API' : String(analysis.flowStats.burstiness)],
         ['Up/down ratio', String(analysis.flowStats.upDownRatio)],
       ],
     ),

@@ -185,13 +185,22 @@ function LiveModelEvaluation() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.field} className="border-t border-line/60">
-                <td className="px-3 py-2 font-mono text-ink">{row.field}</td>
-                <td className="tnum px-3 py-2 text-ink">{fmtPct(row.accuracy, 1)}</td>
-                <td className="tnum px-3 py-2 text-muted">{fmtPct(row.unknownRate, 1)}</td>
-              </tr>
-            ))}
+            {rows.map((row) =>
+              row.field === 'dh_group' ? (
+                <tr key={row.field} className="border-t border-line/60">
+                  <td className="px-3 py-2 font-mono text-ink">{row.field}</td>
+                  <td className="tnum px-3 py-2 text-muted" colSpan={2}>
+                    not predicted (read from the handshake)
+                  </td>
+                </tr>
+              ) : (
+                <tr key={row.field} className="border-t border-line/60">
+                  <td className="px-3 py-2 font-mono text-ink">{row.field}</td>
+                  <td className="tnum px-3 py-2 text-ink">{fmtPct(row.accuracy, 1)}</td>
+                  <td className="tnum px-3 py-2 text-muted">{fmtPct(row.unknownRate, 1)}</td>
+                </tr>
+              ),
+            )}
           </tbody>
         </table>
         <p className="mt-2 text-[11px] text-muted" data-testid="eval-provenance">

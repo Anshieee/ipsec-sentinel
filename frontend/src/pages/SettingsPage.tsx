@@ -14,7 +14,7 @@ export function SettingsPage() {
     <div data-testid="page-settings">
       <PageHeader
         title="Settings"
-        description="Model registry, AI model logs and build information."
+        description="Data source and build information."
       />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>

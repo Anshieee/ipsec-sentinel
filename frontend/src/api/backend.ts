@@ -58,8 +58,24 @@ export interface BackendFinding {
   verdict?: FindingVerdict
 }
 
+/** Backend control on the wire (snake_case). mapControl converts it. */
+export interface BackendControlWire {
+  id: unknown
+  rule_version: unknown
+  title: unknown
+  status: unknown
+  weight: unknown
+  points: unknown
+  evidence: unknown
+  explanation: unknown
+  resolve_by: unknown
+  remediation: unknown
+  source: unknown
+  confidence: unknown
+}
+
 export interface BackendAssessment {
-  controls: BackendControl[]
+  controls: BackendControlWire[]
   posture_score: number | null
   coverage: number
   score_status: ScoreStatus
@@ -206,8 +222,9 @@ export function describeExchange(version: BackendField): Param<string> {
     const role = typeof ev.role === 'string' ? ev.role.replace(/-/g, ' ') : 'observed'
     const pkt = typeof ev.packet === 'number' ? ` (packet ${ev.packet})` : ''
     const exch = ev.exchange === 'ike-sa-init' ? 'IKE_SA_INIT' : ev.exchange === 'ikev1-main-mode' ? 'Main Mode' : ev.exchange
+    const ver = str(version.value, '') === 'ikev1' ? 'IKEv1' : 'IKEv2'
     return {
-      value: `${str(version.value, '').toUpperCase()} · ${exch} ${role}${pkt}`,
+      value: `${ver} · ${exch} ${role}${pkt}`,
       provenance: toProvenance(version.source),
       confidence: version.confidence,
       status: st,
@@ -287,12 +304,15 @@ function paramFor<T>(value: T, f: BackendField, note?: string): Param<T> {
 export function mapProtocol(
   ikeSa: Record<string, BackendField>,
   childSa: Record<string, BackendField>,
-  meta: Record<string, BackendField>,
+  flat: Record<string, BackendField> = {},
 ): MappedProtocol['protocol'] {
   const missing: BackendField = { value: 'unknown', source: 'none', confidence: 0, status: 'NOT_OBSERVED' }
   const ike = (k: string): BackendField => ikeSa[k] ?? missing
   const child = (k: string): BackendField => childSa[k] ?? missing
-  const getMeta = (k: string): BackendField => meta[k] ?? missing
+  /** Flat compat fields (ip_version, nat_t); absent keys mean an older
+   * backend that never sent them — "not provided", not "not observed". */
+  const getFlat = (k: string): BackendField | null =>
+    Object.prototype.hasOwnProperty.call(flat, k) ? (flat[k] ?? missing) : null
   const ikeVer = str(ike('version').value, '')
   const modeVal = str(child('mode').value, '')
   const protoVal = str(child('proto').value, '')
@@ -353,14 +373,20 @@ export function mapProtocol(
     exchangeMode: describeExchange(ike('version')),
     mode,
     ipVersion: (() => {
-      const v = getMeta('ip_version')
-      const n = num(v.value, 0)
+      const f = getFlat('ip_version')
+      if (f === null) {
+        return paramFor('IPv4', { ...missing, status: 'NOT_APPLICABLE' }, 'Not provided by the analysis API.')
+      }
+      const n = num(f.value, 0)
       return n === 4 || n === 6
-        ? paramFor(n === 4 ? 'IPv4' : 'IPv6', v, isUnobserved(v) ? notObservedNote('IP version', v) : undefined)
-        : paramFor('IPv4', { ...v, confidence: 0 }, notObservedNote('IP version', v))
+        ? paramFor(n === 4 ? 'IPv4' : 'IPv6', f, isUnobserved(f) ? notObservedNote('IP version', f) : undefined)
+        : paramFor('IPv4', { ...f, confidence: 0 }, notObservedNote('IP version', f))
     })(),
     natTraversal: (() => {
-      const f = getMeta('nat_t')
+      const f = getFlat('nat_t')
+      if (f === null) {
+        return paramFor(false, { ...missing, status: 'NOT_APPLICABLE' }, 'Not provided by the analysis API.')
+      }
       return paramFor(bool(f.value, false), f, isUnobserved(f) ? notObservedNote('NAT-T', f) : undefined)
     })(),
     ike: {
@@ -491,6 +517,11 @@ export function mapAnalyzeResponse(
   const hasIke =
     str(resp.ike_sa?.version?.value, '') === 'ikev1' || str(resp.ike_sa?.version?.value, '') === 'ikev2'
   const protoVal = str(resp.child_sa?.proto?.value, '')
+  const controls = (resp.assessment.controls ?? []).map(mapControl)
+  // Capture volume keeps its labels but carries detection.evidence
+  // packet counts (n_ike, n_esp, n_ah) — never 1/0 presence markers.
+  const evCounts = resp.detection?.evidence ?? null
+  const totalPackets = num(evCounts?.n_packets, metaNum('n_packets', 0))
   return {
     id: `live-${Date.now().toString(36)}`,
     fileName: file.name,
@@ -504,7 +535,7 @@ export function mapAnalyzeResponse(
       riskLevel: headline.riskLevel,
     },
     posture: headline,
-    controls: resp.assessment.controls ?? [],
+    controls: (resp.assessment.controls ?? []).map(mapControl),
     detection: {
       ipsecDetected: detected,
       nPackets: num(resp.detection?.evidence?.n_packets, metaNum('n_packets', 0)),
@@ -513,26 +544,26 @@ export function mapAnalyzeResponse(
       nAh: num(resp.detection?.evidence?.n_ah, 0),
     },
     summary: {
-      packets: metaNum('n_packets', 0),
-      ikeHandshakes: hasIke ? 1 : 0,
-      espStreams: protoVal === 'esp' ? 1 : 0,
-      ahPackets: protoVal === 'ah' ? 1 : 0,
+      packets: totalPackets,
+      ikeHandshakes: num(evCounts?.n_ike, hasIke ? 1 : 0),
+      espStreams: num(evCounts?.n_esp, protoVal === 'esp' ? 1 : 0),
+      ahPackets: num(evCounts?.n_ah, protoVal === 'ah' ? 1 : 0),
       durationSec: metaNum('duration_s', 0),
     },
-    protocol: mapProtocol(resp.ike_sa ?? {}, resp.child_sa ?? {}, meta),
+    protocol: mapProtocol(resp.ike_sa ?? {}, resp.child_sa ?? {}, resp.fields ?? {}),
     trafficClasses: mapTrafficClasses(
       trafficLabel === 'unknown' || trafficLabel === '' ? undefined : trafficLabel,
       tConf,
     ),
     handshake: handshakeFromEvidence(resp.ike_sa ?? {}, resp.child_sa ?? {}),
-    findings: (resp.assessment.findings ?? []).map((finding) => mapFinding(finding, resp.assessment.controls ?? [])),
+    findings: (resp.assessment.findings ?? []).map((finding) => mapFinding(finding, controls)),
     sas: [],
     packets: [],
     flowStats: {
       meanLen: metaNum('mean_bytes', 0),
-      stdLen: 0,
-      meanIatMs: 0,
-      burstiness: 0,
+      stdLen: null,
+      meanIatMs: null,
+      burstiness: null,
       upDownRatio: metaNum('direction_ratio', 0),
     },
     timeSeries: [],
@@ -541,9 +572,27 @@ export function mapAnalyzeResponse(
   }
 }
 
-/** LIKELY controls still needing evidence, for WITHHELD resolve-by lists. */
-export function unknownsNeedingEvidence(controls: BackendControl[]): BackendControl[] {
-  return controls.filter((c) => c.status === 'UNKNOWN' || c.status === 'LIKELY')
+/** Backend control (snake_case wire) -> UI control (camelCase). The mapper
+ * passes rule_version and resolve_by through — never drops them. */
+export function mapControl(c: BackendControlWire): BackendControl {
+  const str = (v: unknown): string => (typeof v === 'string' ? v : '')
+  const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0)
+  const status = str(c.status)
+  const source = str(c.source)
+  return {
+    id: str(c.id),
+    ruleVersion: str(c.rule_version),
+    title: str(c.title),
+    status: (['PASS', 'FAIL', 'LIKELY', 'UNKNOWN', 'NOT_APPLICABLE'].includes(status) ? status : 'UNKNOWN') as BackendControl['status'],
+    weight: num(c.weight),
+    points: num(c.points),
+    evidence: (c.evidence ?? null) as BackendControl['evidence'],
+    explanation: str(c.explanation),
+    resolveBy: typeof c.resolve_by === 'string' ? (c.resolve_by as string) : null,
+    remediation: typeof c.remediation === 'string' ? (c.remediation as string) : null,
+    source: (['observed', 'inferred', 'label', 'none'].includes(source) ? source : 'none') as BackendControl['source'],
+    confidence: typeof c.confidence === 'number' ? c.confidence : 0,
+  }
 }
 
 export type { ControlStatus }

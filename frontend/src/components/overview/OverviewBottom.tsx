@@ -21,7 +21,7 @@ export function OverviewBottom() {
             Threat matrix: not applicable — no IPsec detected in this capture.
           </p>
         ) : (
-          <ThreatMatrixCard matrix={derived.matrix} selection={selection} onSelect={setSelection} />
+          <ThreatMatrixCard matrix={derived.matrix} selection={selection} onSelect={setSelection} backend={derived.backendHeadline} />
         )}
       </div>
       <div className="col-span-12">

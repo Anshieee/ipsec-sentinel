@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss'
 
-const SANS = ['"IBM Plex Sans Variable"', '"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif']
-const MONO = ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
+const SANS = ['Geist Variable', 'Geist', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif']
+const MONO = ['"Geist Mono Variable"', '"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
 
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
@@ -14,6 +14,8 @@ export default {
         raised: 'rgb(var(--color-raised-rgb) / calc(<alpha-value> * var(--glass-raised)))',
         line: 'rgb(var(--color-line-rgb) / calc(<alpha-value> * var(--glass-line)))',
         'line-strong': 'rgb(var(--color-line-strong-rgb) / calc(<alpha-value> * var(--glass-line-strong)))',
+        /* Range-slider track: neutral grey at >= 3:1 against card surface. */
+        track: 'rgb(var(--color-track-rgb) / <alpha-value>)',
         ink: 'rgb(var(--color-ink-rgb) / <alpha-value>)',
         muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
         /* Label colour for a light fill (the hover step of a filled button).

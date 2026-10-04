@@ -3,6 +3,7 @@ import { PageScaffold } from './PageScaffold'
 import { AuditSummary } from '@/components/audit/AuditSummary'
 import { ScoreWaterfall } from '@/components/audit/ScoreWaterfall'
 import { CategoryRadar } from '@/components/audit/CategoryRadar'
+import { CategoryBars } from '@/components/audit/CategoryBars'
 import { FindingsTable } from '@/components/audit/FindingsTable'
 import { StrideBreakdown } from '@/components/audit/StrideBreakdown'
 import { RemediationPlan } from '@/components/audit/RemediationPlan'
@@ -20,7 +21,11 @@ export function AuditPage() {
   return (
     <PageScaffold
       title="Security Audit"
-      description="Backend findings, threat matrix and the remediation plan (fixtures use the client rule engine)."
+      description={
+        derived.backendHeadline
+          ? 'Backend findings, threat matrix and the remediation plan.'
+          : 'Backend findings, threat matrix and the remediation plan (fixtures use the client rule engine).'
+      }
       testId="page-audit"
     >
       <div className="grid grid-cols-12 gap-4">
@@ -44,10 +49,15 @@ export function AuditPage() {
               total={derived.riskScore}
               backend={derived.backendHeadline}
               ruleVersion={derived.analysis?.posture?.ruleVersion ?? null}
+              controls={derived.analysis?.controls}
             />
           </div>
           <div className="col-span-12 lg:col-span-5">
-            <CategoryRadar scores={derived.categoryScores} />
+            {derived.backendHeadline && derived.analysis ? (
+              <CategoryBars analysis={derived.analysis} />
+            ) : (
+              <CategoryRadar scores={derived.categoryScores} />
+            )}
           </div>
         </div>
 

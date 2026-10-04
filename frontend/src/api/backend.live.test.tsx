@@ -36,13 +36,14 @@ async function probe(): Promise<boolean> {
 const apiUp = await probe()
 if (!apiUp) console.info(`[live-integration] API down at ${API}, skipping`)
 
-function cliHeadline(path: string): { posture: number | null; coverage: number; status: string; band: string | null } | null {
+function cliHeadline(path: string): { posture: number | null; coverage: number; status: string; band: string | null; evidence: { n_packets: number; n_ike: number; n_esp: number; n_ah: number } | null } | null {
   try {
     const raw = execFileSync(CLI, ['analyze', path, '--json'], { timeout: 120000, encoding: 'utf-8' })
     const body = JSON.parse(raw) as {
       assessment: { posture_score: number | null; coverage: number; score_status: string; risk_band: string | null }
+      detection: { evidence: { n_packets: number; n_ike: number; n_esp: number; n_ah: number } }
     }
-    return { posture: body.assessment.posture_score, coverage: body.assessment.coverage, status: body.assessment.score_status, band: body.assessment.risk_band }
+    return { posture: body.assessment.posture_score, coverage: body.assessment.coverage, status: body.assessment.score_status, band: body.assessment.risk_band, evidence: body.detection.evidence }
   } catch {
     return null
   }
@@ -104,6 +105,13 @@ describe.skipIf(!apiUp)('live backend mapping', () => {
       expect(mapped.posture?.coverage).toBeCloseTo(cli.coverage, 4)
       expect(mapped.posture?.scoreStatus).toBe(cli.status)
       expect(mapped.posture?.riskBand).toBe(cli.band)
+      // Item 5: capture volume carries detection.evidence packet counts.
+      if (cli.evidence) {
+        expect(mapped.summary.packets).toBe(cli.evidence.n_packets)
+        expect(mapped.summary.ikeHandshakes).toBe(cli.evidence.n_ike)
+        expect(mapped.summary.espStreams).toBe(cli.evidence.n_esp)
+        expect(mapped.summary.ahPackets).toBe(cli.evidence.n_ah)
+      }
     }
     // IKE SA and CHILD SA are separate cards with per-field status.
     expect(mapped.protocol.ike.encryption.value).not.toBe('')
@@ -162,6 +170,11 @@ describe.skipIf(!apiUp)('live backend mapping', () => {
     ] as const) {
       const resp = await upload(file, path)
       const mapped = mapAnalyzeResponse({ name: file }, resp)
+      // Item 4: every control row carries version; UNKNOWN rows resolve text.
+      for (const c of mapped.controls ?? []) {
+        expect(c.ruleVersion).not.toBe('')
+        if (c.status === 'UNKNOWN') expect(c.resolveBy).not.toBeNull()
+      }
       const { unmount } = render(
         <MemoryRouter>
           <InferenceTable analysis={mapped} />

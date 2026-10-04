@@ -93,7 +93,15 @@ export function Sidebar() {
           </p>
         ) : (
           <div className="rounded-card border border-line bg-raised p-2.5" data-testid="capture-summary">
-            <p className="text-2xs font-semibold uppercase tracking-wide text-muted">Capture status</p>
+            <p className="flex items-center justify-between gap-2 text-2xs font-semibold uppercase tracking-wide text-muted">
+              <span>Capture status</span>
+              <span
+                className="inline-flex items-center rounded-full border border-dashed border-warn/70 bg-warn/10 px-1.5 py-px text-2xs text-warn"
+                title="The live capture stream is simulated; upload a pcap for real analysis."
+              >
+                SIMULATED
+              </span>
+            </p>
             {capturing ? (
               <dl className="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-1 text-[11px]">
                 <dt className="text-muted">Packets</dt>
